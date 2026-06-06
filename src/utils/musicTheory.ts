@@ -97,6 +97,49 @@ export function buildQuestion(root: string, type: ChordType): Question {
   };
 }
 
+export function getRootChineseName(root: string): string {
+  const normalized = normalizeNote(root);
+  const letter = normalized.charAt(0);
+  const accidental = normalized.slice(1);
+
+  if (accidental === "#") {
+    return `升${letter}`;
+  }
+
+  if (accidental === "b") {
+    return `降${letter}`;
+  }
+
+  return letter;
+}
+
+export function getChordTypeChineseName(type: ChordType): string {
+  const names: Record<ChordType, string> = {
+    maj7: "大七和弦",
+    "7": "属七和弦",
+    m7: "小七和弦",
+    m7b5: "半减七和弦",
+    m9: "小九和弦",
+    "9": "属九和弦",
+    maj9: "大九和弦",
+  };
+
+  return names[type];
+}
+
+export function getQuestionReading(question: Question): string {
+  return `${question.label} = ${getRootChineseName(question.root)}${getChordTypeChineseName(question.type)}`;
+}
+
+export function getSkeletonTaskLabel(question: Question): string {
+  const degrees = isNinthChord(question.type) ? "1、3、5、7、9" : "1、3、5、7";
+  return `请把 ${question.root} 对应的 ${degrees} 字母骨架写出来`;
+}
+
+export function getFormulaTaskLabel(question: Question): string {
+  return `再按 ${question.type} 公式写出 ${question.label} 的完整和弦音`;
+}
+
 export function getLetterSkeleton(root: string, includeNine: boolean): string[] {
   const rootLetter = normalizeNote(root).charAt(0);
   const rootIndex = LETTERS.indexOf(rootLetter);
@@ -177,8 +220,8 @@ export function buildHint(question: Question): string[] {
   const answer = getChordNotes(question);
 
   const hint = [
-    `${question.root} 的字母骨架是 ${skeleton.join(" ")}。`,
-    `${question.type} 公式是 ${formula.join(" ")}。`,
+    `${question.root} 的 ${includeNine ? "1、3、5、7、9" : "1、3、5、7"} 字母骨架是 ${skeleton.join(" ")}。`,
+    `${question.type}（${getChordTypeChineseName(question.type)}）公式是 ${formula.join(" ")}。`,
   ];
 
   if (altered.length > 0) {

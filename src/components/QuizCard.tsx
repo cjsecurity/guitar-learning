@@ -6,6 +6,9 @@ import {
   buildHint,
   evaluateAnswer,
   formatFormula,
+  getFormulaTaskLabel,
+  getQuestionReading,
+  getSkeletonTaskLabel,
   isNinthChord,
 } from "../utils/musicTheory";
 
@@ -23,6 +26,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
   const [result, setResult] = useState<EvaluationResult | null>(null);
 
   const hint = buildHint(question);
+  const skeletonDegrees = isNinthChord(question.type) ? ["1", "3", "5", "7", "9"] : ["1", "3", "5", "7"];
 
   function handleSubmit() {
     const nextResult = evaluateAnswer(question, skeletonInput, finalInput, omitFifth);
@@ -46,8 +50,9 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="text-6xl font-black tracking-normal text-ink sm:text-7xl">{question.label}</h1>
-            <p className="mt-3 text-sm text-stone-600">
-              先写字母骨架，再套公式。输入可用空格或逗号分隔。
+            <p className="mt-3 text-base font-semibold text-stone-800">{getQuestionReading(question)}</p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
+              先写根音的字母骨架，再套和弦公式。输入可用空格或逗号分隔。
             </p>
           </div>
           <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
@@ -58,9 +63,31 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
       </div>
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-lg border border-stone-200 bg-mist px-4 py-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-leaf">第一步</p>
+            <p className="mt-2 text-base font-bold text-ink">{getSkeletonTaskLabel(question)}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {skeletonDegrees.map((degree) => (
+                <span key={degree} className="rounded-md border border-stone-300 bg-white px-3 py-2 text-sm font-bold text-stone-700">
+                  {degree} = ?
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-stone-200 bg-mist px-4 py-4">
+            <p className="text-xs font-bold uppercase tracking-wide text-leaf">第二步</p>
+            <p className="mt-2 text-base font-bold text-ink">{getFormulaTaskLabel(question)}</p>
+            <p className="mt-3 text-sm leading-6 text-stone-600">
+              根音部分决定从哪个字母开始，后面的类型标记决定公式。例如 Db7 读作降D属七和弦，公式是 1、3、5、b7。
+            </p>
+          </div>
+        </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2">
-            <span className="label">字母骨架答案</span>
+            <span className="label">{getSkeletonTaskLabel(question)}</span>
             <input
               className="input"
               value={skeletonInput}
@@ -70,7 +97,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
           </label>
 
           <label className="space-y-2">
-            <span className="label">最终和弦音答案</span>
+            <span className="label">{getFormulaTaskLabel(question)}</span>
             <input
               className="input"
               value={finalInput}
