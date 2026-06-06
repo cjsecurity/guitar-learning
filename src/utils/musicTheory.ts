@@ -80,9 +80,9 @@ const DEGREE_INTERVALS: Record<FormulaDegree, number> = {
 
 export const CHORD_CHAPTER: ChallengeChapter = {
   id: "chord-construction",
-  title: "七和弦与九和弦训练",
-  subtitle: "从三和弦到九和弦",
-  description: "先判断字母骨架，再套和弦公式，逐步建立吉他和声拼写能力。",
+  title: "和弦音构成速算",
+  subtitle: "三和弦、七和弦、九和弦分级训练",
+  description: "看到根音和和弦标记，写出 1、3、5、7、9 的字母骨架与完整音名。",
   status: "available",
 };
 

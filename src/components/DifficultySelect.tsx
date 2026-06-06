@@ -1,5 +1,5 @@
 import { ArrowLeft, Flame, Gauge, Skull, Sprout } from "lucide-react";
-import { DIFFICULTIES, DifficultyConfig, DifficultyId } from "../utils/musicTheory";
+import { CHORD_CHAPTER, DIFFICULTIES, DifficultyConfig, DifficultyId } from "../utils/musicTheory";
 
 interface DifficultySelectProps {
   onBackHome: () => void;
@@ -23,7 +23,7 @@ export function DifficultySelect({ onBackHome, onSelect }: DifficultySelectProps
         </button>
 
         <header className="mb-5">
-          <p className="text-sm font-semibold text-leaf">七和弦与九和弦训练</p>
+          <p className="text-sm font-semibold text-leaf">{CHORD_CHAPTER.title}</p>
           <h1 className="mt-2 text-3xl font-black tracking-normal text-ink sm:text-4xl">选择难度</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">
             建议从简单开始。真正的目标不是背答案，而是让“根音 → 字母骨架 → 公式变化”变成稳定反应。

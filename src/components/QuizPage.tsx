@@ -1,7 +1,7 @@
 import { ArrowLeft, Home, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { QuizHistoryItem, QuizStats } from "../types/quiz";
-import { DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
+import { CHORD_CHAPTER, DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
 import { HistoryPanel } from "./HistoryPanel";
 import { QuizCard } from "./QuizCard";
 import { StatsPanel } from "./StatsPanel";
@@ -40,7 +40,7 @@ export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBa
 
         <header className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-leaf">七和弦与九和弦训练 · {difficulty.title}</p>
+            <p className="text-sm font-semibold text-leaf">{CHORD_CHAPTER.title} · {difficulty.title}</p>
             <h1 className="text-2xl font-black tracking-normal text-ink sm:text-3xl">{difficulty.badge}</h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">{difficulty.description}</p>
           </div>
