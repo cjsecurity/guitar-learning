@@ -231,6 +231,7 @@ export function buildHint(question: Question): string[] {
   }
 
   hint.push(`完整答案是 ${answer.join(" ")}。`);
+  hint.push(...buildEnharmonicTips(answer));
 
   if (includeNine) {
     const omitted = getOmittedFifthNotes(question);
@@ -286,6 +287,8 @@ function buildExplanation(
     `所以 ${question.label} = ${finalNotes.join(" ")}。`,
   ];
 
+  lines.push(...buildEnharmonicTips(finalNotes));
+
   if (isNinthChord(question.type)) {
     lines.push(`如果课堂写成 ${omittedNotes.join(" ")}，这是省略了五音 ${finalNotes[2]}，不代表 ${finalNotes[2]} 不属于 ${question.label}。`);
   }
@@ -339,6 +342,35 @@ function spellPitchForLetter(letter: string, targetPitch: number): string {
   if (diff === 0) return letter;
   if (diff > 0) return `${letter}${"#".repeat(diff)}`;
   return `${letter}${"b".repeat(Math.abs(diff))}`;
+}
+
+function buildEnharmonicTips(notes: string[]): string[] {
+  return notes
+    .map((note) => {
+      const simpleName = getSimpleEnharmonicName(note);
+      if (!simpleName || simpleName === note) {
+        return "";
+      }
+
+      const letter = note.charAt(0);
+      return `${note} 和 ${simpleName} 是同一个实际声音；这里写 ${note}，是为了保留它在字母骨架里属于 ${letter} 这个级数。`;
+    })
+    .filter(Boolean);
+}
+
+function getSimpleEnharmonicName(note: string): string | null {
+  const parsed = parseNote(note);
+  const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+  const hasFlat = note.includes("b");
+  const hasSharp = note.includes("#");
+
+  if (!hasFlat && !hasSharp) {
+    return null;
+  }
+
+  const simpleName = hasFlat ? flatNames[parsed.pitch] : sharpNames[parsed.pitch];
+  return simpleName === note ? null : simpleName;
 }
 
 function arraysEqual(left: string[], right: string[]): boolean {
