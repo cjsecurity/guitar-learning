@@ -298,15 +298,17 @@ export function buildHint(question: Question): string[] {
 
   const hint = [
     `${question.root} 的 ${skeletonDegrees.join("、")} 字母骨架是 ${skeleton.join(" ")}。`,
+    "字母骨架只决定用哪些字母，不决定有没有升降号。",
     `${question.type}（${getChordTypeChineseName(question.type)}）公式是 ${formula.join(" ")}。`,
   ];
 
   if (altered.length > 0) {
     hint.push(`所以要把 ${altered.map(formatAlteredDegree).join("、")}。`);
   } else {
-    hint.push("这个类型不需要改变 3、5、7，只要按骨架写出自然公式音。");
+    hint.push("公式里的 3、5、7 表示大三度、纯五度、大七度等标准距离；如果骨架字母的自然音距离不够，就要补 # 或 b。");
   }
 
+  hint.push(...buildSpellingAdjustmentTips(question, skeleton, answer, formula));
   hint.push(`完整答案是 ${answer.join(" ")}。`);
   hint.push(...buildEnharmonicTips(answer));
 
@@ -368,10 +370,12 @@ function buildExplanation(
 ): string[] {
   const lines = [
     `${question.root} 的 ${getSkeletonDegreeLabels(question).join("、")} 字母骨架是 ${skeleton.join(" ")}。`,
+    "注意：字母骨架只是在说 1、3、5、7、9 应该分别用哪些字母，不是在说最终音一定没有升降号。",
     `${question.type} 的公式是 ${formula.join(" ")}。`,
-    `所以 ${question.label} = ${finalNotes.join(" ")}。`,
   ];
 
+  lines.push(...buildSpellingAdjustmentTips(question, skeleton, finalNotes, formula));
+  lines.push(`所以 ${question.label} = ${finalNotes.join(" ")}。`);
   lines.push(...buildEnharmonicTips(finalNotes));
 
   if (isNinthChord(question.type)) {
@@ -403,6 +407,44 @@ function formatAlteredDegree(degree: FormulaDegree): string {
   }
 
   return degree;
+}
+
+function buildSpellingAdjustmentTips(
+  question: Question,
+  skeleton: string[],
+  finalNotes: string[],
+  formula: FormulaDegree[],
+): string[] {
+  return formula
+    .map((degree, index) => {
+      const skeletonLetter = skeleton[index];
+      const finalNote = finalNotes[index];
+
+      if (!skeletonLetter || !finalNote || skeletonLetter === finalNote) {
+        return "";
+      }
+
+      const degreeName = baseDegree(degree);
+      const distanceName = getDegreeDistanceName(degree);
+      return `${degreeName} 音的字母先定为 ${skeletonLetter}；但 ${question.label} 公式要求的是 ${distanceName}，所以要写成 ${finalNote}。`;
+    })
+    .filter(Boolean);
+}
+
+function getDegreeDistanceName(degree: FormulaDegree): string {
+  const names: Record<FormulaDegree, string> = {
+    "1": "根音",
+    b3: "小三度",
+    "3": "大三度",
+    b5: "减五度",
+    "5": "纯五度",
+    "#5": "增五度",
+    b7: "小七度",
+    "7": "大七度",
+    "9": "九度",
+  };
+
+  return names[degree];
 }
 
 function getLetterForDegree(root: string, degree: ScaleDegree): string {
