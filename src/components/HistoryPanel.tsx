@@ -1,5 +1,5 @@
 import { Clock3 } from "lucide-react";
-import { QuizHistoryItem } from "../App";
+import { QuizHistoryItem } from "../types/quiz";
 
 interface HistoryPanelProps {
   history: QuizHistoryItem[];

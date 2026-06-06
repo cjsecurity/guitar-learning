@@ -8,6 +8,7 @@ import {
   formatFormula,
   getFormulaTaskLabel,
   getQuestionReading,
+  getSkeletonDegreeLabels,
   getSkeletonTaskLabel,
   isNinthChord,
 } from "../utils/musicTheory";
@@ -26,7 +27,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
   const [result, setResult] = useState<EvaluationResult | null>(null);
 
   const hint = buildHint(question);
-  const skeletonDegrees = isNinthChord(question.type) ? ["1", "3", "5", "7", "9"] : ["1", "3", "5", "7"];
+  const skeletonDegrees = getSkeletonDegreeLabels(question);
 
   function handleSubmit() {
     const nextResult = evaluateAnswer(question, skeletonInput, finalInput, omitFifth);
@@ -80,7 +81,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
             <p className="text-xs font-bold uppercase tracking-wide text-leaf">第二步</p>
             <p className="mt-2 text-base font-bold text-ink">{getFormulaTaskLabel(question)}</p>
             <p className="mt-3 text-sm leading-6 text-stone-600">
-              根音部分决定从哪个字母开始，后面的类型标记决定公式。例如 Db7 读作降D属七和弦，公式是 1、3、5、b7。
+              根音部分决定从哪个字母开始，后面的类型标记决定公式。例如 Cm 是 C 小三和弦，Db7 是降D属七和弦。
             </p>
           </div>
         </div>
@@ -107,15 +108,17 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
           </label>
         </div>
 
-        <label className="flex items-start gap-3 rounded-md border border-stone-200 bg-mist px-3 py-3 text-sm text-stone-700">
-          <input
-            className="mt-1 h-4 w-4 accent-leaf"
-            type="checkbox"
-            checked={omitFifth}
-            onChange={(event) => setOmitFifth(event.target.checked)}
-          />
-          <span>我选择省略五音，并知道完整和弦结构里仍然包含五音。</span>
-        </label>
+        {isNinthChord(question.type) && (
+          <label className="flex items-start gap-3 rounded-md border border-stone-200 bg-mist px-3 py-3 text-sm text-stone-700">
+            <input
+              className="mt-1 h-4 w-4 accent-leaf"
+              type="checkbox"
+              checked={omitFifth}
+              onChange={(event) => setOmitFifth(event.target.checked)}
+            />
+            <span>我选择省略五音，并知道完整和弦结构里仍然包含五音。</span>
+          </label>
+        )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <button type="button" className="btn-primary flex-1" onClick={handleSubmit}>

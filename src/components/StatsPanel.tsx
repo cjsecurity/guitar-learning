@@ -1,5 +1,5 @@
 import { BarChart3, Flame, Target, Trophy } from "lucide-react";
-import { QuizStats } from "../App";
+import { QuizStats } from "../types/quiz";
 
 interface StatsPanelProps {
   stats: QuizStats;
