@@ -1,11 +1,13 @@
-import { BookOpen, ChevronRight, Lock, Music2 } from "lucide-react";
+import { BookOpen, ChevronRight, Lock, Music2, Ruler } from "lucide-react";
+import { INTERVAL_CHAPTER } from "../utils/intervalTheory";
 import { CHORD_CHAPTER } from "../utils/musicTheory";
 
 interface HomePageProps {
-  onOpenChapter: () => void;
+  onOpenIntervalChapter: () => void;
+  onOpenChordChapter: () => void;
 }
 
-export function HomePage({ onOpenChapter }: HomePageProps) {
+export function HomePage({ onOpenIntervalChapter, onOpenChordChapter }: HomePageProps) {
   return (
     <main className="min-h-screen bg-mist px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -25,28 +27,59 @@ export function HomePage({ onOpenChapter }: HomePageProps) {
         </header>
 
         <section className="grid gap-4 md:grid-cols-3">
-          <button
-            type="button"
-            className="panel group flex min-h-56 flex-col p-5 text-left transition hover:-translate-y-0.5 hover:border-leaf hover:shadow-md"
-            onClick={onOpenChapter}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-leaf text-white">
-                <BookOpen size={20} aria-hidden="true" />
-              </span>
-              <ChevronRight className="text-stone-400 transition group-hover:translate-x-1 group-hover:text-leaf" size={22} aria-hidden="true" />
-            </div>
-            <p className="mt-5 text-sm font-semibold text-leaf">{CHORD_CHAPTER.subtitle}</p>
-            <h2 className="mt-2 text-2xl font-black text-ink">{CHORD_CHAPTER.title}</h2>
-            <p className="mt-3 text-sm leading-6 text-stone-600">{CHORD_CHAPTER.description}</p>
-            <span className="mt-auto pt-5 text-sm font-bold text-leaf">进入考核</span>
-          </button>
+          <ChapterCard
+            title={INTERVAL_CHAPTER.title}
+            subtitle={INTERVAL_CHAPTER.subtitle}
+            description={INTERVAL_CHAPTER.description}
+            icon={Ruler}
+            onClick={onOpenIntervalChapter}
+          />
+
+          <ChapterCard
+            title={CHORD_CHAPTER.title}
+            subtitle={CHORD_CHAPTER.subtitle}
+            description={CHORD_CHAPTER.description}
+            icon={BookOpen}
+            onClick={onOpenChordChapter}
+          />
 
           <LockedChapter title="顺阶和弦挑战" description="之后用于练 C 大调、自然小调、和声小调里的顺阶和弦。" />
-          <LockedChapter title="指板音名挑战" description="之后用于把音名、品位、弦组和根音形状连起来。" />
         </section>
       </div>
     </main>
+  );
+}
+
+function ChapterCard({
+  title,
+  subtitle,
+  description,
+  icon: Icon,
+  onClick,
+}: {
+  title: string;
+  subtitle: string;
+  description: string;
+  icon: typeof BookOpen;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="panel group flex min-h-56 flex-col p-5 text-left transition hover:-translate-y-0.5 hover:border-leaf hover:shadow-md"
+      onClick={onClick}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-leaf text-white">
+          <Icon size={20} aria-hidden="true" />
+        </span>
+        <ChevronRight className="text-stone-400 transition group-hover:translate-x-1 group-hover:text-leaf" size={22} aria-hidden="true" />
+      </div>
+      <p className="mt-5 text-sm font-semibold text-leaf">{subtitle}</p>
+      <h2 className="mt-2 text-2xl font-black text-ink">{title}</h2>
+      <p className="mt-3 text-sm leading-6 text-stone-600">{description}</p>
+      <span className="mt-auto pt-5 text-sm font-bold text-leaf">进入考核</span>
+    </button>
   );
 }
 

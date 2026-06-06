@@ -1,10 +1,12 @@
-import { ChordType, DifficultyId } from "../utils/musicTheory";
+export type ChapterId = "interval" | "chord";
+export type StatsKey = `${ChapterId}:${string}`;
 
 export interface QuizHistoryItem {
   id: string;
+  chapterId: ChapterId;
+  difficultyId: string;
   questionLabel: string;
-  chordType: ChordType;
-  difficultyId: DifficultyId;
+  typeLabel: string;
   correct: boolean;
   expectedFinal: string;
   time: string;
@@ -15,11 +17,11 @@ export interface QuizStats {
   correctAnswers: number;
   currentStreak: number;
   bestStreak: number;
-  mistakesByType: Partial<Record<ChordType, number>>;
+  mistakesByType: Record<string, number>;
   history: QuizHistoryItem[];
 }
 
-export type StatsByDifficulty = Record<DifficultyId, QuizStats>;
+export type StatsByScope = Partial<Record<StatsKey, QuizStats>>;
 
 export const EMPTY_STATS: QuizStats = {
   totalAnswers: 0,
@@ -30,9 +32,14 @@ export const EMPTY_STATS: QuizStats = {
   history: [],
 };
 
-export const EMPTY_STATS_BY_DIFFICULTY: StatsByDifficulty = {
-  easy: { ...EMPTY_STATS },
-  medium: { ...EMPTY_STATS },
-  hard: { ...EMPTY_STATS },
-  hell: { ...EMPTY_STATS },
-};
+export function createEmptyStats(): QuizStats {
+  return {
+    ...EMPTY_STATS,
+    mistakesByType: {},
+    history: [],
+  };
+}
+
+export function makeStatsKey(chapterId: ChapterId, difficultyId: string): StatsKey {
+  return `${chapterId}:${difficultyId}`;
+}
