@@ -44,6 +44,7 @@ export interface IntervalDefinition {
   fullName: string;
   semitones: number;
   feel: IntervalFeel;
+  audioExample: string;
   aliases: string[];
 }
 
@@ -51,6 +52,8 @@ export interface IntervalQuestion {
   mode: IntervalQuestionMode;
   root: string;
   target: string;
+  rootFrequency: number;
+  targetFrequency: number;
   interval: IntervalDefinition;
   label: string;
 }
@@ -91,19 +94,19 @@ export const INTERVAL_CHAPTER: IntervalChapter = {
 };
 
 export const INTERVALS: IntervalDefinition[] = [
-  { id: "m2", degreeNumber: 2, degreeName: "二度", qualityName: "小", fullName: "小二度", semitones: 1, feel: "刺耳", aliases: ["小2度", "m2"] },
-  { id: "M2", degreeNumber: 2, degreeName: "二度", qualityName: "大", fullName: "大二度", semitones: 2, feel: "紧张", aliases: ["大2度", "M2"] },
-  { id: "m3", degreeNumber: 3, degreeName: "三度", qualityName: "小", fullName: "小三度", semitones: 3, feel: "顺耳", aliases: ["小3度", "m3"] },
-  { id: "M3", degreeNumber: 3, degreeName: "三度", qualityName: "大", fullName: "大三度", semitones: 4, feel: "顺耳", aliases: ["大3度", "M3"] },
-  { id: "P4", degreeNumber: 4, degreeName: "四度", qualityName: "纯", fullName: "纯四度", semitones: 5, feel: "稳定", aliases: ["纯4度", "P4"] },
-  { id: "A4", degreeNumber: 4, degreeName: "四度", qualityName: "增", fullName: "增四度", semitones: 6, feel: "紧张", aliases: ["增4度", "A4", "#4"] },
-  { id: "d5", degreeNumber: 5, degreeName: "五度", qualityName: "减", fullName: "减五度", semitones: 6, feel: "紧张", aliases: ["减5度", "d5", "b5"] },
-  { id: "P5", degreeNumber: 5, degreeName: "五度", qualityName: "纯", fullName: "纯五度", semitones: 7, feel: "稳定", aliases: ["纯5度", "P5"] },
-  { id: "m6", degreeNumber: 6, degreeName: "六度", qualityName: "小", fullName: "小六度", semitones: 8, feel: "顺耳", aliases: ["小6度", "m6"] },
-  { id: "M6", degreeNumber: 6, degreeName: "六度", qualityName: "大", fullName: "大六度", semitones: 9, feel: "顺耳", aliases: ["大6度", "M6"] },
-  { id: "m7", degreeNumber: 7, degreeName: "七度", qualityName: "小", fullName: "小七度", semitones: 10, feel: "紧张", aliases: ["小7度", "m7"] },
-  { id: "M7", degreeNumber: 7, degreeName: "七度", qualityName: "大", fullName: "大七度", semitones: 11, feel: "紧张", aliases: ["大7度", "M7"] },
-  { id: "P8", degreeNumber: 8, degreeName: "八度", qualityName: "纯", fullName: "八度", semitones: 12, feel: "稳定", aliases: ["纯八度", "纯8度", "P8"] },
+  { id: "m2", degreeNumber: 2, degreeName: "二度", qualityName: "小", fullName: "小二度", semitones: 1, feel: "刺耳", audioExample: "C -> Db 很挤、很冲突", aliases: ["小2度", "m2"] },
+  { id: "M2", degreeNumber: 2, degreeName: "二度", qualityName: "大", fullName: "大二度", semitones: 2, feel: "紧张", audioExample: "C -> D 有摩擦但能过渡", aliases: ["大2度", "M2"] },
+  { id: "m3", degreeNumber: 3, degreeName: "三度", qualityName: "小", fullName: "小三度", semitones: 3, feel: "顺耳", audioExample: "C -> Eb 偏暗、蓝调感", aliases: ["小3度", "m3"] },
+  { id: "M3", degreeNumber: 3, degreeName: "三度", qualityName: "大", fullName: "大三度", semitones: 4, feel: "顺耳", audioExample: "C -> E 明亮、开朗", aliases: ["大3度", "M3"] },
+  { id: "P4", degreeNumber: 4, degreeName: "四度", qualityName: "纯", fullName: "纯四度", semitones: 5, feel: "稳定", audioExample: "C -> F 稳定、开阔", aliases: ["纯4度", "P4"] },
+  { id: "A4", degreeNumber: 4, degreeName: "四度", qualityName: "增", fullName: "增四度", semitones: 6, feel: "紧张", audioExample: "C -> F# 极不稳定", aliases: ["增4度", "A4", "#4"] },
+  { id: "d5", degreeNumber: 5, degreeName: "五度", qualityName: "减", fullName: "减五度", semitones: 6, feel: "紧张", audioExample: "C -> Gb 极不稳定", aliases: ["减5度", "d5", "b5"] },
+  { id: "P5", degreeNumber: 5, degreeName: "五度", qualityName: "纯", fullName: "纯五度", semitones: 7, feel: "稳定", audioExample: "C -> G 稳定、有力", aliases: ["纯5度", "P5"] },
+  { id: "m6", degreeNumber: 6, degreeName: "六度", qualityName: "小", fullName: "小六度", semitones: 8, feel: "顺耳", audioExample: "C -> Ab 悲伤、戏剧", aliases: ["小6度", "m6"] },
+  { id: "M6", degreeNumber: 6, degreeName: "六度", qualityName: "大", fullName: "大六度", semitones: 9, feel: "顺耳", audioExample: "C -> A 温暖、甜美", aliases: ["大6度", "M6"] },
+  { id: "m7", degreeNumber: 7, degreeName: "七度", qualityName: "小", fullName: "小七度", semitones: 10, feel: "紧张", audioExample: "C -> Bb 有爵士/布鲁斯张力", aliases: ["小7度", "m7"] },
+  { id: "M7", degreeNumber: 7, degreeName: "七度", qualityName: "大", fullName: "大七度", semitones: 11, feel: "紧张", audioExample: "C -> B 明亮但悬着", aliases: ["大7度", "M7"] },
+  { id: "P8", degreeNumber: 8, degreeName: "八度", qualityName: "纯", fullName: "八度", semitones: 12, feel: "稳定", audioExample: "C -> C 最稳定，像同一个音升高一组", aliases: ["纯八度", "纯8度", "P8"] },
 ];
 
 export const INTERVAL_DIFFICULTIES: IntervalDifficultyConfig[] = [
@@ -207,6 +210,8 @@ function buildRandomQuestion(config: IntervalDifficultyConfig): IntervalQuestion
       mode: "spell",
       root,
       target,
+      rootFrequency: noteToFrequency(root),
+      targetFrequency: noteToFrequency(target),
       interval,
       label: `${root} 的 ${interval.fullName}`,
     };
@@ -219,6 +224,8 @@ function buildRandomQuestion(config: IntervalDifficultyConfig): IntervalQuestion
       mode: "identify",
       root,
       target,
+      rootFrequency: noteToFrequency(root),
+      targetFrequency: noteToFrequency(target),
       interval,
       label: `${root} -> ${target}`,
     };
@@ -230,6 +237,8 @@ function buildRandomQuestion(config: IntervalDifficultyConfig): IntervalQuestion
     mode: "identify",
     root,
     target,
+    rootFrequency: noteToFrequency(root),
+    targetFrequency: noteToFrequency(target),
     interval,
     label: `${root} -> ${target}`,
   };
@@ -341,6 +350,12 @@ function parseNote(note: string): { letter: string; pitch: number } {
     letter,
     pitch: mod12(NATURAL_PITCH[letter] + offset),
   };
+}
+
+function noteToFrequency(note: string, octave = 4): number {
+  const parsed = parseNote(note);
+  const midi = (octave + 1) * 12 + parsed.pitch;
+  return 440 * 2 ** ((midi - 69) / 12);
 }
 
 function spellPitchForLetter(letter: string, targetPitch: number): string {

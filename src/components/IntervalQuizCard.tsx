@@ -1,6 +1,7 @@
-import { CheckCircle2, HelpCircle, RefreshCw, Send, XCircle } from "lucide-react";
+import { CheckCircle2, HelpCircle, Music, Play, RefreshCw, Send, Volume2, XCircle } from "lucide-react";
 import { useState } from "react";
-import { IntervalEvaluationResult, IntervalQuestion, evaluateIntervalAnswer } from "../utils/intervalTheory";
+import { getFrequency, playSequence, playSingle, playTogether } from "../utils/audioEngine";
+import { IntervalEvaluationResult, IntervalFeel, IntervalQuestion, evaluateIntervalAnswer } from "../utils/intervalTheory";
 
 interface IntervalQuizCardProps {
   question: IntervalQuestion;
@@ -13,6 +14,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [semitones, setSemitones] = useState("");
   const [quality, setQuality] = useState("");
   const [feel, setFeel] = useState("");
+  const [hasPlayed, setHasPlayed] = useState(false);
   const [target, setTarget] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
@@ -28,10 +30,31 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
     setSemitones("");
     setQuality("");
     setFeel("");
+    setHasPlayed(false);
     setTarget("");
     setShowHint(false);
     setResult(null);
     onNext();
+  }
+
+  async function playRoot() {
+    setHasPlayed(true);
+    await playSingle(question.rootFrequency);
+  }
+
+  async function playTarget() {
+    setHasPlayed(true);
+    await playSingle(question.targetFrequency);
+  }
+
+  async function playCurrentInterval() {
+    setHasPlayed(true);
+    await playSequence([question.rootFrequency, question.targetFrequency]);
+  }
+
+  async function playCurrentTogether() {
+    setHasPlayed(true);
+    await playTogether([question.rootFrequency, question.targetFrequency]);
   }
 
   return (
@@ -56,6 +79,25 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
       </div>
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
+        <div className="rounded-lg border border-stone-200 bg-mist px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Volume2 className="text-leaf" size={20} aria-hidden="true" />
+            <h2 className="text-base font-bold text-ink">先听声音</h2>
+          </div>
+          <p className="mt-2 text-sm leading-6 text-stone-600">
+            先听根音，再听目标音。听不出来时先播放下面的对比样本，再回来听当前题。
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <AudioButton label="播放根音" onClick={playRoot} />
+            <AudioButton label="播放目标音" onClick={playTarget} />
+            <AudioButton label="根音 + 目标音" onClick={playCurrentInterval} />
+            <AudioButton label="同时听两个音" onClick={playCurrentTogether} />
+          </div>
+          {!hasPlayed && <p className="mt-3 text-xs font-semibold text-amber-700">先听再选，听感分类不是背表格。</p>}
+        </div>
+
+        <ComparisonSamples />
+
         {question.mode === "spell" ? (
           <label className="space-y-2">
             <span className="label">目标音</span>
@@ -75,10 +117,10 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <span className="label">完整音程名</span>
               <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 大三度 或 M3" />
             </label>
-            <label className="space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <span className="label">听感分类</span>
-              <input className="input" value={feel} onChange={(event) => setFeel(event.target.value)} placeholder="稳定、顺耳、紧张、刺耳" />
-            </label>
+              <FeelPicker value={feel} onChange={setFeel} />
+            </div>
           </div>
         )}
 
@@ -99,7 +141,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <ol className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
-              <li>3. 最后把听感归类：稳定、顺耳、紧张或刺耳。</li>
+              <li>3. 听感要先播放当前题和对比样本，再选稳定、顺耳、紧张或刺耳。</li>
               {question.mode === "spell" && <li>4. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -117,12 +159,18 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             </div>
 
             <div className="mt-4 grid gap-3 text-sm text-stone-800 sm:grid-cols-2 lg:grid-cols-4">
-              <ResultBadge label="度数" ok={result.degreeCorrect} value={result.expectedDegree} />
-              <ResultBadge label="半音" ok={result.semitoneCorrect} value={`${result.expectedSemitones}`} />
-              <ResultBadge label="音程名" ok={result.qualityCorrect} value={result.expectedQuality} />
-              <ResultBadge label="听感" ok={result.feelCorrect} value={result.expectedFeel} />
+              <ResultBadge label="度数" ok={question.mode === "spell" || result.degreeCorrect} value={result.expectedDegree} />
+              <ResultBadge label="半音" ok={question.mode === "spell" || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
+              <ResultBadge label="音程名" ok={question.mode === "spell" || result.qualityCorrect} value={result.expectedQuality} />
+              {question.mode === "identify" && <ResultBadge label="耳朵判断" ok={result.feelCorrect} value={result.expectedFeel} />}
               {question.mode === "spell" && <ResultBadge label="目标音" ok={result.targetCorrect} value={result.expectedTarget} />}
             </div>
+
+            {question.mode === "identify" && (
+              <p className="mt-4 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
+                你选的是 {feel || "未选择"}，标准分类是 {result.expectedFeel}。先听声音，再用理论检查：{question.interval.audioExample}。
+              </p>
+            )}
 
             <ul className="mt-4 space-y-2 text-sm leading-6 text-stone-800">
               {result.explanation.map((line) => (
@@ -133,6 +181,67 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         )}
       </div>
     </section>
+  );
+}
+
+function AudioButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" className="btn-secondary" onClick={onClick}>
+      <Play size={16} aria-hidden="true" />
+      {label}
+    </button>
+  );
+}
+
+function FeelPicker({ value, onChange }: { value: string; onChange: (value: IntervalFeel) => void }) {
+  const options: IntervalFeel[] = ["稳定", "顺耳", "紧张", "刺耳"];
+
+  return (
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      {options.map((option) => (
+        <button
+          key={option}
+          type="button"
+          className={`min-h-11 rounded-md border px-3 py-2 text-sm font-bold transition ${
+            value === option ? "border-leaf bg-leaf text-white" : "border-stone-300 bg-white text-stone-700 hover:border-leaf hover:text-leaf"
+          }`}
+          onClick={() => onChange(option)}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ComparisonSamples() {
+  const samples: Array<{ feel: IntervalFeel; label: string; notes: [string, string] }> = [
+    { feel: "稳定", label: "C -> G / C -> C", notes: ["C", "G"] },
+    { feel: "顺耳", label: "C -> E / C -> Eb", notes: ["C", "E"] },
+    { feel: "紧张", label: "C -> F# / C -> B", notes: ["C", "F#"] },
+    { feel: "刺耳", label: "C -> Db", notes: ["C", "Db"] },
+  ];
+
+  return (
+    <div className="rounded-lg border border-stone-200 bg-white px-4 py-4">
+      <div className="flex items-center gap-2">
+        <Music className="text-leaf" size={20} aria-hidden="true" />
+        <h2 className="text-base font-bold text-ink">对比样本</h2>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {samples.map((sample) => (
+          <button
+            key={sample.feel}
+            type="button"
+            className="rounded-md border border-stone-200 bg-mist px-3 py-3 text-left transition hover:border-leaf"
+            onClick={() => playSequence(sample.notes.map((note) => getFrequency(note)))}
+          >
+            <span className="text-sm font-black text-ink">{sample.feel}</span>
+            <span className="mt-1 block text-xs text-stone-600">{sample.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 
