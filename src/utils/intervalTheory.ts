@@ -1,6 +1,6 @@
 export type IntervalDifficultyId = "easy" | "medium" | "hard" | "hell";
 export type IntervalQuestionMode = "identify" | "spell";
-export type IntervalFeel = "完全协和" | "不完全协和" | "不协和" | "语境协和";
+export type IntervalFeel = "完全协和" | "不完全协和" | "不协和";
 
 export interface IntervalChapter {
   id: "interval";
@@ -100,7 +100,7 @@ export const INTERVALS: IntervalDefinition[] = [
   { id: "M2", degreeNumber: 2, degreeName: "二度", qualityName: "大", fullName: "大二度", semitones: 2, feel: "不协和", audioExample: "C -> D 有摩擦但能过渡，属于不协和音程", aliases: ["大2度", "M2"] },
   { id: "m3", degreeNumber: 3, degreeName: "三度", qualityName: "小", fullName: "小三度", semitones: 3, feel: "不完全协和", audioExample: "C -> Eb 偏暗、蓝调感，属于不完全协和", aliases: ["小3度", "m3"] },
   { id: "M3", degreeNumber: 3, degreeName: "三度", qualityName: "大", fullName: "大三度", semitones: 4, feel: "不完全协和", audioExample: "C -> E 明亮、开朗，属于不完全协和", aliases: ["大3度", "M3"] },
-  { id: "P4", degreeNumber: 4, degreeName: "四度", qualityName: "纯", fullName: "纯四度", semitones: 5, feel: "语境协和", audioExample: "C -> F 开阔，但纯四度是否稳定要看低音和和声语境", aliases: ["纯4度", "P4"] },
+  { id: "P4", degreeNumber: 4, degreeName: "四度", qualityName: "纯", fullName: "纯四度", semitones: 5, feel: "完全协和", audioExample: "C -> F 开阔、稳定，属于完全协和", aliases: ["纯4度", "P4"] },
   { id: "A4", degreeNumber: 4, degreeName: "四度", qualityName: "增", fullName: "增四度", semitones: 6, feel: "不协和", audioExample: "C -> F# 很不稳定，属于三全音/不协和", aliases: ["增4度", "A4", "#4"] },
   { id: "d5", degreeNumber: 5, degreeName: "五度", qualityName: "减", fullName: "减五度", semitones: 6, feel: "不协和", audioExample: "C -> Gb 很不稳定，属于三全音/不协和", aliases: ["减5度", "d5", "b5"] },
   { id: "P5", degreeNumber: 5, degreeName: "五度", qualityName: "纯", fullName: "纯五度", semitones: 7, feel: "完全协和", audioExample: "C -> G 稳定、有力，属于完全协和", aliases: ["纯5度", "P5"] },
@@ -281,10 +281,6 @@ function buildIntervalExplanation(question: IntervalQuestion): string[] {
     lines.push("增四度和减五度都是 6 个半音，也都叫三全音；区别在于目标音字母不同。");
   }
 
-  if (interval.id === "P4") {
-    lines.push("纯四度比较特殊：旋律里常听起来开阔，但在传统和声里放在低音上方时常需要解决，所以这里标为“语境协和”。");
-  }
-
   if (question.mode === "spell") {
     lines.push(`${question.root} 的 ${interval.fullName} 要写成 ${question.target}，因为度数先决定目标字母，再用升降号补足半音距离。`);
   }
@@ -323,10 +319,9 @@ function normalizeQualityAnswer(answer: string, interval: IntervalDefinition): b
 
 function normalizeFeelAnswer(answer: string): string {
   const text = answer.trim();
-  if (text.includes("语境") || text.includes("看语境") || text.includes("纯四")) return "语境协和";
   if (text.includes("不完全") || text.includes("三度") || text.includes("六度") || text.includes("柔") || text.includes("顺")) return "不完全协和";
   if (text.includes("不协") || text.includes("刺") || text.includes("紧") || text.includes("张") || text.includes("摩擦")) return "不协和";
-  if (text.includes("完全") || text.includes("稳") || text.includes("融合") || text.includes("纯五") || text.includes("八度")) return "完全协和";
+  if (text.includes("完全") || text.includes("稳") || text.includes("融合") || text.includes("纯四") || text.includes("纯五") || text.includes("八度")) return "完全协和";
   return text;
 }
 

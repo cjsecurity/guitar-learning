@@ -141,7 +141,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <ol className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
-              <li>3. 协和分类按完全协和、不完全协和、不协和来判断；纯四度先记住“要看语境”。</li>
+              <li>3. 协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
               {question.mode === "spell" && <li>4. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -195,14 +195,13 @@ function AudioButton({ label, onClick }: { label: string; onClick: () => void })
 
 function FeelPicker({ value, onChange }: { value: string; onChange: (value: IntervalFeel) => void }) {
   const options: Array<{ value: IntervalFeel; helper: string }> = [
-    { value: "完全协和", helper: "纯五、八度" },
+    { value: "完全协和", helper: "纯四、纯五、八度" },
     { value: "不完全协和", helper: "大小三度、大小六度" },
     { value: "不协和", helper: "二度、七度、三全音" },
-    { value: "语境协和", helper: "纯四度" },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
       {options.map((option) => (
         <button
           key={option.value}
@@ -222,10 +221,9 @@ function FeelPicker({ value, onChange }: { value: string; onChange: (value: Inte
 
 function ComparisonSamples() {
   const samples: Array<{ feel: IntervalFeel; label: string; notes: [string, string] }> = [
-    { feel: "完全协和", label: "C -> G / C -> C", notes: ["C", "G"] },
+    { feel: "完全协和", label: "C -> F / C -> G / C -> C", notes: ["C", "F"] },
     { feel: "不完全协和", label: "C -> E / C -> Eb", notes: ["C", "E"] },
     { feel: "不协和", label: "C -> Db / C -> F#", notes: ["C", "Db"] },
-    { feel: "语境协和", label: "C -> F", notes: ["C", "F"] },
   ];
 
   return (
