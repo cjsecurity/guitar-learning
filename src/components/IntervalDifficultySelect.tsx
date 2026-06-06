@@ -26,7 +26,7 @@ export function IntervalDifficultySelect({ onBackHome, onSelect }: IntervalDiffi
           <p className="text-sm font-semibold text-leaf">{INTERVAL_CHAPTER.title}</p>
           <h1 className="mt-2 text-3xl font-black tracking-normal text-ink sm:text-4xl">选择难度</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">
-            建议先把 C 根音练熟。音程练习的顺序是：度数看字母，性质看半音，最后把听感分组记住。
+            建议先把 C 根音练熟。音程练习的顺序是：度数看字母，性质看半音，最后分清完全协和、不完全协和与不协和。
           </p>
         </header>
 

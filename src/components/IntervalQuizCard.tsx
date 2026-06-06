@@ -68,7 +68,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               {question.mode === "spell" ? "根据根音和音程名，写出目标音。" : "根据根音和目标音，判断音程。"}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
-              练习顺序：度数看字母，性质看半音，最后判断听感。
+              练习顺序：度数看字母，性质看半音，最后判断协和分类。
             </p>
           </div>
           <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
@@ -93,7 +93,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <AudioButton label="根音 + 目标音" onClick={playCurrentInterval} />
             <AudioButton label="同时听两个音" onClick={playCurrentTogether} />
           </div>
-          {!hasPlayed && <p className="mt-3 text-xs font-semibold text-amber-700">先听再选，听感分类不是背表格。</p>}
+          {!hasPlayed && <p className="mt-3 text-xs font-semibold text-amber-700">先听再选，协和分类要和声音感觉连起来。</p>}
         </div>
 
         <ComparisonSamples />
@@ -118,7 +118,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 大三度 或 M3" />
             </label>
             <div className="space-y-2 md:col-span-2">
-              <span className="label">听感分类</span>
+              <span className="label">协和分类</span>
               <FeelPicker value={feel} onChange={setFeel} />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <ol className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
-              <li>3. 听感要先播放当前题和对比样本，再选稳定、顺耳、紧张或刺耳。</li>
+              <li>3. 协和分类按完全协和、不完全协和、不协和来判断；纯四度先记住“要看语境”。</li>
               {question.mode === "spell" && <li>4. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -162,7 +162,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <ResultBadge label="度数" ok={question.mode === "spell" || result.degreeCorrect} value={result.expectedDegree} />
               <ResultBadge label="半音" ok={question.mode === "spell" || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
               <ResultBadge label="音程名" ok={question.mode === "spell" || result.qualityCorrect} value={result.expectedQuality} />
-              {question.mode === "identify" && <ResultBadge label="耳朵判断" ok={result.feelCorrect} value={result.expectedFeel} />}
+              {question.mode === "identify" && <ResultBadge label="协和分类" ok={result.feelCorrect} value={result.expectedFeel} />}
               {question.mode === "spell" && <ResultBadge label="目标音" ok={result.targetCorrect} value={result.expectedTarget} />}
             </div>
 
@@ -194,20 +194,26 @@ function AudioButton({ label, onClick }: { label: string; onClick: () => void })
 }
 
 function FeelPicker({ value, onChange }: { value: string; onChange: (value: IntervalFeel) => void }) {
-  const options: IntervalFeel[] = ["稳定", "顺耳", "紧张", "刺耳"];
+  const options: Array<{ value: IntervalFeel; helper: string }> = [
+    { value: "完全协和", helper: "纯五、八度" },
+    { value: "不完全协和", helper: "大小三度、大小六度" },
+    { value: "不协和", helper: "二度、七度、三全音" },
+    { value: "语境协和", helper: "纯四度" },
+  ];
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4">
       {options.map((option) => (
         <button
-          key={option}
+          key={option.value}
           type="button"
-          className={`min-h-11 rounded-md border px-3 py-2 text-sm font-bold transition ${
-            value === option ? "border-leaf bg-leaf text-white" : "border-stone-300 bg-white text-stone-700 hover:border-leaf hover:text-leaf"
+          className={`min-h-16 rounded-md border px-3 py-2 text-left text-sm font-bold transition ${
+            value === option.value ? "border-leaf bg-leaf text-white" : "border-stone-300 bg-white text-stone-700 hover:border-leaf hover:text-leaf"
           }`}
-          onClick={() => onChange(option)}
+          onClick={() => onChange(option.value)}
         >
-          {option}
+          <span className="block">{option.value}</span>
+          <span className={`mt-1 block text-xs font-semibold ${value === option.value ? "text-white/80" : "text-stone-500"}`}>{option.helper}</span>
         </button>
       ))}
     </div>
@@ -216,10 +222,10 @@ function FeelPicker({ value, onChange }: { value: string; onChange: (value: Inte
 
 function ComparisonSamples() {
   const samples: Array<{ feel: IntervalFeel; label: string; notes: [string, string] }> = [
-    { feel: "稳定", label: "C -> G / C -> C", notes: ["C", "G"] },
-    { feel: "顺耳", label: "C -> E / C -> Eb", notes: ["C", "E"] },
-    { feel: "紧张", label: "C -> F# / C -> B", notes: ["C", "F#"] },
-    { feel: "刺耳", label: "C -> Db", notes: ["C", "Db"] },
+    { feel: "完全协和", label: "C -> G / C -> C", notes: ["C", "G"] },
+    { feel: "不完全协和", label: "C -> E / C -> Eb", notes: ["C", "E"] },
+    { feel: "不协和", label: "C -> Db / C -> F#", notes: ["C", "Db"] },
+    { feel: "语境协和", label: "C -> F", notes: ["C", "F"] },
   ];
 
   return (
