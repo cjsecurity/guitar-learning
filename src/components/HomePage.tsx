@@ -1,13 +1,28 @@
-import { BookOpen, ChevronRight, Lock, Music2, Ruler } from "lucide-react";
+import { BookOpen, ChevronRight, CircleDot, Clock3, Compass, GitBranch, Hash, KeyRound, MapPinned, Music2, Network, Piano, Repeat2, Ruler, Tags } from "lucide-react";
+import { THEORY_CHAPTERS } from "../utils/courseTheory";
 import { INTERVAL_CHAPTER } from "../utils/intervalTheory";
 import { CHORD_CHAPTER } from "../utils/musicTheory";
 
 interface HomePageProps {
   onOpenIntervalChapter: () => void;
   onOpenChordChapter: () => void;
+  onOpenTheoryChapter: (chapterId: string) => void;
 }
 
-export function HomePage({ onOpenIntervalChapter, onOpenChordChapter }: HomePageProps) {
+const theoryIcons: Record<string, typeof BookOpen> = {
+  "fretboard-root": MapPinned,
+  "diatonic-chords": Piano,
+  "chord-symbols": Tags,
+  "extensions-omissions": CircleDot,
+  "progression-transpose": Repeat2,
+  "key-signatures": KeyRound,
+  "relative-pentatonic": GitBranch,
+  "minor-function": Compass,
+  "borrowed-chords": Network,
+  "rhythm-grid": Clock3,
+};
+
+export function HomePage({ onOpenIntervalChapter, onOpenChordChapter, onOpenTheoryChapter }: HomePageProps) {
   return (
     <main className="min-h-screen bg-mist px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -22,11 +37,11 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter }: HomePage
             </div>
           </div>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-stone-600">
-            把课堂里的和弦构成、音名拼写和指板判断拆成小关卡。先建立清楚的字母骨架，再把声音落到吉他上。
+            把 7 节课里的音程、和弦、调号、级数、大小调、指板根音和节奏结构拆成小关卡。每个分支只练一个能力，答错时给出课堂化解释。
           </p>
         </header>
 
-        <section className="grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <ChapterCard
             title={INTERVAL_CHAPTER.title}
             subtitle={INTERVAL_CHAPTER.subtitle}
@@ -43,7 +58,16 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter }: HomePage
             onClick={onOpenChordChapter}
           />
 
-          <LockedChapter title="顺阶和弦挑战" description="之后用于练 C 大调、自然小调、和声小调里的顺阶和弦。" />
+          {THEORY_CHAPTERS.map((chapter) => (
+            <ChapterCard
+              key={chapter.id}
+              title={chapter.title}
+              subtitle={chapter.subtitle}
+              description={chapter.description}
+              icon={theoryIcons[chapter.id] ?? Hash}
+              onClick={() => onOpenTheoryChapter(chapter.id)}
+            />
+          ))}
         </section>
       </div>
     </main>
@@ -80,20 +104,5 @@ function ChapterCard({
       <p className="mt-3 text-sm leading-6 text-stone-600">{description}</p>
       <span className="mt-auto pt-5 text-sm font-bold text-leaf">进入考核</span>
     </button>
-  );
-}
-
-function LockedChapter({ title, description }: { title: string; description: string }) {
-  return (
-    <article className="panel flex min-h-56 flex-col p-5 opacity-75">
-      <div className="flex items-center justify-between gap-3">
-        <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-stone-200 text-stone-500">
-          <Lock size={20} aria-hidden="true" />
-        </span>
-        <span className="rounded-full bg-stone-100 px-3 py-1 text-xs font-bold text-stone-500">未开放</span>
-      </div>
-      <h2 className="mt-7 text-2xl font-black text-ink">{title}</h2>
-      <p className="mt-3 text-sm leading-6 text-stone-600">{description}</p>
-    </article>
   );
 }

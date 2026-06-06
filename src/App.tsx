@@ -4,7 +4,10 @@ import { HomePage } from "./components/HomePage";
 import { IntervalDifficultySelect } from "./components/IntervalDifficultySelect";
 import { IntervalQuizPage } from "./components/IntervalQuizPage";
 import { QuizPage } from "./components/QuizPage";
+import { TheoryDifficultySelect } from "./components/TheoryDifficultySelect";
+import { TheoryQuizPage } from "./components/TheoryQuizPage";
 import { createEmptyStats, makeStatsKey, QuizHistoryItem, QuizStats, StatsByScope, StatsKey } from "./types/quiz";
+import { TheoryDifficultyId, TheoryEvaluationResult, TheoryQuestion, getTheoryChapter, getTheoryDifficulty } from "./utils/courseTheory";
 import { IntervalDifficultyId, IntervalEvaluationResult, IntervalQuestion, getIntervalDifficulty } from "./utils/intervalTheory";
 import { DifficultyId, EvaluationResult, Question, getDifficulty } from "./utils/musicTheory";
 
@@ -15,7 +18,9 @@ type ViewState =
   | { name: "interval-difficulty" }
   | { name: "interval-quiz"; difficultyId: IntervalDifficultyId }
   | { name: "chord-difficulty" }
-  | { name: "chord-quiz"; difficultyId: DifficultyId };
+  | { name: "chord-quiz"; difficultyId: DifficultyId }
+  | { name: "theory-difficulty"; chapterId: string }
+  | { name: "theory-quiz"; chapterId: string; difficultyId: TheoryDifficultyId };
 
 export default function App() {
   const [view, setView] = useState<ViewState>({ name: "home" });
@@ -91,6 +96,25 @@ export default function App() {
     );
   }
 
+  function handleTheorySubmitResult(difficultyId: TheoryDifficultyId, question: TheoryQuestion, result: TheoryEvaluationResult) {
+    const key = makeStatsKey(question.chapterId, difficultyId);
+    updateStats(
+      key,
+      {
+        id: `${Date.now()}-${question.id}`,
+        chapterId: question.chapterId,
+        difficultyId,
+        questionLabel: question.label,
+        typeLabel: result.typeLabel,
+        correct: result.isFullyCorrect,
+        expectedFinal: result.expectedFinal,
+        time: formatTime(),
+      },
+      result.typeLabel,
+      result.isFullyCorrect,
+    );
+  }
+
   function handleResetStats(key: StatsKey) {
     setStatsByScope((current) => ({
       ...current,
@@ -138,10 +162,40 @@ export default function App() {
     );
   }
 
+  if (view.name === "theory-difficulty") {
+    const chapter = getTheoryChapter(view.chapterId);
+    return (
+      <TheoryDifficultySelect
+        chapter={chapter}
+        onBackHome={() => setView({ name: "home" })}
+        onSelect={(difficultyId) => setView({ name: "theory-quiz", chapterId: chapter.id, difficultyId })}
+      />
+    );
+  }
+
+  if (view.name === "theory-quiz") {
+    const chapter = getTheoryChapter(view.chapterId);
+    const difficulty = getTheoryDifficulty(chapter.id, view.difficultyId);
+    const key = makeStatsKey(chapter.id, view.difficultyId);
+
+    return (
+      <TheoryQuizPage
+        chapter={chapter}
+        difficulty={difficulty}
+        stats={getStats(key)}
+        onSubmitResult={(question, result) => handleTheorySubmitResult(view.difficultyId, question, result)}
+        onResetStats={() => handleResetStats(key)}
+        onBackHome={() => setView({ name: "home" })}
+        onBackDifficulty={() => setView({ name: "theory-difficulty", chapterId: chapter.id })}
+      />
+    );
+  }
+
   return (
     <HomePage
       onOpenIntervalChapter={() => setView({ name: "interval-difficulty" })}
       onOpenChordChapter={() => setView({ name: "chord-difficulty" })}
+      onOpenTheoryChapter={(chapterId) => setView({ name: "theory-difficulty", chapterId })}
     />
   );
 }

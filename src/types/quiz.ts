@@ -1,4 +1,4 @@
-export type ChapterId = "interval" | "chord";
+export type ChapterId = string;
 export type StatsKey = `${ChapterId}:${string}`;
 
 export interface QuizHistoryItem {
