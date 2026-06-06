@@ -56,7 +56,7 @@ const DIFFICULTY_TITLES: Record<TheoryDifficultyId, string> = {
   easy: "简单",
   medium: "中等",
   hard: "困难",
-  hell: "地狱",
+  hell: "综合",
 };
 
 const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficultySeeds: Record<TheoryDifficultyId, { badge: string; description: string; questions: QuestionSeed[] }> }> = [
@@ -80,9 +80,9 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "常见升降根音",
         description: "加入 Bb、Eb、F#、C#、Ab 等课堂常见根音。",
         questions: [
-          q("Bb 在五弦", "Bb 在 5 弦第几品？", "品位", "1", ["1品", "五弦1品", "5弦1品", "A#"], "降号根音", ["5 弦开放音是 A，升高 1 个半音就是 Bb/A#。"], ["5 弦 1 品可写 Bb，也可听成 A#；在降号 key 里优先写 Bb。"]),
-          q("Eb 在五弦", "Eb 在 5 弦第几品？", "品位", "6", ["6品", "五弦6品", "5弦6品", "D#"], "降号根音", ["C 在 5 弦 3 品，再往上 3 个半音到 Eb。"], ["5 弦 6 品是 Eb/D#，课堂借用和弦常会用到 Ebmaj7。"]),
-          q("Ab 在六弦", "Ab 在 6 弦第几品？", "品位", "4", ["4品", "六弦4品", "6弦4品", "G#"], "降号根音", ["6 弦 3 品是 G，4 品是 Ab/G#。"], ["6 弦 4 品可作为 Ab 根音，也常写成 G#。"]),
+          q("Bb 在五弦", "Bb 在 5 弦第几品？", "品位", "1", ["1品", "五弦1品", "5弦1品"], "降号根音", ["5 弦开放音是 A，升高 1 个半音就是 Bb/A#。"], ["5 弦 1 品是 Bb，也可听成 A#；在降号调里优先写 Bb。"]),
+          q("Eb 在五弦", "Eb 在 5 弦第几品？", "品位", "6", ["6品", "五弦6品", "5弦6品"], "降号根音", ["C 在 5 弦 3 品，再往上 3 个半音到 Eb。"], ["5 弦 6 品是 Eb/D#，课堂借用和弦常会用到 Ebmaj7。"]),
+          q("Ab 在六弦", "Ab 在 6 弦第几品？", "品位", "4", ["4品", "六弦4品", "6弦4品"], "降号根音", ["6 弦 3 品是 G，4 品是 Ab/G#。"], ["6 弦 4 品可作为 Ab 根音，也常写成 G#。"]),
         ],
       },
       hard: {
@@ -131,15 +131,15 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "级数与和弦互推",
         description: "混合三和弦、七和弦、和弦反推级数。",
         questions: [
-          q("Am7 级数", "Am7 在 C 大调里是几级七和弦？", "级数", "6级小七", ["6", "六级", "6级", "VI", "vim7"], "反推级数", ["A 是 C 大调第 6 个音。"], ["Am7 是 C 大调的 6 级小七。"]),
+          q("Am7 级数", "Am7 在 C 大调里是几级七和弦？", "级数", "6级小七", ["6", "六级", "6级", "vi", "vi7"], "反推级数", ["A 是 C 大调第 6 个音。"], ["Am7 是 C 大调的 6 级小七。"]),
           q("Fmaj7 级数", "Fmaj7 在 C 大调里是几级七和弦？", "级数", "4级大七", ["4", "四级", "4级", "IV", "IVmaj7"], "反推级数", ["口诀：一四大。"], ["Fmaj7 是 C 大调的 4 级大七。"]),
         ],
       },
       hell: {
         badge: "小调 ii-V-i 嵌入",
-        description: "判断 Bm7b5-E7-Am7 在 C 大调中的级数写法。",
+        description: "用标准罗马数字判断 Bm7b5-E7-Am7 在 C 大调中的功能。",
         questions: [
-          q("Bm7b5-E7-Am7", "Bm7b5 - E7 - Am7 在 C 大调级数里应写成什么？", "级数进行", "7ø - 37 - 6m7", ["7ø-37-6m7", "7m7b5 37 6m7", "VIIø III7 VIm7"], "嵌入小调", ["E7 不是 C 大调顺阶 iii，它是导向 Am 的属七。"], ["在 C 大调视角下它是 7ø - 37 - 6m7；功能上像 A 小调 iiø - V7 - i。"]),
+          q("Bm7b5-E7-Am7", "Bm7b5 - E7 - Am7 在 C 大调里用罗马数字应怎样分析？", "级数进行", "viiø7 - V7/vi - vi7", ["viiø7 V7/vi vi7", "viiø - V7/vi - vi", "viiø7 V7 of vi vi7"], "副属和弦", ["Bm7b5 是 C 大调的 viiø7；E7 不是顺阶 iii7，而是指向 Am/vi 的副属七和弦。"], ["在 C 大调视角下，Bm7b5 是 viiø7，E7 是 V7/vi，Am7 是 vi7。若临时把 A minor 当中心听，也可理解为 A 小调的 iiø7 - V7 - i7。"]),
         ],
       },
     },
@@ -205,7 +205,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         description: "给和弦名，写出核心结构。",
         questions: [
           q("Dm9", "Dm9 的完整和弦音是什么？", "音名", "D F A C E", ["D,F,A,C,E", "D F A C E"], "九和弦结构", ["Dm9 = Dm7 + 9。"], ["Dm9 完整结构是 D F A C E；课堂 D F C E 是省略五音 A。"]),
-          q("G13", "G13 的核心完整结构至少要包含哪些身份音？", "音名", "G B F E", ["G B D F E", "G B F E", "G,F,B,E"], "十三和弦结构", ["属十三要有 3、b7、13。"], ["G13 的身份音是 G、B、F、E；五音 D 可省略。"]),
+          q("G13", "在爵士/流行 lead-sheet 语境里，G13 最能说明属十三色彩的核心音有哪些？", "音名", "G B F E", ["G B D F E", "G B F E", "G,F,B,E"], "属十三核心音", ["属十三的功能通常靠根音、3音、b7、13音说明；5音常可省略，9音可加入，11音通常因与3音冲突而省略。"], ["G13 在吉他 voicing 中常抓住 G、B、F、E：根音、3音、b7、13音。严格叠三度会涉及 9、11、13，但实际伴奏会按声部与乐器限制省略部分音。"]),
         ],
       },
       hard: {
@@ -213,7 +213,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         description: "给课堂按法音，判断省略了哪个音。",
         questions: [
           q("Dm9(no5)", "课堂 Dm9 写成 D F C E，省略了哪个音？", "省略音", "A", ["五音A", "5音A", "A音"], "省略五音", ["Dm9 完整是 D F A C E。"], ["D F C E 是 Dm9(no5)，省略五音 A。"]),
-          q("G13(no5)", "课堂 G13 写成 G F B E，省略了哪个音？", "省略音", "D", ["五音D", "5音D", "D音"], "省略五音", ["G13 完整包含 1 3 5 b7 13。"], ["G F B E 是 G13(no5)，省略五音 D。"]),
+          q("G13(no5)", "课堂 G13 写成 G F B E，省略了哪个五音？", "省略音", "D", ["五音D", "5音D", "D音"], "省略五音", ["G 的五音是 D。"], ["G F B E 是常见 G13 吉他 voicing，省略了五音 D；这不影响它表达属十三功能。"]),
         ],
       },
       hell: {
@@ -229,8 +229,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
   {
     id: "progression-transpose",
     title: "级数进行转调",
-    subtitle: "把 1-6-2-5 落到具体 key",
-    description: "训练把级数谱翻译成真实和弦名，避免只会移动 shape 却写错升降号。",
+    subtitle: "把 1-6-2-5 落到具体调",
+    description: "训练把级数谱翻译成真实和弦名，避免只会移动把位形状却写错升降号。",
     lessonRefs: "第3、4、7课",
     difficultySeeds: {
       easy: {
@@ -242,27 +242,27 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         ],
       },
       medium: {
-        badge: "常见 key",
-        description: "转到 G、D、F、Bb 等常见 key。",
+        badge: "常见调",
+        description: "转到 G、D、F、Bb 等常见调。",
         questions: [
           q("Bb 的 1-6-2-5", "Bb 大调 1-6-2-5 七和弦是什么？", "和弦进行", "Bbmaj7 Gm7 Cm7 F7", ["Bbmaj7-Gm7-Cm7-F7"], "级数转调", ["Bb 大调音阶含 Bb、Eb。"], ["Bb 的 1-6-2-5 是 Bbmaj7 Gm7 Cm7 F7。"]),
           q("D 的 ii-V-I", "D 大调 ii-V-I 是什么？", "和弦进行", "Em7 A7 Dmaj7", ["Em7-A7-Dmaj7"], "ii-V-I", ["D 大调 ii 是 E，V 是 A。"], ["D 大调 ii-V-I = Em7 A7 Dmaj7。"]),
         ],
       },
       hard: {
-        badge: "升降号较多 key",
-        description: "练 A、E、Ab、Db 等更容易拼错的 key。",
+        badge: "升降号较多的调",
+        description: "练 A、E、Ab、Db 等更容易拼错的调。",
         questions: [
           q("A 的 1-6-2-5", "A 大调 1-6-2-5 七和弦是什么？", "和弦进行", "Amaj7 F#m7 Bm7 E7", ["Amaj7-F#m7-Bm7-E7"], "级数转调", ["A 大调有 F# C# G#。"], ["A 的 1-6-2-5 是 Amaj7 F#m7 Bm7 E7。"]),
           q("Ab 的 ii-V-I", "Ab 大调 ii-V-I 是什么？", "和弦进行", "Bbm7 Eb7 Abmaj7", ["Bbm7-Eb7-Abmaj7"], "ii-V-I", ["Ab 大调 ii 是 Bb，V 是 Eb。"], ["Ab 大调 ii-V-I = Bbm7 Eb7 Abmaj7。"]),
         ],
       },
       hell: {
-        badge: "反推 key 与级数",
-        description: "给具体和弦，反推 key 和级数。",
+        badge: "反推调与级数",
+        description: "给具体和弦，反推调和级数。",
         questions: [
-          q("Amaj7 F#m7 Bm7 E7", "Amaj7 F#m7 Bm7 E7 是哪个 key 的什么级数进行？", "key 与级数", "A大调 1-6-2-5", ["A 1-6-2-5", "A大调1-6-2-5"], "反推级数", ["看第一个大七和最后的 E7。"], ["这是 A 大调 1-6-2-5。"]),
-          q("Bbm7 Eb7 Abmaj7", "Bbm7 Eb7 Abmaj7 是哪个 key 的什么进行？", "key 与级数", "Ab大调 ii-V-I", ["Ab ii-V-I", "Ab大调2-5-1"], "反推级数", ["Eb7 强烈指向 Abmaj7。"], ["这是 Ab 大调 ii-V-I。"]),
+          q("Amaj7 F#m7 Bm7 E7", "Amaj7 F#m7 Bm7 E7 是哪个调的什么级数进行？", "调与级数", "A大调 1-6-2-5", ["A 1-6-2-5", "A大调1-6-2-5"], "反推级数", ["看第一个大七和最后的 E7。"], ["这是 A 大调 1-6-2-5。"]),
+          q("Bbm7 Eb7 Abmaj7", "Bbm7 Eb7 Abmaj7 是哪个调的什么进行？", "调与级数", "Ab大调 ii-V-I", ["Ab ii-V-I", "Ab大调2-5-1"], "反推级数", ["Eb7 强烈指向 Abmaj7。"], ["这是 Ab 大调 ii-V-I。"]),
         ],
       },
     },
@@ -271,12 +271,12 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
     id: "key-signatures",
     title: "调号与五度圈速算",
     subtitle: "升降号顺序与关系小调",
-    description: "训练 key、调号、五度圈和关系小调，解决会移动 shape 但写不对 key 的问题。",
+    description: "训练调、调号、五度圈和关系小调，解决会移动把位形状但写不对调的问题。",
     lessonRefs: "第7课",
     difficultySeeds: {
       easy: {
         badge: "基础调号",
-        description: "C、G、D、F、Bb 等入门 key。",
+        description: "C、G、D、F、Bb 等入门调。",
         questions: [
           q("G major 调号", "G major 有哪些升号？", "调号", "F#", ["F♯", "升F", "一个升号F#"], "升号调", ["升号顺序从 F 开始。"], ["G major 是 1 个升号：F#。"]),
           q("Bb major 调号", "Bb major 有哪些降号？", "调号", "Bb Eb", ["Bb,Eb", "B♭ E♭", "降B降E"], "降号调", ["降号顺序 B E A D G C F。"], ["Bb major 有两个降号：Bb Eb。"]),
@@ -284,7 +284,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       },
       medium: {
         badge: "中等调号",
-        description: "A、E、Eb、Ab 等常见但更容易错的 key。",
+        description: "A、E、Eb、Ab 等常见但更容易错的调。",
         questions: [
           q("A major 调号", "A major 有哪些升号？", "调号", "F# C# G#", ["F# C# G#", "F♯ C♯ G♯"], "升号调", ["A 是升号调第 3 个。"], ["A major 有 F# C# G#。"]),
           q("Ab major 调号", "Ab major 有哪些降号？", "调号", "Bb Eb Ab Db", ["Bb Eb Ab Db", "B♭ E♭ A♭ D♭"], "降号调", ["Ab 是降号调第 4 个。"], ["Ab major 有 Bb Eb Ab Db。"]),
@@ -292,7 +292,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       },
       hard: {
         badge: "复杂调号",
-        description: "B、F#、Db、Gb 等升降号较多的 key。",
+        description: "B、F#、Db、Gb 等升降号较多的调。",
         questions: [
           q("B major 调号", "B major 有哪些升号？", "调号", "F# C# G# D# A#", ["F# C# G# D# A#"], "升号调", ["B 是升号调第 5 个。"], ["B major 有 F# C# G# D# A#。"]),
           q("Db major 调号", "Db major 有哪些降号？", "调号", "Bb Eb Ab Db Gb", ["Bb Eb Ab Db Gb"], "降号调", ["Db 是降号调第 5 个。"], ["Db major 有 Bb Eb Ab Db Gb。"]),
@@ -303,7 +303,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         description: "给调号或关系小调，反推大调并保证拼写正确。",
         questions: [
           q("A major 关系小调", "A major 的关系小调是什么？", "小调", "F# minor", ["F#m", "F#minor", "F#小调"], "关系大小调", ["大调第 6 级是关系小调。"], ["A major 的关系小调是 F# minor，不是 Gb minor。"]),
-          q("F# C# G#", "调号 F# C# G# 对应哪个大调？", "key", "A major", ["A", "A大调"], "调号反推", ["三个升号对应 A。"], ["F# C# G# 是 A major 的调号。"]),
+          q("F# C# G#", "调号 F# C# G# 对应哪个大调？", "调", "A major", ["A", "A大调"], "调号反推", ["三个升号对应 A。"], ["F# C# G# 是 A major 的调号。"]),
         ],
       },
     },
@@ -324,15 +324,15 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         ],
       },
       medium: {
-        badge: "自然音 key 五声",
-        description: "写自然音 key 的大/小调五声音阶。",
+        badge: "自然音调五声",
+        description: "写自然音调的大/小调五声音阶。",
         questions: [
           q("E 小调五声", "E minor pentatonic 是哪五个音？", "音名", "E G A B D", ["E,G,A,B,D"], "小调五声", ["公式：1 b3 4 5 b7。"], ["E 小调五声是 E G A B D。"]),
           q("G 大调五声", "G major pentatonic 是哪五个音？", "音名", "G A B D E", ["G,A,B,D,E"], "大调五声", ["公式：1 2 3 5 6。"], ["G 大调五声是 G A B D E。"]),
         ],
       },
       hard: {
-        badge: "带升降号 key",
+        badge: "带升降号调",
         description: "加入 A/F#、Bb/G 等带升降号关系。",
         questions: [
           q("A 的关系小调", "A major 的关系小调是什么？", "小调", "F# minor", ["F#m", "F#小调"], "关系大小调", ["A major 有 F#，不要写 Gb。"], ["A major 的关系小调是 F# minor。"]),
@@ -382,10 +382,10 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       },
       hell: {
         badge: "减七替代",
-        description: "由减七判断它是哪一个属七 b9 的无根形式。",
+        description: "由导音减七判断它对应哪个省略根音的属七降九。",
         questions: [
-          q("G#°7 功能", "G#°7 可以理解成哪个属七 b9 的无根形式？", "无根属和弦", "E7(b9)", ["E7b9", "rootless E7b9", "E属七降九"], "减七替代", ["E7(b9)=E G# B D F，去掉 E。"], ["G#°7 = G# B D F，可理解为 rootless E7(b9)。"]),
-          q("C#°7 功能", "C#°7 导向 Dm 时，可理解成哪个属七 b9 的无根形式？", "无根属和弦", "A7(b9)", ["A7b9", "rootless A7b9"], "减七替代", ["A7(b9)=A C# E G Bb，去掉 A。"], ["C#°7 可理解为 rootless A7(b9)，导向 Dm。"]),
+          q("G#°7 功能", "G#°7 可以理解成哪个省略根音的属七降九？", "导音减七与属七降九", "省略根音的 E7(b9)", ["E7(b9)", "E7b9", "E属七降九", "无根E7b9"], "导音减七", ["E7(b9)=E G# B D F；省略根音 E 后得到 G# B D F。"], ["G#°7 = G# B D F。正统功能和声中，它是 A 小调的导音减七和弦 vii°7；在爵士/吉他语境里，也常理解为省略根音的 E7(b9)。"]),
+          q("C#°7 功能", "C#°7 导向 Dm 时，可理解成哪个省略根音的属七降九？", "导音减七与属七降九", "省略根音的 A7(b9)", ["A7(b9)", "A7b9", "A属七降九", "无根A7b9"], "导音减七", ["A7(b9)=A C# E G Bb；省略根音 A 后得到 C# E G Bb。"], ["C#°7 = C# E G Bb。它可作为 D 小调的导音减七，也可理解为省略根音的 A7(b9)，导向 Dm。"]),
         ],
       },
     },
@@ -393,8 +393,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
   {
     id: "borrowed-chords",
     title: "借用和弦判断",
-    subtitle: "Key 是中心，不是监狱",
-    description: "判断和弦来自 C major 还是借自 C minor，理解同主音借用的颜色。",
+    subtitle: "同主音大小调借用",
+    description: "判断和弦来自主调还是同主音小调，理解 modal mixture / borrowed chords。",
     lessonRefs: "第4课",
     difficultySeeds: {
       easy: {
@@ -421,11 +421,11 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         ],
       },
       hell: {
-        badge: "换 key 借用",
-        description: "换到 G、F、Bb 等 key 做同主音借用判断。",
+        badge: "换调借用",
+        description: "换到 G、F、Bb 等调做同主音借用判断。",
         questions: [
-          q("G 的 bVImaj7", "G major 从 G minor 借 bVImaj7，会得到哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "换 key 借用", ["G 的 b6 是 Eb。"], ["G 的 bVImaj7 是 Ebmaj7。"]),
-          q("F 的 bIIImaj7", "F major 从 F minor 借 bIIImaj7，会得到哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "换 key 借用", ["F 的 b3 是 Ab。"], ["F 的 bIIImaj7 是 Abmaj7。"]),
+          q("G 的 bVImaj7", "G major 从 G minor 借 bVImaj7，会得到哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "换调借用", ["G 的 b6 是 Eb。"], ["G 的 bVImaj7 是 Ebmaj7。"]),
+          q("F 的 bIIImaj7", "F major 从 F minor 借 bIIImaj7，会得到哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "换调借用", ["F 的 b3 是 Ab。"], ["F 的 bIIImaj7 是 Abmaj7。"]),
         ],
       },
     },
@@ -433,8 +433,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
   {
     id: "rhythm-grid",
     title: "16分网格与重音移位",
-    subtitle: "3+3+3+3+4 回到 one",
-    description: "把律动理论做成可检查的节奏脑内训练：16 分网格、重音移位、ghost note 固定位置。",
+    subtitle: "3+3+3+3+4 回到第一拍",
+    description: "把律动理论做成可检查的节奏脑内训练：十六分音符细分、重音移位、ghost note 固定位置。",
     lessonRefs: "第6、7课",
     difficultySeeds: {
       easy: {
@@ -447,10 +447,10 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       },
       medium: {
         badge: "重音位置判断",
-        description: "给 pattern，判断是否是三音重音移位。",
+        description: "给 pattern，判断是否是三个十六分音符一组的重音移位。",
         questions: [
           q("X..X..X..X....", "X..X..X..X.... 表示哪种分组？", "分组", "3+3+3+3+4", ["3 3 3 3 4", "三三三三四"], "重音移位", ["每个 X 后面两个点，前四组都是 3。"], ["这是 3+3+3+3+4。"]),
-          q("三音一组", "课堂里的三音一组是三连音吗？", "判断", "不是", ["否", "不是三连音"], "概念区分", ["它是在 16 分网格里每三个格子一组。"], ["这里的三音一组不是三连音。"], ["是", "不是"]),
+          q("三个十六分一组", "课堂里的“三个十六分音符一组”是三连音吗？", "判断", "不是", ["否", "不是三连音"], "概念区分", ["它是在 16 分网格里每三个格子一组。"], ["这里不是三连音，而是在十六分音符网格中做 3+3+3+3+4 的重音移位。"], ["是", "不是"]),
         ],
       },
       hard: {
@@ -461,11 +461,11 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         ],
       },
       hell: {
-        badge: "能否回 one",
-        description: "判断错位 pattern 是否能在小节末回到 one。",
+        badge: "能否回到第一拍",
+        description: "判断错位 pattern 是否能在小节末回到下一小节第一拍。",
         questions: [
-          q("四组三音加四格", "3+3+3+3+4 能在一小节末回到 one 吗？", "判断", "能", ["可以", "能回到one", "能"], "回 one", ["总数 16。"], ["3+3+3+3+4 正好等于 16，所以能回到下一小节 one。"], ["能", "不能"]),
-          q("五组三音", "如果一小节只排 3+3+3+3+3，会不会完整回到 one？", "判断", "不能", ["不会", "不能回到one", "不能"], "回 one", ["总数只有 15。"], ["3+3+3+3+3 只有 15 格，少 1 格，不能完整回到 one。"], ["能", "不能"]),
+          q("四组三音加四格", "3+3+3+3+4 能在一小节末回到下一小节第一拍吗？", "判断", "能", ["可以", "能回到one", "能"], "回到第一拍", ["总数 16。"], ["3+3+3+3+4 正好等于 16 个十六分音符，所以能回到下一小节第一拍（one）。"], ["能", "不能"]),
+          q("五组三音", "如果一小节只排 3+3+3+3+3，会不会完整回到下一小节第一拍？", "判断", "不能", ["不会", "不能回到one", "不能"], "回到第一拍", ["总数只有 15。"], ["3+3+3+3+3 只有 15 格，少 1 格，不能完整回到下一小节第一拍。"], ["能", "不能"]),
         ],
       },
     },
@@ -511,8 +511,9 @@ export function createRandomTheoryQuestion(config: TheoryDifficultyConfig, previ
 }
 
 export function evaluateTheoryAnswer(question: TheoryQuestion, answer: string): TheoryEvaluationResult {
-  const normalizedUserAnswer = normalizeAnswer(answer);
-  const isFullyCorrect = question.acceptedAnswers.some((accepted) => answersMatch(normalizedUserAnswer, normalizeAnswer(accepted)));
+  const preserveRomanCase = question.acceptedAnswers.some(containsRomanToken);
+  const normalizedUserAnswer = normalizeAnswer(answer, { preserveRomanCase });
+  const isFullyCorrect = question.acceptedAnswers.some((accepted) => answersMatch(normalizedUserAnswer, normalizeAnswer(accepted, { preserveRomanCase })));
 
   return {
     isFullyCorrect,
@@ -547,18 +548,38 @@ function q(
   };
 }
 
-function normalizeAnswer(value: string): string {
-  return value
+function normalizeAnswer(value: string, options: { preserveRomanCase?: boolean } = {}): string {
+  const normalized = value
     .trim()
     .replace(/♯/g, "#")
     .replace(/♭/g, "b")
     .replace(/，|、|\/|\||→|->|—|–|-/g, " ")
-    .replace(/\s+/g, " ")
-    .toLowerCase();
+    .replace(/\s+/g, " ");
+
+  if (!options.preserveRomanCase) {
+    return normalized.toLowerCase();
+  }
+
+  return normalized
+    .split(" ")
+    .map((token) => (isRomanToken(token) ? token : token.toLowerCase()))
+    .join(" ");
 }
 
 function answersMatch(userAnswer: string, acceptedAnswer: string): boolean {
   return userAnswer === acceptedAnswer || compact(userAnswer) === compact(acceptedAnswer);
+}
+
+function containsRomanToken(value: string): boolean {
+  return value
+    .replace(/，|、|\/|\||→|->|—|–|-/g, " ")
+    .split(/\s+/)
+    .some(isRomanToken);
+}
+
+// Roman numerals are case-sensitive in music theory: IV is major, iv is minor.
+function isRomanToken(token: string): boolean {
+  return /^[#b]?(?:I|II|III|IV|V|VI|VII|i|ii|iii|iv|v|vi|vii)(?:maj|m|dim|ø|°|o)?[0-9]*$/.test(token);
 }
 
 function compact(value: string): string {

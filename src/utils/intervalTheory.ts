@@ -141,7 +141,7 @@ export const INTERVAL_DIFFICULTIES: IntervalDifficultyConfig[] = [
   },
   {
     id: "hell",
-    title: "地狱",
+    title: "综合",
     badge: "反向拼写",
     description: "给根音和音程名，写出目标音。重点分清 C 的增四度是 F#，减五度是 Gb。",
     mode: "spell",

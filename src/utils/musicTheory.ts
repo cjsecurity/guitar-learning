@@ -113,7 +113,7 @@ export const DIFFICULTIES: DifficultyConfig[] = [
   },
   {
     id: "hell",
-    title: "地狱",
+    title: "综合",
     badge: "升降号九和弦",
     description: "根音加入升降号，继续只练九和弦，重点识别 Fb、Cb、E#、B# 等等音拼写。",
     roots: [...NATURAL_ROOTS, ...ALTERED_ROOTS],

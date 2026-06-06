@@ -1,4 +1,4 @@
-import { ArrowLeft, Flame, Gauge, Skull, Sprout } from "lucide-react";
+import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
 import { INTERVAL_CHAPTER, INTERVAL_DIFFICULTIES, IntervalDifficultyConfig, IntervalDifficultyId } from "../utils/intervalTheory";
 
 interface IntervalDifficultySelectProps {
@@ -10,7 +10,7 @@ const icons: Record<IntervalDifficultyId, typeof Sprout> = {
   easy: Sprout,
   medium: Gauge,
   hard: Flame,
-  hell: Skull,
+  hell: Trophy,
 };
 
 export function IntervalDifficultySelect({ onBackHome, onSelect }: IntervalDifficultySelectProps) {

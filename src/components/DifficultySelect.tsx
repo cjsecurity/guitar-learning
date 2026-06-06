@@ -1,4 +1,4 @@
-import { ArrowLeft, Flame, Gauge, Skull, Sprout } from "lucide-react";
+import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
 import { CHORD_CHAPTER, DIFFICULTIES, DifficultyConfig, DifficultyId } from "../utils/musicTheory";
 
 interface DifficultySelectProps {
@@ -10,7 +10,7 @@ const icons: Record<DifficultyId, typeof Sprout> = {
   easy: Sprout,
   medium: Gauge,
   hard: Flame,
-  hell: Skull,
+  hell: Trophy,
 };
 
 export function DifficultySelect({ onBackHome, onSelect }: DifficultySelectProps) {
