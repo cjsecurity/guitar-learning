@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #17201b;
+  background: #f4f7f4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(47, 111, 79, 0.3);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-lg border border-stone-200 bg-white shadow-sm;
+  }
+
+  .label {
+    @apply text-sm font-medium text-stone-700;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-stone-300 bg-white px-3 py-3 text-base text-ink transition placeholder:text-stone-400 focus:border-leaf;
+  }
+
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-55;
+  }
+
+  .btn-primary {
+    @apply btn bg-leaf text-white hover:bg-[#285f44];
+  }
+
+  .btn-secondary {
+    @apply btn border border-stone-300 bg-white text-ink hover:border-leaf hover:text-leaf;
+  }
+
+  .btn-warm {
+    @apply btn bg-brass text-white hover:bg-[#9c742d];
+  }
+}
