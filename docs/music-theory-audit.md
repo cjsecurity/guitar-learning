@@ -93,6 +93,7 @@ npm run build
 - 借用和弦使用 `modal mixture / borrowed chords` 的概念：从同主音大小调或平行调式借用和弦。
 - 页面上使用“同主音大小调借用”作为中文说明，避免把课堂口语当成概念名。
 - 常见 borrowed iv、bVII、bVII7 需要进入题库，因为它们是流行/摇滚吉他里高频出现的同主音借用色彩。
+- 借用和弦题库应由 key + borrowed degree 参数化生成；常考 bIIImaj7、bVImaj7、bVII7、iv、bVII，并在进行题中让学生从实际和弦串里找出借用和弦。
 
 ## 导音减七与属七降九
 

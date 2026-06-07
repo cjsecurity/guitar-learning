@@ -67,9 +67,9 @@
 | D/E/C/G 小调的 v7 / V7 / vii°7 | 换小调后的属功能 | 通过，由小调根音参数化生成 |
 | A/D/E/C/G 小调的导音减七功能 | 导音减七与省略根音的属七降九 | 通过，由 `buildLeadingToneDiminishedQuestions` 生成，反馈区区分功能和声与爵士/吉他语境 |
 | Ebmaj7 / Fmaj7 | C major 内外判断 | 通过 |
-| bIIImaj7 / bVImaj7 / bVII7 / iv | C major 从同主音 C minor 借用 | 通过，题干已明确借用方向 |
-| Cmaj7 Ebmaj7 Abmaj7 Gm7 / C-F-Fm-C / C-Bb-F-C | 同主音小调借用进行，含 borrowed iv 与 bVII | 通过 |
-| G 的 bVImaj7 / F 的 bIIImaj7 | 换调后的同主音借用 | 通过 |
+| C 的 bIIImaj7 / bVImaj7 / bVII7 / iv / bVII | C major 从同主音 C minor 借用 | 通过，由 `buildBorrowedDegreeQuestions` 参数化生成，覆盖流行/摇滚高频 borrowed iv 与 bVII |
+| C/G/F 的 bIII-bVI-v、IV-iv、bVII 进行 | 同主音小调借用进行，含 borrowed iv 与 bVII | 通过，由 `buildBorrowedProgressionQuestions` 生成 |
+| G/F/Bb/Eb 的 bIIImaj7 / bVImaj7 / bVII7 / iv / bVII | 换调后的同主音借用 | 通过，由 key + borrowed degree 参数化生成 |
 | 4/4 的 16 分格 / 每拍口令 | 十六分音符细分 | 通过 |
 | X..X..X..X..X... | 3+3+3+3+4 的 16 格重音移位 | 通过，长度 16，重音在 1、4、7、10、13 |
 | 三个十六分一组 | 十六分重音移位与三连音区别 | 通过 |
@@ -87,6 +87,7 @@
 - 额外节奏 pattern 如 `3+3+2+3+3+2`、`6+6+4`、起点偏移必须保持 16 格。
 - 节奏 pattern 题必须保留 16 步点击网格、播放能力与跟拍检测。
 - 标准副属和弦、导音减七、同主音借用、纯四度说明、罗马数字大小写保护必须存在。
+- 借用和弦必须保留 `buildBorrowedDegreeQuestions`、`buildBorrowedProgressionQuestions` 与 `getBorrowedChord`，避免退回 C 调静态小题池。
 - 顺阶和弦、级数转调、调号与五度圈、关系大小调与五声、小调功能必须保留参数化生成函数，避免回到静态小题池。
 - 小调功能章节必须保留 v7/V7/vii°7 到 i 的音频对比。
 - 关系大小调五声题必须保留共用五声盒子指板图，帮助学生把中心感落到吉他指板。

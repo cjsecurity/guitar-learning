@@ -89,6 +89,46 @@ const MAJOR_PROGRESSIONS = [
   { id: "IV-iii-ii-I", display: "IV-iii-ii-I", degrees: [4, 3, 2, 1], roman: "IVmaj7 iii7 ii7 Imaj7" },
 ];
 
+type BorrowedDegreeId = "bIIImaj7" | "bVImaj7" | "bVII7" | "iv" | "bVII";
+
+const BORROWED_DEGREES: Record<BorrowedDegreeId, { scaleIndex: number; suffix: string; typeLabel: string; hint: string; explanation: string }> = {
+  bIIImaj7: {
+    scaleIndex: 2,
+    suffix: "maj7",
+    typeLabel: "借用 bIIImaj7",
+    hint: "bIIImaj7 来自同主音自然小调的第 3 级七和弦。",
+    explanation: "bIIImaj7 是同主音小调里常见的大七色彩。",
+  },
+  bVImaj7: {
+    scaleIndex: 5,
+    suffix: "maj7",
+    typeLabel: "借用 bVImaj7",
+    hint: "bVImaj7 来自同主音自然小调的第 6 级七和弦。",
+    explanation: "bVImaj7 是从大调中心突然转暗的常见 borrowed chord 色彩。",
+  },
+  bVII7: {
+    scaleIndex: 6,
+    suffix: "7",
+    typeLabel: "借用 bVII7",
+    hint: "bVII7 来自同主音自然小调的第 7 级七和弦。",
+    explanation: "bVII7 是流行、摇滚和 blues 语境里很常见的同主音借用色彩。",
+  },
+  iv: {
+    scaleIndex: 3,
+    suffix: "m",
+    typeLabel: "borrowed iv",
+    hint: "iv 是把大调里的 IV 借成同主音小调里的小四级。",
+    explanation: "iv 是流行歌里高频的小四级借用，会让大调进行短暂变暗。",
+  },
+  bVII: {
+    scaleIndex: 6,
+    suffix: "",
+    typeLabel: "借用 bVII",
+    hint: "bVII 三和弦来自同主音自然小调的第 7 级三和弦。",
+    explanation: "bVII 三和弦在流行/摇滚吉他里很常见，也常和 mixolydian 色彩相邻。",
+  },
+};
+
 type KeySignatureKind = "none" | "sharp" | "flat";
 
 interface KeySignatureDefinition {
@@ -479,30 +519,18 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       },
       medium: {
         badge: "C minor 借用",
-        description: "识别 bIIImaj7、bVImaj7、bVII7。",
-        questions: [
-          q("bIIImaj7", "C major 从同主音 C minor 借来的 bIIImaj7 是哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "借用级数", ["从 C major 看，b3 是 Eb。"], ["C major 从 C minor 借来的 bIIImaj7 是 Ebmaj7。"]),
-          q("bVImaj7", "C major 从同主音 C minor 借来的 bVImaj7 是哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "借用级数", ["从 C major 看，b6 是 Ab。"], ["C major 从 C minor 借来的 bVImaj7 是 Abmaj7。"]),
-          q("bVII7", "C major 从同主音 C minor 借来的 bVII7 是哪个和弦？", "和弦", "Bb7", ["B♭7", "降B7"], "借用级数", ["C natural minor 的 b7 是 Bb，七和弦质量是属七。"], ["C major 从 C minor 借来的 bVII7 是 Bb7。"]),
-          q("iv", "C major 里常见的 borrowed iv 是哪个三和弦？", "和弦", "Fm", ["Fmin", "F-", "F小三和弦"], "借用 iv", ["C minor 的 4 级是 Fm。"], ["C major 里的 borrowed iv 是 Fm。很多流行歌会用 I -> III -> IV -> iv 这类从大调借小四级的颜色。"]),
-        ],
+        description: "识别 bIIImaj7、bVImaj7、bVII7、iv、bVII。",
+        questions: buildBorrowedDegreeQuestions(["C"], ["bIIImaj7", "bVImaj7", "bVII7", "iv", "bVII"]),
       },
       hard: {
         badge: "进行标注",
         description: "给课堂进行，标出借用和弦。",
-        questions: [
-          q("Cmaj7 Ebmaj7 Abmaj7 Gm7", "Cmaj7 Ebmaj7 Abmaj7 Gm7 中哪些是从 C minor 借来的？", "借用和弦", "Ebmaj7 Abmaj7 Gm7", ["Ebmaj7,Abmaj7,Gm7"], "借用进行", ["Cmaj7 是主中心；其它来自 C minor。"], ["Ebmaj7、Abmaj7、Gm7 都可从 C minor 借来。"]),
-          q("C F Fm C", "C - F - Fm - C 里哪个和弦是从 C minor 借来的？", "借用和弦", "Fm", ["F minor", "F小三和弦"], "借用 iv", ["C major 里本来是 F；C minor 里是 Fm。"], ["Fm 是从同主音 C minor 借来的 iv。它常制造“明亮大调突然变暗一点”的流行歌色彩。"]),
-          q("C Bb F C", "C - Bb - F - C 里哪个和弦最像从 C minor / mixolydian 色彩借来的 bVII？", "借用和弦", "Bb", ["B♭", "降B"], "bVII 借用", ["C major 顺阶没有 Bb。"], ["Bb 是 C major 外来的 bVII。课堂里可先把它看成从 C minor 借来的 bVII；流行/摇滚里也常带 mixolydian 色彩。"]),
-        ],
+        questions: buildBorrowedProgressionQuestions(["C", "G", "F"]),
       },
       hell: {
         badge: "换调借用",
         description: "换到 G、F、Bb 等调做同主音借用判断。",
-        questions: [
-          q("G 的 bVImaj7", "G major 从 G minor 借 bVImaj7，会得到哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "换调借用", ["G 的 b6 是 Eb。"], ["G 的 bVImaj7 是 Ebmaj7。"]),
-          q("F 的 bIIImaj7", "F major 从 F minor 借 bIIImaj7，会得到哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "换调借用", ["F 的 b3 是 Ab。"], ["F 的 bIIImaj7 是 Abmaj7。"]),
-        ],
+        questions: buildBorrowedDegreeQuestions(["G", "F", "Bb", "Eb"], ["bIIImaj7", "bVImaj7", "bVII7", "iv", "bVII"]),
       },
     },
   },
@@ -859,6 +887,80 @@ function buildPentatonicCenterQuestions(majorKeys: string[]): QuestionSeed[] {
   });
 }
 
+function buildBorrowedDegreeQuestions(keys: string[], degreeIds: BorrowedDegreeId[]): QuestionSeed[] {
+  return keys.flatMap((key) =>
+    degreeIds.map((degreeId) => {
+      const chord = getBorrowedChord(key, degreeId);
+      const degree = BORROWED_DEGREES[degreeId];
+      const naturalMinor = getMinorScale(key, "natural");
+      const borrowedRoot = naturalMinor[degree.scaleIndex];
+
+      return q(
+        `${key} 的 ${degreeId}`,
+        `${key} major 从同主音 ${key} minor 借来的 ${degreeId} 是哪个和弦？`,
+        "和弦",
+        chord,
+        getChordAliases(chord),
+        degree.typeLabel,
+        [`${key} natural minor 是 ${naturalMinor.join(" ")}。`, degree.hint],
+        [
+          `${key} major 从同主音 ${key} minor 借来的 ${degreeId} 是 ${chord}。根音来自 ${key} natural minor 的 ${borrowedRoot}，和弦质量沿用同主音小调里的级数性质。`,
+          degree.explanation,
+        ],
+      );
+    }),
+  );
+}
+
+function buildBorrowedProgressionQuestions(keys: string[]): QuestionSeed[] {
+  return keys.flatMap((key) => {
+    const tonicMaj7 = `${key}maj7`;
+    const tonicTriad = key;
+    const majorScale = getMajorScale(key);
+    const minorScale = getMinorScale(key, "natural");
+    const bIIImaj7 = getBorrowedChord(key, "bIIImaj7");
+    const bVImaj7 = getBorrowedChord(key, "bVImaj7");
+    const v7 = `${minorScale[4]}m7`;
+    const iv = getBorrowedChord(key, "iv");
+    const bVII = getBorrowedChord(key, "bVII");
+    const ivSource = `${majorScale[3]} -> ${iv}`;
+    const bVIISource = `${majorScale[6]} -> ${bVII}`;
+
+    return [
+      q(
+        `${key}maj7 ${bIIImaj7} ${bVImaj7} ${v7}`,
+        `${tonicMaj7} ${bIIImaj7} ${bVImaj7} ${v7} 中哪些是从 ${key} minor 借来的？`,
+        "借用和弦",
+        `${bIIImaj7} ${bVImaj7} ${v7}`,
+        [`${bIIImaj7},${bVImaj7},${v7}`, `${bIIImaj7}-${bVImaj7}-${v7}`],
+        "借用进行",
+        [`${key} major 是主中心；${key} natural minor 是 ${minorScale.join(" ")}。`],
+        [`${bIIImaj7}、${bVImaj7}、${v7} 都可从同主音 ${key} minor 借来；${tonicMaj7} 仍是 ${key} major 的主和弦。`],
+      ),
+      q(
+        `${key} IV-iv`,
+        `${tonicTriad} - ${majorScale[3]} - ${iv} - ${tonicTriad} 里哪个和弦是 borrowed iv？`,
+        "借用和弦",
+        iv,
+        getChordAliases(iv),
+        "borrowed iv",
+        [`${key} major 里的 IV 是 ${majorScale[3]}，同主音 ${key} minor 里的 iv 是 ${iv}。`],
+        [`${iv} 是 borrowed iv。它来自 ${key} minor，让 ${ivSource} 的变化听起来像大调里突然暗下来一点。`],
+      ),
+      q(
+        `${key} bVII`,
+        `${tonicTriad} - ${bVII} - ${majorScale[3]} - ${tonicTriad} 里哪个和弦最像从 ${key} minor / mixolydian 色彩借来的 bVII？`,
+        "借用和弦",
+        bVII,
+        getChordAliases(bVII),
+        "借用 bVII",
+        [`${key} major 的七级是 ${majorScale[6]}，bVII 会把七级降到 ${minorScale[6]}。`],
+        [`${bVII} 是 ${key} major 外来的 bVII。可先理解为从同主音 ${key} minor 借来；在流行/摇滚里也常带 mixolydian 色彩。${bVIISource} 是这题的关键变化。`],
+      ),
+    ];
+  });
+}
+
 function buildMinorScaleQuestions(minorRoots: string[]): QuestionSeed[] {
   return minorRoots.flatMap((minorRoot) => {
     const natural = getMinorScale(minorRoot, "natural");
@@ -989,6 +1091,12 @@ function getMinorScale(minorRoot: string, kind: "natural" | "harmonic"): string[
     const letter = NOTE_LETTERS[(rootLetterIndex + index) % NOTE_LETTERS.length];
     return spellPitchForLetter(letter, mod12(root.pitch + interval));
   });
+}
+
+function getBorrowedChord(key: string, degreeId: BorrowedDegreeId): string {
+  const degree = BORROWED_DEGREES[degreeId];
+  const root = getMinorScale(key, "natural")[degree.scaleIndex];
+  return `${root}${degree.suffix}`;
 }
 
 function getDiminishedSeventhChord(root: string): string[] {
