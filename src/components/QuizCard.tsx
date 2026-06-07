@@ -32,6 +32,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
   const skeletonDegrees = getSkeletonDegreeLabels(question);
   const skeletonPlaceholder = getSkeletonPlaceholder(skeletonDegrees.length);
   const finalPlaceholder = getFinalNotesPlaceholder(skeletonDegrees.length);
+  const canSubmit = Boolean(skeletonInput.trim() && finalInput.trim());
 
   function handleSubmit() {
     if (result) {
@@ -134,7 +135,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result)}>
+          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>

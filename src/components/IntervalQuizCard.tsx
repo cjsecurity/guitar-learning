@@ -20,6 +20,13 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
   const requiresTargetAnswer = question.mode === "spell" || question.difficultyId === "hard";
+  const canSubmit = Boolean(
+    degree.trim() &&
+      semitones.trim() &&
+      quality.trim() &&
+      feel &&
+      (!requiresTargetAnswer || target.trim()),
+  );
   const timer = useQuestionTimer(question.label);
 
   function handleSubmit() {
@@ -155,7 +162,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result)}>
+          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>

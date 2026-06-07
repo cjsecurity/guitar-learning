@@ -69,6 +69,7 @@ const requiredSnippets = [
   ["实际谱面常会按调性改用更易读的等音根音", "升降号九和弦出现双升/双降时，应桥接理论拼写与实用记谱"],
   ["targetCorrect && degreeCorrect && semitoneCorrect && qualityCorrect && feelCorrect", "音程困难档与反向拼写题必须同时判目标音、度数、半音、完整音程名和基础协和分类"],
   ["status=\"reference\"", "和弦公式等系统复盘字段应显示为参考，不应假装用户答对了该字段"],
+  ["disabled={Boolean(result) || !canSubmit}", "所有题卡必须禁止空答案提交，避免空提交污染成绩统计"],
   ["Dm9 省略辨认", "省略音题目标签不应预先写 no5 泄露答案"],
   ["G13 省略辨认", "属十三省略音题目标签不应预先写 no5 泄露答案"],
   ["G9", "延伸音结构题应覆盖属九和弦完整结构"],
