@@ -86,7 +86,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
           </div>
         )}
 
-        {!isRhythmGrid && (
+        {!isRhythmGrid && !question.options && (
           <label className="space-y-2">
             <span className="label">{question.answerLabel}</span>
             <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="输入答案，支持空格、逗号或常见符号分隔" />

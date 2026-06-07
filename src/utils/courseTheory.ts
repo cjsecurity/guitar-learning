@@ -232,8 +232,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "多写法互认",
         description: "同一个和弦类型的多个标记互相识别。",
         questions: [
-          q("Bø7", "Bø7 的等价常见写法是什么？", "写法", "Bm7b5", ["Bmin7b5", "B-7b5", "B half diminished"], "多写法", ["ø7 就是 m7b5。"], ["Bø7、Bm7b5、Bmin7b5 都是 B 半减七。"]),
-          q("C△7", "C△7 / CM7 / Cmaj7 都表示什么？", "类型", "大七和弦", ["maj7", "major7", "大七"], "多写法", ["三角符号常表示 major。"], ["C△7、CM7、Cmaj7 都是 C 大七。"]),
+          q("Bø7", "Bø7 的等价常见写法是什么？", "写法", "Bm7b5", ["Bmin7b5", "B-7b5", "B half diminished"], "多写法", ["ø7 就是 m7b5。"], ["Bø7、Bm7b5、Bmin7b5 都是 B 半减七。"], ["Bm7b5", "Bmaj7", "B7", "Bdim7"]),
+          q("C△7", "C△7 / CM7 / Cmaj7 都表示什么？", "类型", "大七和弦", ["maj7", "major7", "大七"], "多写法", ["三角符号常表示 major。"], ["C△7、CM7、Cmaj7 都是 C 大七。"], ["大七和弦", "小七和弦", "属七和弦", "半减七和弦"]),
         ],
       },
     },
