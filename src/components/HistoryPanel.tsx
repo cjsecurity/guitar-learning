@@ -19,7 +19,7 @@ export function HistoryPanel({ history }: HistoryPanelProps) {
       ) : (
         <div className="mt-4 space-y-2">
           {history.map((item) => (
-            <article key={item.id} className="rounded-md border border-stone-200 bg-white px-3 py-3">
+            <article key={item.id} data-testid="history-item" className="rounded-md border border-stone-200 bg-white px-3 py-3">
               <div className="flex items-center justify-between gap-3">
                 <p className="text-base font-black text-ink">{item.questionLabel}</p>
                 <span

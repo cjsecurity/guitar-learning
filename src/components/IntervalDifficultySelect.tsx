@@ -46,6 +46,7 @@ function DifficultyCard({ difficulty, onSelect }: { difficulty: IntervalDifficul
   return (
     <button
       type="button"
+      data-testid={`difficulty-card-interval-${difficulty.id}`}
       className="panel flex min-h-64 flex-col p-5 text-left transition hover:-translate-y-0.5 hover:border-leaf hover:shadow-md"
       onClick={() => onSelect(difficulty.id)}
     >

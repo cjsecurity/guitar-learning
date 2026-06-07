@@ -67,6 +67,7 @@ export function RhythmStepSequencer({ question, value, onChange }: RhythmStepSeq
                 <button
                   key={`${index}-${step}`}
                   type="button"
+                  data-testid={`rhythm-step-${index + 1}`}
                   className={`h-11 rounded-md border text-sm font-black transition ${
                     active
                       ? "border-leaf bg-leaf text-white shadow-sm"

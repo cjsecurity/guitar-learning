@@ -43,11 +43,11 @@ export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onR
     <main className="min-h-screen bg-mist px-4 py-5 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-5 flex flex-wrap gap-3">
-          <button type="button" className="btn-secondary" onClick={onBackDifficulty}>
+          <button type="button" data-testid="back-difficulty-button" className="btn-secondary" onClick={onBackDifficulty}>
             <ArrowLeft size={18} aria-hidden="true" />
             返回难度选择
           </button>
-          <button type="button" className="btn-secondary" onClick={onBackHome}>
+          <button type="button" data-testid="back-home-button" className="btn-secondary" onClick={onBackHome}>
             <Home size={18} aria-hidden="true" />
             返回主页面
           </button>
@@ -62,7 +62,7 @@ export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onR
 
           <div className="flex flex-col gap-2 sm:items-end">
             <p className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-stone-700 shadow-sm">{headerStats}</p>
-            <button type="button" className="btn-secondary" onClick={onResetStats}>
+            <button type="button" data-testid="reset-stats-button" className="btn-secondary" onClick={onResetStats}>
               <RotateCcw size={16} aria-hidden="true" />
               重置本难度统计
             </button>

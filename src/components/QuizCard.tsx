@@ -61,7 +61,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         <p className="text-sm font-medium text-leaf">当前题目</p>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-6xl font-black tracking-normal text-ink sm:text-7xl">{question.label}</h1>
+            <h1 data-testid="current-question-label" className="text-6xl font-black tracking-normal text-ink sm:text-7xl">{question.label}</h1>
             <p className="mt-3 text-base font-semibold text-stone-800">{getQuestionReading(question)}</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
               先写根音的字母骨架，再套和弦公式。请按 1、3、5、7、9 的顺序输入；输入可用空格或逗号分隔。
@@ -69,7 +69,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
             <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
-            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+            <button type="button" data-testid="next-question-button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
               <RefreshCw size={18} aria-hidden="true" />
               下一题
             </button>
@@ -104,6 +104,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
           <label className="space-y-2">
             <span className="label">{getSkeletonTaskLabel(question)}</span>
             <input
+              data-testid="chord-skeleton-input"
               className="input"
               value={skeletonInput}
               onChange={(event) => setSkeletonInput(event.target.value)}
@@ -114,6 +115,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
           <label className="space-y-2">
             <span className="label">{getFormulaTaskLabel(question)}</span>
             <input
+              data-testid="chord-final-input"
               className="input"
               value={finalInput}
               onChange={(event) => setFinalInput(event.target.value)}
@@ -125,6 +127,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         {isNinthChord(question.type) && (
           <label className="flex items-start gap-3 rounded-md border border-stone-200 bg-mist px-3 py-3 text-sm text-stone-700">
             <input
+              data-testid="omit-fifth-checkbox"
               className="mt-1 h-4 w-4 accent-leaf"
               type="checkbox"
               checked={omitFifth}
@@ -135,11 +138,11 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
+          <button type="button" data-testid="submit-answer-button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>
-          <button type="button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
+          <button type="button" data-testid="hint-toggle-button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
             <HelpCircle size={18} aria-hidden="true" />
             {showHint ? "收起提示" : "显示提示"}
           </button>

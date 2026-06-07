@@ -79,7 +79,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         <p className="text-sm font-medium text-leaf">当前题目</p>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-5xl font-black tracking-normal text-ink sm:text-6xl">{question.label}</h1>
+            <h1 data-testid="current-question-label" className="text-5xl font-black tracking-normal text-ink sm:text-6xl">{question.label}</h1>
             <p className="mt-3 text-base font-semibold text-stone-800">
               {question.mode === "spell" ? "根据根音和音程名，写出目标音并完成音程分析。" : "根据根音和目标音，判断音程。"}
             </p>
@@ -89,7 +89,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
             <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
-            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+            <button type="button" data-testid="next-question-button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
               <RefreshCw size={18} aria-hidden="true" />
               下一题
             </button>
@@ -121,19 +121,19 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
               <span className="label">目标音</span>
-              <input className="input" value={target} onChange={(event) => setTarget(event.target.value)} placeholder="例如 F#、Gb、C" />
+              <input data-testid="interval-target-input" className="input" value={target} onChange={(event) => setTarget(event.target.value)} placeholder="例如 F#、Gb、C" />
             </label>
             <label className="space-y-2">
               <span className="label">度数</span>
-              <input className="input" value={degree} onChange={(event) => setDegree(event.target.value)} placeholder="例如 四度 或 4度" />
+              <input data-testid="interval-degree-input" className="input" value={degree} onChange={(event) => setDegree(event.target.value)} placeholder="例如 四度 或 4度" />
             </label>
             <label className="space-y-2">
               <span className="label">半音数量</span>
-              <input className="input" value={semitones} onChange={(event) => setSemitones(event.target.value)} placeholder="例如 6" />
+              <input data-testid="interval-semitones-input" className="input" value={semitones} onChange={(event) => setSemitones(event.target.value)} placeholder="例如 6" />
             </label>
             <label className="space-y-2">
               <span className="label">完整音程名</span>
-              <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 增四度 或 A4" />
+              <input data-testid="interval-quality-input" className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 增四度 或 A4" />
             </label>
             <div className="space-y-2 md:col-span-2">
               <span className="label">基础协和分类</span>
@@ -144,15 +144,15 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
               <span className="label">度数</span>
-              <input className="input" value={degree} onChange={(event) => setDegree(event.target.value)} placeholder="例如 三度 或 3度" />
+              <input data-testid="interval-degree-input" className="input" value={degree} onChange={(event) => setDegree(event.target.value)} placeholder="例如 三度 或 3度" />
             </label>
             <label className="space-y-2">
               <span className="label">半音数量</span>
-              <input className="input" value={semitones} onChange={(event) => setSemitones(event.target.value)} placeholder="例如 4" />
+              <input data-testid="interval-semitones-input" className="input" value={semitones} onChange={(event) => setSemitones(event.target.value)} placeholder="例如 4" />
             </label>
             <label className="space-y-2">
               <span className="label">完整音程名</span>
-              <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 大三度 或 M3" />
+              <input data-testid="interval-quality-input" className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 大三度 或 M3" />
             </label>
             <div className="space-y-2 md:col-span-2">
               <span className="label">基础协和分类</span>
@@ -162,11 +162,11 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
+          <button type="button" data-testid="submit-answer-button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>
-          <button type="button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
+          <button type="button" data-testid="hint-toggle-button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
             <HelpCircle size={18} aria-hidden="true" />
             {showHint ? "收起提示" : "显示提示"}
           </button>
@@ -242,6 +242,7 @@ function FeelPicker({ value, onChange }: { value: string; onChange: (value: Inte
         <button
           key={option.value}
           type="button"
+          data-testid={`interval-feel-${option.value}`}
           className={`min-h-16 rounded-md border px-3 py-2 text-left text-sm font-bold transition ${
             value === option.value ? "border-leaf bg-leaf text-white" : "border-stone-300 bg-white text-stone-700 hover:border-leaf hover:text-leaf"
           }`}

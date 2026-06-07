@@ -48,13 +48,13 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
         <p className="text-sm font-medium text-leaf">当前题目</p>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-4xl font-black tracking-normal text-ink sm:text-5xl">{question.label}</h1>
+            <h1 data-testid="current-question-label" className="text-4xl font-black tracking-normal text-ink sm:text-5xl">{question.label}</h1>
             <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-stone-800">{question.prompt}</p>
             <p className="mt-2 text-sm leading-6 text-stone-600">训练点：{question.typeLabel}</p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
             <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
-            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+            <button type="button" data-testid="next-question-button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
               <RefreshCw size={18} aria-hidden="true" />
               下一题
             </button>
@@ -76,6 +76,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
               <button
                 key={option}
                 type="button"
+                data-testid="theory-option-button"
                 className={`min-h-12 rounded-md border px-3 py-2 text-sm font-bold transition ${
                   answer === option ? "border-leaf bg-leaf text-white" : "border-stone-300 bg-white text-stone-700 hover:border-leaf hover:text-leaf"
                 }`}
@@ -90,16 +91,16 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
         {!isRhythmGrid && !question.options && (
           <label className="space-y-2">
             <span className="label">{question.answerLabel}</span>
-            <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="输入答案，支持空格、逗号或常见符号分隔" />
+            <input data-testid="theory-answer-input" className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="输入答案，支持空格、逗号或常见符号分隔" />
           </label>
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
+          <button type="button" data-testid="submit-answer-button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result) || !canSubmit}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>
-          <button type="button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
+          <button type="button" data-testid="hint-toggle-button" className="btn-warm flex-1" onClick={() => setShowHint((value) => !value)}>
             <HelpCircle size={18} aria-hidden="true" />
             {showHint ? "收起提示" : "显示提示"}
           </button>

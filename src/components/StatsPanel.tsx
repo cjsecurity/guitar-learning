@@ -33,8 +33,10 @@ export function StatsPanel({ stats }: StatsPanelProps) {
 }
 
 function Metric({ label, value, icon }: { label: string; value: string | number; icon?: React.ReactNode }) {
+  const testId = `stats-${label}`;
+
   return (
-    <div className="rounded-md border border-stone-200 bg-mist px-3 py-3">
+    <div data-testid={testId} className="rounded-md border border-stone-200 bg-mist px-3 py-3">
       <p className="flex items-center gap-1 text-xs font-medium text-stone-600">
         {icon}
         {label}

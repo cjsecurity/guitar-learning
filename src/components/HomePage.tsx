@@ -43,6 +43,7 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter, onOpenTheo
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <ChapterCard
+            testId="chapter-card-interval"
             title={INTERVAL_CHAPTER.title}
             subtitle={INTERVAL_CHAPTER.subtitle}
             description={INTERVAL_CHAPTER.description}
@@ -51,6 +52,7 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter, onOpenTheo
           />
 
           <ChapterCard
+            testId="chapter-card-chord"
             title={CHORD_CHAPTER.title}
             subtitle={CHORD_CHAPTER.subtitle}
             description={CHORD_CHAPTER.description}
@@ -61,6 +63,7 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter, onOpenTheo
           {THEORY_CHAPTERS.map((chapter) => (
             <ChapterCard
               key={chapter.id}
+              testId={`chapter-card-${chapter.id}`}
               title={chapter.title}
               subtitle={chapter.subtitle}
               description={chapter.description}
@@ -75,12 +78,14 @@ export function HomePage({ onOpenIntervalChapter, onOpenChordChapter, onOpenTheo
 }
 
 function ChapterCard({
+  testId,
   title,
   subtitle,
   description,
   icon: Icon,
   onClick,
 }: {
+  testId: string;
   title: string;
   subtitle: string;
   description: string;
@@ -90,6 +95,7 @@ function ChapterCard({
   return (
     <button
       type="button"
+      data-testid={testId}
       className="panel group flex min-h-56 flex-col p-5 text-left transition hover:-translate-y-0.5 hover:border-leaf hover:shadow-md"
       onClick={onClick}
     >
