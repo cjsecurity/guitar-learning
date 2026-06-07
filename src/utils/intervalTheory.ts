@@ -51,6 +51,7 @@ export interface IntervalDefinition {
 
 export interface IntervalQuestion {
   mode: IntervalQuestionMode;
+  difficultyId: IntervalDifficultyId;
   root: string;
   target: string;
   rootFrequency: number;
@@ -155,13 +156,12 @@ export function getIntervalDifficulty(id: IntervalDifficultyId): IntervalDifficu
 }
 
 export function createRandomIntervalQuestion(config: IntervalDifficultyConfig, previous?: IntervalQuestion): IntervalQuestion {
-  let question = buildRandomQuestion(config);
-
-  if (previous && question.label === previous.label) {
-    question = buildRandomQuestion(config);
+  if (!previous) {
+    return buildRandomQuestion(config);
   }
 
-  return question;
+  const candidates = buildQuestionPool(config).filter((question) => question.label !== previous.label);
+  return randomItem(candidates.length > 0 ? candidates : buildQuestionPool(config));
 }
 
 export function evaluateIntervalAnswer(
@@ -176,6 +176,8 @@ export function evaluateIntervalAnswer(
   const isFullyCorrect =
     question.mode === "spell"
       ? targetCorrect
+      : question.difficultyId === "hard"
+        ? qualityCorrect
       : degreeCorrect && semitoneCorrect && qualityCorrect && feelCorrect;
 
   return {
@@ -203,47 +205,63 @@ export function normalizeNote(raw: string): string {
 }
 
 function buildRandomQuestion(config: IntervalDifficultyConfig): IntervalQuestion {
-  const root = randomItem(config.roots);
+  return randomItem(buildQuestionPool(config));
+}
 
+function buildQuestionPool(config: IntervalDifficultyConfig): IntervalQuestion[] {
   if (config.mode === "spell") {
-    const interval = findInterval(randomItem(config.intervalIds ?? ["M3"]));
-    const target = spellTarget(root, interval);
-    return {
-      mode: "spell",
-      root,
-      target,
-      rootFrequency: noteToFrequency(root),
-      targetFrequency: getTargetFrequency(target, interval),
-      interval,
-      label: `${root} 的 ${interval.fullName}`,
-    };
+    return config.roots.flatMap((root) =>
+      (config.intervalIds ?? ["M3"]).map((intervalId) => {
+        const interval = findInterval(intervalId);
+        const target = spellTarget(root, interval);
+        return {
+          mode: "spell" as const,
+          difficultyId: config.id,
+          root,
+          target,
+          rootFrequency: noteToFrequency(root),
+          targetFrequency: getTargetFrequency(target, interval),
+          interval,
+          label: `${root} 的 ${interval.fullName}`,
+        };
+      }),
+    );
   }
 
   if (config.targets) {
-    const target = randomItem(config.targets);
-    const interval = getIntervalBetween(root, target);
-    return {
-      mode: "identify",
-      root,
-      target,
-      rootFrequency: noteToFrequency(root),
-      targetFrequency: noteToFrequency(target),
-      interval,
-      label: `${root} -> ${target}`,
-    };
+    return config.roots.flatMap((root) =>
+      (config.targets ?? []).map((target) => {
+        const interval = getIntervalBetween(root, target);
+        return {
+          mode: "identify" as const,
+          difficultyId: config.id,
+          root,
+          target,
+          rootFrequency: noteToFrequency(root),
+          targetFrequency: noteToFrequency(target),
+          interval,
+          label: `${root} -> ${target}`,
+        };
+      }),
+    );
   }
 
-  const interval = findInterval(randomItem(config.intervalIds ?? ["M3"]));
-  const target = spellTarget(root, interval);
-  return {
-    mode: "identify",
-    root,
-    target,
-    rootFrequency: noteToFrequency(root),
-    targetFrequency: getTargetFrequency(target, interval),
-    interval,
-    label: `${root} -> ${formatTargetForLabel(target, interval)}`,
-  };
+  return config.roots.flatMap((root) =>
+    (config.intervalIds ?? ["M3"]).map((intervalId) => {
+      const interval = findInterval(intervalId);
+      const target = spellTarget(root, interval);
+      return {
+        mode: "identify" as const,
+        difficultyId: config.id,
+        root,
+        target,
+        rootFrequency: noteToFrequency(root),
+        targetFrequency: getTargetFrequency(target, interval),
+        interval,
+        label: `${root} -> ${formatTargetForLabel(target, interval)}`,
+      };
+    }),
+  );
 }
 
 function getIntervalBetween(root: string, target: string): IntervalDefinition {
@@ -271,11 +289,20 @@ function spellTarget(root: string, interval: IntervalDefinition): string {
 
 function buildIntervalExplanation(question: IntervalQuestion): string[] {
   const interval = question.interval;
-  const lines = [
+  const enharmonicName = getSimpleEnharmonicName(question.target);
+  const lines = [];
+
+  if (enharmonicName && enharmonicName !== question.target) {
+    lines.push(
+      `${question.target} 和 ${enharmonicName} 是同一个实际声音；这里写 ${question.target}，是因为 ${question.root} 到 ${question.target.charAt(0).toUpperCase()} 的字母距离才是 ${interval.degreeName}，写成 ${enharmonicName} 会改变度数名称。`,
+    );
+  }
+
+  lines.push(
     `${question.root} 到 ${question.target} 的度数先看字母：数到 ${question.target.charAt(0).toUpperCase()} 是 ${interval.degreeName}。`,
     `再数半音：一共 ${interval.semitones} 个半音，所以性质是 ${interval.qualityName}，完整名称是 ${interval.fullName}。`,
     `基础协和分类：${interval.feel}。`,
-  ];
+  );
 
   if (interval.id === "P4") {
     lines.push("本课程按入门听感把纯四度归入完全协和；进入严格对位或四部和声时，纯四度在低音上方还要看具体语境。");
@@ -381,6 +408,21 @@ function spellPitchForLetter(letter: string, targetPitch: number): string {
   if (diff === 0) return letter;
   if (diff > 0) return `${letter}${"#".repeat(diff)}`;
   return `${letter}${"b".repeat(Math.abs(diff))}`;
+}
+
+function getSimpleEnharmonicName(note: string): string | null {
+  const parsed = parseNote(note);
+  const sharpNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+  const flatNames = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+  const hasFlat = note.includes("b");
+  const hasSharp = note.includes("#");
+
+  if (!hasFlat && !hasSharp) {
+    return null;
+  }
+
+  const simpleName = hasFlat ? flatNames[parsed.pitch] : sharpNames[parsed.pitch];
+  return simpleName === note ? null : simpleName;
 }
 
 function mod12(value: number): number {

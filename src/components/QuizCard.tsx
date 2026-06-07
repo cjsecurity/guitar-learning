@@ -53,7 +53,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
             <h1 className="text-6xl font-black tracking-normal text-ink sm:text-7xl">{question.label}</h1>
             <p className="mt-3 text-base font-semibold text-stone-800">{getQuestionReading(question)}</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
-              先写根音的字母骨架，再套和弦公式。输入可用空格或逗号分隔。
+              先写根音的字母骨架，再套和弦公式。请按 1、3、5、7、9 的顺序输入；输入可用空格或逗号分隔。
             </p>
           </div>
           <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
@@ -103,7 +103,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
               className="input"
               value={finalInput}
               onChange={(event) => setFinalInput(event.target.value)}
-              placeholder="例如 A C# E G"
+              placeholder="按 1-3-5-7-9 顺序，例如 A C# E G"
             />
           </label>
         </div>

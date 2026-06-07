@@ -1,6 +1,7 @@
 import { CheckCircle2, HelpCircle, RefreshCw, Send, XCircle } from "lucide-react";
 import { useState } from "react";
 import { TheoryEvaluationResult, TheoryQuestion, evaluateTheoryAnswer } from "../utils/courseTheory";
+import { FretboardDiagram } from "./FretboardDiagram";
 
 interface TheoryQuizCardProps {
   question: TheoryQuestion;
@@ -44,6 +45,8 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
       </div>
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
+        <FretboardDiagram question={question} />
+
         {question.options && (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {question.options.map((option) => (

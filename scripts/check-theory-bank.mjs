@@ -30,6 +30,14 @@ const requiredSnippets = [
   ["同主音大小调借用", "借用和弦需要落到 modal mixture / borrowed chords"],
   ["纯四度", "音程协和分类需要明确纯四度"],
   ["preserveRomanCase", "罗马数字大小写必须保留"],
+  ["replaceChineseNumbers", "指板弦品答案需要支持中文数字输入"],
+  ["difficultyId === \"hard\"", "音程困难档应只要求完整音程名，降低四字段填写摩擦"],
+  ["Cdim7", "和弦标记题应区分减七和半减七"],
+  ["Cadd9", "和弦标记题应区分 add9 与属九"],
+  ["最后一个升号", "调号题应包含升号调经典速算法"],
+  ["倒数第二个降号", "调号题应包含降号调经典速算法"],
+  ["A小调 v7", "小调功能题应对比自然小调 v7 与和声小调 V7"],
+  ["borrowed iv", "借用和弦题应覆盖流行乐高频的小四级借用"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {

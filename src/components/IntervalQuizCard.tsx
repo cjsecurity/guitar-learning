@@ -18,6 +18,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [target, setTarget] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
+  const isHardIdentify = question.mode === "identify" && question.difficultyId === "hard";
 
   function handleSubmit() {
     const nextResult = evaluateIntervalAnswer(question, { degree, semitones, quality, feel, target });
@@ -68,7 +69,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               {question.mode === "spell" ? "根据根音和音程名，写出目标音。" : "根据根音和目标音，判断音程。"}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
-              练习顺序：度数看字母，性质看半音，最后判断基础协和分类。
+              {isHardIdentify ? "这一档只要求快速说出完整音程名；解释区会帮你核对度数、半音和协和分类。" : "练习顺序：度数看字母，性质看半音，最后判断基础协和分类。"}
             </p>
           </div>
           <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
@@ -102,6 +103,11 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
           <label className="space-y-2">
             <span className="label">目标音</span>
             <input className="input" value={target} onChange={(event) => setTarget(event.target.value)} placeholder="例如 F#、Gb、C" />
+          </label>
+        ) : isHardIdentify ? (
+          <label className="space-y-2">
+            <span className="label">完整音程名</span>
+            <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 增四度、减五度、M3、P5" />
           </label>
         ) : (
           <div className="grid gap-4 md:grid-cols-2">
@@ -142,6 +148,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
               <li>3. 本课程的基础协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
+              {isHardIdentify && <li>4. 困难档只填完整音程名，是为了更贴合“速算”；提交后再看其它字段校准。</li>}
               {question.mode === "spell" && <li>4. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -159,10 +166,10 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             </div>
 
             <div className="mt-4 grid gap-3 text-sm text-stone-800 sm:grid-cols-2 lg:grid-cols-4">
-              <ResultBadge label="度数" ok={question.mode === "spell" || result.degreeCorrect} value={result.expectedDegree} />
-              <ResultBadge label="半音" ok={question.mode === "spell" || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
+              <ResultBadge label="度数" ok={question.mode === "spell" || isHardIdentify || result.degreeCorrect} value={result.expectedDegree} />
+              <ResultBadge label="半音" ok={question.mode === "spell" || isHardIdentify || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
               <ResultBadge label="音程名" ok={question.mode === "spell" || result.qualityCorrect} value={result.expectedQuality} />
-              {question.mode === "identify" && <ResultBadge label="基础协和分类" ok={result.feelCorrect} value={result.expectedFeel} />}
+              {question.mode === "identify" && <ResultBadge label="基础协和分类" ok={isHardIdentify || result.feelCorrect} value={result.expectedFeel} />}
               {question.mode === "spell" && <ResultBadge label="目标音" ok={result.targetCorrect} value={result.expectedTarget} />}
             </div>
 

@@ -311,6 +311,7 @@ export function buildHint(question: Question): string[] {
   hint.push(...buildSpellingAdjustmentTips(question, skeleton, answer, formula));
   hint.push(`完整答案是 ${answer.join(" ")}。`);
   hint.push(...buildEnharmonicTips(answer));
+  hint.push(...buildPracticalNotationTips(question, answer));
 
   if (isNinthChord(question.type)) {
     const omitted = getOmittedFifthNotes(question);
@@ -377,6 +378,7 @@ function buildExplanation(
   lines.push(...buildSpellingAdjustmentTips(question, skeleton, finalNotes, formula));
   lines.push(`所以 ${question.label} = ${finalNotes.join(" ")}。`);
   lines.push(...buildEnharmonicTips(finalNotes));
+  lines.push(...buildPracticalNotationTips(question, finalNotes));
 
   if (isNinthChord(question.type)) {
     lines.push(`如果课堂写成 ${omittedNotes.join(" ")}，这是省略了五音 ${finalNotes[2]}，不代表 ${finalNotes[2]} 不属于 ${question.label}。`);
@@ -503,6 +505,33 @@ function buildEnharmonicTips(notes: string[]): string[] {
       return `${note} 和 ${simpleName} 是同一个实际声音；这里写 ${note}，是为了保留它在字母骨架里属于 ${letter} 这个级数。`;
     })
     .filter(Boolean);
+}
+
+function buildPracticalNotationTips(question: Question, notes: string[]): string[] {
+  if (!notes.some((note) => note.includes("##") || note.includes("bb"))) {
+    return [];
+  }
+
+  const practicalRoot = getCommonEnharmonicRoot(question.root);
+  if (!practicalRoot) {
+    return [
+      "双升或双降来自严格按字母骨架拼写；它是理论拼写训练，不代表实际谱面一定优先这样写。",
+    ];
+  }
+
+  return [
+    `${question.label} 里出现双升/双降，是因为本题强制保留 ${question.root} 根音下的级数拼写；实际谱面常会按调性改用更易读的等音根音，例如 ${formatChordLabel(practicalRoot, question.type)}。`,
+  ];
+}
+
+function getCommonEnharmonicRoot(root: string): string | null {
+  const commonRoots: Record<string, string> = {
+    "D#": "Eb",
+    "G#": "Ab",
+    "A#": "Bb",
+  };
+
+  return commonRoots[normalizeNote(root)] ?? null;
 }
 
 function getSimpleEnharmonicName(note: string): string | null {
