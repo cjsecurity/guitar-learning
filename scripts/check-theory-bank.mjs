@@ -62,6 +62,8 @@ const requiredSnippets = [
   ["Cadd9", "和弦标记题应区分 add9 与属九"],
   ["C6", "和弦标记题应区分 6 和 13 的语境"],
   ["Csus2", "和弦标记题应覆盖 sus2"],
+  ["C-7", "和弦标记多写法题应覆盖减号表示 minor 的常见写法"],
+  ["C°7", "和弦标记多写法题应覆盖减七符号并继续区分半减七"],
   ["getSkeletonPlaceholder", "和弦骨架输入框应按三/七/九和弦动态提示 1-3-5-7-9 顺序"],
   ["getFinalNotesPlaceholder", "最终和弦音输入框应明确按 1-3-5-7-9 顺序输入，避免转位答案误判"],
   ["实际谱面常会按调性改用更易读的等音根音", "升降号九和弦出现双升/双降时，应桥接理论拼写与实用记谱"],
@@ -69,6 +71,8 @@ const requiredSnippets = [
   ["status=\"reference\"", "和弦公式等系统复盘字段应显示为参考，不应假装用户答对了该字段"],
   ["Dm9 省略辨认", "省略音题目标签不应预先写 no5 泄露答案"],
   ["G13 省略辨认", "属十三省略音题目标签不应预先写 no5 泄露答案"],
+  ["G9", "延伸音结构题应覆盖属九和弦完整结构"],
+  ["G7(b13) -> G13", "延伸音声部解决题应覆盖 b13 还原到 13 的方向"],
   ["!isRhythmGrid && !question.options", "已有选项的理论题应隐藏自由文本输入框，避免选择题和填空题混用"],
   ["\"Bm7b5\", \"Bmaj7\", \"B7\", \"Bdim7\"", "Bø7 多写法互认应使用选择题并包含高频干扰项"],
   ["最后一个升号", "调号题应包含升号调经典速算法"],
@@ -86,14 +90,18 @@ const requiredSnippets = [
   ["bVII 三和弦", "借用和弦题应覆盖流行/摇滚高频 bVII 三和弦"],
   ["buildBorrowedIvSongAnchorQuestion", "borrowed iv 应有歌曲级听觉锚点题"],
   ["G - B - C - Cm", "borrowed iv 应用 G - B - C - Cm 作为无歌词听觉锚点"],
+  ["Abmaj7", "借用和弦入门档应包含 C major 外来的 bVImaj7 对比"],
   ["playRhythmPattern", "节奏网格应支持音频播放"],
   ["RhythmStepSequencer", "16 分 pattern 题应使用点击式 step sequencer"],
   ["RhythmTapTrainer", "16 分 pattern 题应提供 tap-along 跟拍检测"],
   ["跟拍检测", "节奏题应把网格训练进一步连接到身体跟拍"],
   ["TOLERANCE_MS", "跟拍检测应有明确误差容忍范围"],
   ["6+6+4", "节奏题应覆盖 3+3+3+3+4 以外的分组"],
+  ["X...X...X...X...", "节奏题应覆盖每拍一个重音的基准 pattern，方便和错位重音对比"],
+  ["6+6+6", "节奏回到 one 题应覆盖超出 16 格的反例"],
   ["起点偏移", "节奏题应覆盖重音起点偏移"],
   ["buildDiatonicDegreeQuestions", "顺阶和弦题库应由级数生成，避免手写小题池"],
+  ["buildAuthenticCadenceQuestion", "顺阶和弦综合档应覆盖基本 V7-Imaj7 解决，避免只练特殊副属和弦"],
   ["buildProgressionQuestions", "级数转调题库应由 key + progression 参数化生成"],
   ["KEY_SIGNATURES", "调号题库应由标准大调调号表生成，避免手写小题池"],
   ["buildKeySignatureQuestions", "调号题应由 key 列表参数化生成"],
@@ -265,6 +273,15 @@ async function runRuntimeTheoryChecks() {
       courseTheory.evaluateTheoryAnswer(cmaj7Root, "六弦八品拍六弦").isFullyCorrect,
       "指板根音题应接受全中文数字输入：六弦八品拍六弦",
     );
+
+    for (const chapter of courseTheory.THEORY_CHAPTERS) {
+      for (const difficulty of chapter.difficulties) {
+        assertRuntime(
+          difficulty.questions.length >= 3,
+          `${chapter.id}/${difficulty.id} 至少应有 3 题，避免小题池反复循环；当前为 ${difficulty.questions.length}`,
+        );
+      }
+    }
   } catch (error) {
     failures.push(`运行时乐理自检无法执行：${error.message}`);
   }
