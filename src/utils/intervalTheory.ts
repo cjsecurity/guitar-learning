@@ -287,7 +287,7 @@ function buildIntervalExplanation(question: IntervalQuestion): string[] {
 
   if (enharmonicName && enharmonicName !== question.target) {
     lines.push(
-      `${question.target} 和 ${enharmonicName} 是同一个实际声音；这里写 ${question.target}，是因为 ${question.root} 到 ${question.target.charAt(0).toUpperCase()} 的字母距离才是 ${interval.degreeName}，写成 ${enharmonicName} 会改变度数名称。`,
+      `${question.target} 和 ${enharmonicName} 是同一个实际声音，但本题不能直接写成 ${enharmonicName}：音程度数先看字母，${question.root} 到 ${question.target.charAt(0).toUpperCase()} 的字母距离才是 ${interval.degreeName}，写成 ${enharmonicName} 会改变度数名称。`,
     );
   }
 
