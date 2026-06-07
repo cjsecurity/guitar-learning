@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { QuizStats } from "../types/quiz";
 import { TheoryChapter, TheoryDifficultyConfig, TheoryEvaluationResult, TheoryQuestion, createRandomTheoryQuestion } from "../utils/courseTheory";
 import { getKnowledgeCard } from "../utils/knowledgeCards";
-import { getRecentQuestionLabels, getReviewQuestionLabels } from "../utils/reviewQueue";
+import { getRecentQuestionLabels, getReviewQuestionLabels, mergeRecentQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { KnowledgeCard } from "./KnowledgeCard";
 import { ReviewQueueNotice } from "./ReviewQueueNotice";
@@ -22,14 +22,22 @@ interface TheoryQuizPageProps {
 
 export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: TheoryQuizPageProps) {
   const [question, setQuestion] = useState<TheoryQuestion>(() => createRandomTheoryQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats), recentLabels: getRecentQuestionLabels(stats) }));
+  const [shownLabels, setShownLabels] = useState<string[]>(() => [question.label]);
   const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
   const recentLabels = useMemo(() => getRecentQuestionLabels(stats), [stats]);
+  const effectiveRecentLabels = useMemo(() => mergeRecentQuestionLabels([shownLabels, recentLabels]), [shownLabels, recentLabels]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立反应速度";
     const accuracy = Math.round((stats.correctAnswers / stats.totalAnswers) * 100);
     return `${stats.totalAnswers} 题 · 正确率 ${accuracy}% · 当前连对 ${stats.currentStreak}`;
   }, [stats]);
+
+  function handleNextQuestion() {
+    const nextQuestion = createRandomTheoryQuestion(difficulty, { previous: question, reviewLabels, recentLabels: effectiveRecentLabels });
+    setQuestion(nextQuestion);
+    setShownLabels((labels) => mergeRecentQuestionLabels([[nextQuestion.label], labels]));
+  }
 
   return (
     <main className="min-h-screen bg-mist px-4 py-5 sm:px-6 lg:px-8">
@@ -67,7 +75,7 @@ export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onR
           <TheoryQuizCard
             question={question}
             onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
-            onNext={() => setQuestion((current) => createRandomTheoryQuestion(difficulty, { previous: current, reviewLabels, recentLabels }))}
+            onNext={handleNextQuestion}
           />
 
           <aside className="space-y-5">

@@ -1,6 +1,7 @@
 import { QuizStats } from "../types/quiz";
 
 export const REVIEW_DRAW_RATE = 0.65;
+export const SHOWN_QUESTION_MEMORY_LIMIT = 5;
 
 export interface LabeledQuestion {
   id?: string;
@@ -80,6 +81,24 @@ export function getRecentQuestionLabels(stats: QuizStats, limit = 3): string[] {
 
     if (labels.length >= limit) {
       break;
+    }
+  }
+
+  return labels;
+}
+
+export function mergeRecentQuestionLabels(labelGroups: Array<string[] | undefined>, limit = SHOWN_QUESTION_MEMORY_LIMIT): string[] {
+  const labels: string[] = [];
+
+  for (const group of labelGroups) {
+    for (const label of group ?? []) {
+      if (!labels.includes(label)) {
+        labels.push(label);
+      }
+
+      if (labels.length >= limit) {
+        return labels;
+      }
     }
   }
 
