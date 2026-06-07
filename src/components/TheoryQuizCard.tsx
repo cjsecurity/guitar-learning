@@ -1,6 +1,7 @@
 import { CheckCircle2, HelpCircle, RefreshCw, Send, XCircle } from "lucide-react";
 import { useState } from "react";
 import { TheoryEvaluationResult, TheoryQuestion, evaluateTheoryAnswer } from "../utils/courseTheory";
+import { CircleOfFifthsDiagram } from "./CircleOfFifthsDiagram";
 import { FretboardDiagram } from "./FretboardDiagram";
 import { MinorFunctionAudioPanel } from "./MinorFunctionAudioPanel";
 import { PentatonicBoxDiagram } from "./PentatonicBoxDiagram";
@@ -61,6 +62,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
       </div>
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
+        <CircleOfFifthsDiagram question={question} />
         <FretboardDiagram question={question} />
         <PentatonicBoxDiagram question={question} />
         <MinorFunctionAudioPanel question={question} />

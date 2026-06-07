@@ -54,7 +54,7 @@
 | G、D、F、Bb 的四类进行 | 常见调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
 | A、E、B、F#、Eb、Ab、Db 的四类进行 | 带升降号调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
 | 12 个常用拼写大调的 1-6-2-5 / ii-V-I 反推 | 和弦反推调与级数 | 通过，由 `buildReverseProgressionQuestions` 参数化生成 |
-| G major 调号 / Bb major 调号 / 五度圈相邻升号调 | 五度圈与基础调号 | 通过，提示包含“最后一个升号+半音=调名”和“倒数第二个降号=调名” |
+| G major 调号 / Bb major 调号 / 五度圈相邻升号调 | 五度圈与基础调号 | 通过，提示包含“最后一个升号+半音=调名”和“倒数第二个降号=调名”，题卡提供五度圈速查图 |
 | A major 调号 / Ab major 调号 | 中等调号 | 通过 |
 | B major 调号 / Db major 调号 | 复杂调号 | 通过 |
 | Eb major 关系小调 / F# C# G# | 关系小调与调号反推 | 通过，避免和关系大小调章节重复使用 A major 关系小调 |
