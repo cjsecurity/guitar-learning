@@ -375,6 +375,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         questions: [
           ...buildProgressionQuestions(["C"], ["1-6-2-5", "ii-V-I", "iii-vi-ii-V", "IV-iii-ii-I"]),
           buildProgressionMappingQuestion(),
+          buildProgressionLoopApplicationQuestion(),
         ],
       },
       medium: {
@@ -497,6 +498,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         questions: [
           ...buildMinorDominantQuestions(["A"]),
           ...buildHarmonicMinorReasonQuestions(["A"]),
+          buildMinorFunctionLoopApplicationQuestion(),
         ],
       },
       hard: {
@@ -571,6 +573,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
           q("X..X..X..X..X...", "X..X..X..X..X... 表示哪种 16 格重音分组？", "分组", "3+3+3+3+4", ["3 3 3 3 4", "三三三三四"], "重音移位", ["前四组都是 X..，每组 3 个十六分格；最后一组 X...，共 4 个十六分格。"], ["X..X..X..X..X... 一共 16 格，对应 3+3+3+3+4。"]),
           q("X...X...X...X...", "X...X...X...X... 表示哪种 16 格重音？", "分组", "每拍一个重音", ["四分音符重音", "1拍1个", "每拍一次", "quarter accents", "one per beat", "1 5 9 13"], "重音位置", ["每个 X 后面 3 个点，说明每 4 个 16 分格一个重音。"], ["X...X...X...X... 的重音落在 1、5、9、13 格，也就是每拍一个重音。"]),
           q("三个十六分一组", "课堂里的“三个十六分音符一组”是三连音吗？", "判断", "不是", ["否", "不是三连音"], "概念区分", ["它是在 16 分网格里每三个格子一组。"], ["这里不是三连音，而是在十六分音符网格中做 3+3+3+3+4 的重音移位。"], ["是", "不是"]),
+          buildRhythmGrooveApplicationQuestion(),
         ],
       },
       hard: {
@@ -751,6 +754,19 @@ function buildProgressionMappingQuestion(): QuestionSeed {
   );
 }
 
+function buildProgressionLoopApplicationQuestion(): QuestionSeed {
+  return q(
+    "课堂loop C-6-2-5",
+    "课堂伴奏 loop：Cmaj7 - Am7 - Dm7 - G7。它在 C 大调里对应哪个级数进行？",
+    "级数进行",
+    "1-6-2-5",
+    ["Imaj7 vi7 ii7 V7", "I vi ii V", "1 6 2 5", "一六二五"],
+    "课堂 loop 应用",
+    ["先看每个和弦根音：C、A、D、G。", "在 C 大调里，它们分别是 1、6、2、5。"],
+    ["Cmaj7 - Am7 - Dm7 - G7 是 C 大调里的 1-6-2-5，也可写成 Imaj7 - vi7 - ii7 - V7。把级数落到真实和弦名后，就能把同一个 loop 移到别的 key。"],
+  );
+}
+
 function buildAuthenticCadenceQuestion(): QuestionSeed {
   return q(
     "G7-Cmaj7",
@@ -761,6 +777,33 @@ function buildAuthenticCadenceQuestion(): QuestionSeed {
     "属到主解决",
     ["C 大调 5 级是 G；G7 是 V7，Cmaj7 是 Imaj7。", "罗马数字大小写有含义：V 是大三/属功能，I 是主和弦。"],
     ["G7 - Cmaj7 是 C 大调 V7 - Imaj7，也就是最基本的属到主解决。"],
+  );
+}
+
+function buildMinorFunctionLoopApplicationQuestion(): QuestionSeed {
+  return q(
+    "A小调回家路线",
+    "课堂小调 loop 里，哪条路线回到 Am 的属功能更强：Em7 -> Am，还是 E7 -> Am？",
+    "功能选择",
+    "E7 -> Am",
+    ["E7-Am", "E7 Am", "V7-i", "V7回i", "和声小调V7"],
+    "小调功能应用",
+    ["A 自然小调的 v7 是 Em7；A 和声小调把 G 升成 G#，形成 E7。", "G# 是 A 的导音，离 A 只有半音。"],
+    ["E7 -> Am 更强，因为 E7 里的 G# 是 A 的导音，会强烈想解决到 A。Em7 -> Am 也能回家，但少了导音张力。"],
+    ["Em7 -> Am", "E7 -> Am"],
+  );
+}
+
+function buildRhythmGrooveApplicationQuestion(): QuestionSeed {
+  return q(
+    "课堂funk重音",
+    "课堂 funk 练习里，鼓或右手重音落在第 1、4、7、10、13 格。这个 16 格 pattern 是什么？",
+    "pattern",
+    "X..X..X..X..X...",
+    ["X.. X.. X.. X.. X...", "3+3+3+3+4", "三三三三四"],
+    "课堂 groove 应用",
+    ["第 1 格是 X，之后每隔 3 个十六分格出现一个重音，最后补 4 格回到下一小节 one。"],
+    ["第 1、4、7、10、13 格点亮后，pattern 是 X..X..X..X..X...。这是 16 分网格里的 3+3+3+3+4 重音移位，不是三连音。"],
   );
 }
 

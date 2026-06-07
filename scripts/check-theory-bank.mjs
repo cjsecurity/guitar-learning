@@ -123,6 +123,13 @@ const requiredSnippets = [
   ["bVII 三和弦", "借用和弦题应覆盖流行/摇滚高频 bVII 三和弦"],
   ["buildBorrowedIvSongAnchorQuestion", "borrowed iv 应有歌曲级听觉锚点题"],
   ["G - B - C - Cm", "borrowed iv 应用 G - B - C - Cm 作为无歌词听觉锚点"],
+  ["buildProgressionLoopApplicationQuestion", "级数转调应有课堂伴奏 loop 应用题"],
+  ["课堂loop C-6-2-5", "级数转调应用题应覆盖 Cmaj7-Am7-Dm7-G7 的 1-6-2-5 loop"],
+  ["buildMinorFunctionLoopApplicationQuestion", "小调功能应有 V7 回 i 的课堂 loop 应用题"],
+  ["Em7 -> Am", "小调功能应用题应对比自然小调 v7 回 i"],
+  ["E7 -> Am", "小调功能应用题应对比和声小调 V7 回 i"],
+  ["buildRhythmGrooveApplicationQuestion", "节奏章节应有课堂 funk 重音应用题"],
+  ["课堂funk重音", "节奏应用题应把 16 格重音连接到课堂 groove 场景"],
   ["Abmaj7", "借用和弦入门档应包含 C major 外来的 bVImaj7 对比"],
   ["playRhythmPattern", "节奏网格应支持音频播放"],
   ["RhythmStepSequencer", "16 分 pattern 题应使用点击式 step sequencer"],
@@ -382,6 +389,30 @@ async function runRuntimeTheoryChecks() {
     assertRuntime(
       courseTheory.evaluateTheoryAnswer(secondaryDominant, "viio7 V7/vi vi7").isFullyCorrect,
       "Bm7b5-E7-Am7 应接受 viio7 V7/vi vi7 这种可打字写法",
+    );
+
+    const progressionEasy = courseTheory.getTheoryDifficulty("progression-transpose", "easy");
+    const classroomLoop = progressionEasy.questions.find((question) => question.label === "课堂loop C-6-2-5");
+    assertRuntime(Boolean(classroomLoop), "级数转调简单档应包含课堂loop C-6-2-5 应用题");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(classroomLoop, "Imaj7 vi7 ii7 V7").isFullyCorrect,
+      "课堂loop C-6-2-5 应接受标准罗马数字答案 Imaj7 vi7 ii7 V7",
+    );
+
+    const minorMedium = courseTheory.getTheoryDifficulty("minor-function", "medium");
+    const minorLoop = minorMedium.questions.find((question) => question.label === "A小调回家路线");
+    assertRuntime(Boolean(minorLoop), "自然小调与和声小调中等档应包含 A小调回家路线应用题");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(minorLoop, "V7-i").isFullyCorrect,
+      "A小调回家路线应接受 V7-i 这种功能答案",
+    );
+
+    const rhythmMedium = courseTheory.getTheoryDifficulty("rhythm-grid", "medium");
+    const funkAccent = rhythmMedium.questions.find((question) => question.label === "课堂funk重音");
+    assertRuntime(Boolean(funkAccent), "节奏中等档应包含课堂funk重音应用题");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(funkAccent, "3+3+3+3+4").isFullyCorrect,
+      "课堂funk重音应接受 3+3+3+3+4 这种分组答案",
     );
 
     const fretboardHell = courseTheory.getTheoryDifficulty("fretboard-root", "hell");
