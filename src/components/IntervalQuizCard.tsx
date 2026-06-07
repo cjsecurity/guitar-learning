@@ -1,7 +1,7 @@
 import { CheckCircle2, HelpCircle, Music, Play, RefreshCw, Send, Volume2, XCircle } from "lucide-react";
 import { useState } from "react";
-import { getFrequency, playSequence, playSingle, playTogether } from "../utils/audioEngine";
-import { IntervalEvaluationResult, IntervalFeel, IntervalQuestion, evaluateIntervalAnswer } from "../utils/intervalTheory";
+import { playSequence, playSingle, playTogether } from "../utils/audioEngine";
+import { INTERVALS, IntervalEvaluationResult, IntervalFeel, IntervalId, IntervalQuestion, evaluateIntervalAnswer, getIntervalAudioFrequencies } from "../utils/intervalTheory";
 import { SpeedTimer, useQuestionTimer } from "./SpeedTimer";
 
 interface IntervalQuizCardProps {
@@ -238,10 +238,10 @@ function FeelPicker({ value, onChange }: { value: string; onChange: (value: Inte
 }
 
 function ComparisonSamples() {
-  const samples: Array<{ feel: IntervalFeel; label: string; notes: [string, string] }> = [
-    { feel: "完全协和", label: "C -> F / C -> G / C -> C", notes: ["C", "F"] },
-    { feel: "不完全协和", label: "C -> E / C -> Eb", notes: ["C", "E"] },
-    { feel: "不协和", label: "C -> Db / C -> F#", notes: ["C", "Db"] },
+  const samples: Array<{ feel: IntervalFeel; label: string; intervalIds: IntervalId[] }> = [
+    { feel: "完全协和", label: "C -> F / C -> G / C -> C(高八度)", intervalIds: ["P4", "P5", "P8"] },
+    { feel: "不完全协和", label: "C -> E / C -> Eb", intervalIds: ["M3", "m3"] },
+    { feel: "不协和", label: "C -> Db / C -> F#", intervalIds: ["m2", "A4"] },
   ];
 
   return (
@@ -256,7 +256,7 @@ function ComparisonSamples() {
             key={sample.feel}
             type="button"
             className="rounded-md border border-stone-200 bg-mist px-3 py-3 text-left transition hover:border-leaf"
-            onClick={() => playSequence(sample.notes.map((note) => getFrequency(note)))}
+            onClick={() => playSequence(sample.intervalIds.flatMap(getSampleFrequencies))}
           >
             <span className="text-sm font-black text-ink">{sample.feel}</span>
             <span className="mt-1 block text-xs text-stone-600">{sample.label}</span>
@@ -265,6 +265,11 @@ function ComparisonSamples() {
       </div>
     </div>
   );
+}
+
+function getSampleFrequencies(intervalId: IntervalId): [number, number] {
+  const interval = INTERVALS.find((item) => item.id === intervalId) ?? INTERVALS[0];
+  return getIntervalAudioFrequencies("C", interval);
 }
 
 function ResultBadge({ label, ok, value }: { label: string; ok: boolean; value: string }) {

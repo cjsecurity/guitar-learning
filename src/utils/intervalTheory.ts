@@ -161,6 +161,12 @@ export function createRandomIntervalQuestion(config: IntervalDifficultyConfig, p
   return pickQuestionCandidate(buildQuestionPool(config), normalizeQuestionPickOptions(previousOrOptions));
 }
 
+export function getIntervalAudioFrequencies(root: string, interval: IntervalDefinition): [number, number] {
+  const rootFrequency = noteToFrequency(root);
+  const targetFrequency = rootFrequency * 2 ** (interval.semitones / 12);
+  return [rootFrequency, targetFrequency];
+}
+
 export function evaluateIntervalAnswer(
   question: IntervalQuestion,
   answers: { degree: string; semitones: string; quality: string; feel: string; target: string },
@@ -207,13 +213,14 @@ function buildQuestionPool(config: IntervalDifficultyConfig): IntervalQuestion[]
       (config.intervalIds ?? ["M3"]).map((intervalId) => {
         const interval = findInterval(intervalId);
         const target = spellTarget(root, interval);
+        const [rootFrequency, targetFrequency] = getIntervalAudioFrequencies(root, interval);
         return {
           mode: "spell" as const,
           difficultyId: config.id,
           root,
           target,
-          rootFrequency: noteToFrequency(root),
-          targetFrequency: getTargetFrequency(target, interval),
+          rootFrequency,
+          targetFrequency,
           interval,
           label: `${root} 的 ${interval.fullName}`,
         };
@@ -225,15 +232,16 @@ function buildQuestionPool(config: IntervalDifficultyConfig): IntervalQuestion[]
     return config.roots.flatMap((root) =>
       (config.targets ?? []).map((target) => {
         const interval = getIntervalBetween(root, target);
+        const [rootFrequency, targetFrequency] = getIntervalAudioFrequencies(root, interval);
         return {
           mode: "identify" as const,
           difficultyId: config.id,
           root,
           target,
-          rootFrequency: noteToFrequency(root),
-          targetFrequency: noteToFrequency(target),
+          rootFrequency,
+          targetFrequency,
           interval,
-          label: `${root} -> ${target}`,
+          label: `${root} -> ${formatTargetForLabel(root, target, interval)}`,
         };
       }),
     );
@@ -243,15 +251,16 @@ function buildQuestionPool(config: IntervalDifficultyConfig): IntervalQuestion[]
     (config.intervalIds ?? ["M3"]).map((intervalId) => {
       const interval = findInterval(intervalId);
       const target = spellTarget(root, interval);
+      const [rootFrequency, targetFrequency] = getIntervalAudioFrequencies(root, interval);
       return {
         mode: "identify" as const,
         difficultyId: config.id,
         root,
         target,
-        rootFrequency: noteToFrequency(root),
-        targetFrequency: getTargetFrequency(target, interval),
+        rootFrequency,
+        targetFrequency,
         interval,
-        label: `${root} -> ${formatTargetForLabel(target, interval)}`,
+        label: `${root} -> ${formatTargetForLabel(root, target, interval)}`,
       };
     }),
   );
@@ -289,6 +298,14 @@ function buildIntervalExplanation(question: IntervalQuestion): string[] {
     lines.push(
       `${question.target} 和 ${enharmonicName} 是同一个实际声音，但本题不能直接写成 ${enharmonicName}：音程度数先看字母，${question.root} 到 ${question.target.charAt(0).toUpperCase()} 的字母距离才是 ${interval.degreeName}，写成 ${enharmonicName} 会改变度数名称。`,
     );
+  }
+
+  if (interval.id === "P8") {
+    lines.push(`本题是八度：${question.target} 和根音同音名，但播放时目标音会放在高一组。`);
+  } else if (interval.semitones === 0) {
+    lines.push(`本题是纯一度：${question.root} 和 ${question.target} 是同一个音高。`);
+  } else {
+    lines.push(`本题默认从 ${question.root} 向上数音程；播放目标音也会放在根音上方。`);
   }
 
   lines.push(
@@ -383,12 +400,18 @@ function noteToFrequency(note: string, octave = 4): number {
   return 440 * 2 ** ((midi - 69) / 12);
 }
 
-function getTargetFrequency(target: string, interval: IntervalDefinition): number {
-  return noteToFrequency(target, interval.id === "P8" ? 5 : 4);
-}
+function formatTargetForLabel(root: string, target: string, interval: IntervalDefinition): string {
+  if (interval.id === "P8") {
+    return `${target}(高八度)`;
+  }
 
-function formatTargetForLabel(target: string, interval: IntervalDefinition): string {
-  return interval.id === "P8" ? `${target}(高八度)` : target;
+  const rootPitch = parseNote(root).pitch;
+  const targetPitch = parseNote(target).pitch;
+  if (interval.semitones > 0 && targetPitch <= rootPitch) {
+    return `${target}(上方)`;
+  }
+
+  return target;
 }
 
 function spellPitchForLetter(letter: string, targetPitch: number): string {
