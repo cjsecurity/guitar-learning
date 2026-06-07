@@ -37,27 +37,27 @@
 | Bb 在五弦 / Eb 在五弦 / Ab 在六弦 | 等音位置与降号调拼写 | 通过，问品位时只接受品位，不把等音名当品位答案 |
 | 6弦8品 / 5弦6品 / 6弦4品 | 品位反推音名 | 通过，等音名只在反推音名题中接受 |
 | Cmaj7 六弦系统 / Dm9 五弦系统 | 吉他根音系统与右手落点 | 通过，属于课程演奏技术，不伪装成通用和声概念 |
-| 1/2/4/5/7级三和弦 | 大调顺阶三和弦 I ii iii IV V vi vii° | 通过，三和弦口诀与七和弦口诀分层，不把 G 三和弦误导为 G7 |
-| 5/6/7级七和弦 | 大调顺阶七和弦 Imaj7 ii7 iii7 IVmaj7 V7 vi7 viiø7 | 通过 |
+| C 大调 1-7 级三和弦 | 大调顺阶三和弦 I ii iii IV V vi vii° | 通过，由 `buildDiatonicDegreeQuestions` 参数化生成；三和弦口诀与七和弦口诀分层，不把 G 三和弦误导为 G7 |
+| C 大调 1-7 级七和弦 | 大调顺阶七和弦 Imaj7 ii7 iii7 IVmaj7 V7 vi7 viiø7 | 通过，由 `buildDiatonicDegreeQuestions` 参数化生成 |
 | Am7 级数 / Fmaj7 级数 | 罗马数字大小写与和弦性质 | 通过，判题保留 IV/iv、vi/VI 大小写差异 |
 | Bm7b5-E7-Am7 / Dm7-G7-Cmaj7 | 副属和弦 / applied chord；ii-V-I | 通过，标准写法为 viiø7 - V7/vi - vi7；同时接受 viio7、vii07、viim7b5 等可打字写法 |
 | Cm / Cdim / Caug | 三和弦标记 | 通过，已改为选择题优先 |
 | C7 / Cø7 / Cdim7 | 属七、半减七、减七标记 | 通过，Cdim7 与 Cm7b5 区分为不同和弦 |
-| G13sus4 / G7(b13) / Cadd9 vs C9 / C/E | sus、变化延伸音、add9、slash chord | 通过 |
+| G13sus4 / G7(b13) / Cadd9 vs C9 / C6 vs C13 / Csus2 / C/E | sus、变化延伸音、add9、六和弦、slash chord | 通过 |
 | Bø7 / C△7 | 和弦符号多写法 | 通过 |
 | 9 的来源 / 11 的来源 / 13 的来源 | 延伸音 2->9、4->11、6->13 | 通过 |
 | Dm9 | 九和弦完整结构 | 通过，强调 D F C E 是 Dm9(no5) |
 | G13 | lead-sheet / guitar voicing 的属十三核心音 | 通过，题干已避免把核心 voicing 说成完整叠三度结构 |
 | Dm9(no5) / G13(no5) / 属和弦自然11 | 省略五音；属和弦自然 11 与 3 音冲突 | 通过 |
 | G13sus4 到 G13 / G13 到 G7(b13) | sus 解决与 13 到 b13 的声部变化 | 通过 |
-| C 的 1-6-2-5 / C 的 ii-V-I / 1-6-2-5 映射 | C 大调级数进行；数字级数到罗马数字 | 通过 |
-| Bb 的 1-6-2-5 / D 的 ii-V-I | 常见调转调 | 通过 |
-| A 的 1-6-2-5 / Ab 的 ii-V-I | 带升降号调转调 | 通过 |
-| Amaj7 F#m7 Bm7 E7 / Bbm7 Eb7 Abmaj7 | 和弦反推调与级数 | 通过 |
+| C 大调 1-6-2-5 / ii-V-I / iii-vi-ii-V / IV-iii-ii-I / 1-6-2-5 映射 | C 大调级数进行；数字级数到罗马数字 | 通过 |
+| G、D、F、Bb 的四类进行 | 常见调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
+| A、E、B、F#、Eb、Ab、Db 的四类进行 | 带升降号调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
+| 12 个常用拼写大调的 1-6-2-5 / ii-V-I 反推 | 和弦反推调与级数 | 通过，由 `buildReverseProgressionQuestions` 参数化生成 |
 | G major 调号 / Bb major 调号 / 五度圈相邻升号调 | 五度圈与基础调号 | 通过，提示包含“最后一个升号+半音=调名”和“倒数第二个降号=调名” |
 | A major 调号 / Ab major 调号 | 中等调号 | 通过 |
 | B major 调号 / Db major 调号 | 复杂调号 | 通过 |
-| A major 关系小调 / F# C# G# | 关系小调与调号反推 | 通过 |
+| Eb major 关系小调 / F# C# G# | 关系小调与调号反推 | 通过，避免和关系大小调章节重复使用 A major 关系小调 |
 | G 的关系小调 / E minor 关系大调 | 关系大小调 | 通过 |
 | E 小调五声 / G 大调五声 | 小调五声与大调五声公式 | 通过 |
 | A 的关系小调 / Bb 大调五声 | 带升降号调的关系小调与五声音阶 | 通过 |
@@ -85,3 +85,4 @@
 - 额外节奏 pattern 如 `3+3+2+3+3+2`、`6+6+4`、起点偏移必须保持 16 格。
 - 节奏 pattern 题必须保留 16 步点击网格与播放能力。
 - 标准副属和弦、导音减七、同主音借用、纯四度说明、罗马数字大小写保护必须存在。
+- 顺阶和弦、级数转调必须保留参数化生成函数，避免回到静态小题池。

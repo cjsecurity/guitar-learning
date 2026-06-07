@@ -59,6 +59,55 @@ const DIFFICULTY_TITLES: Record<TheoryDifficultyId, string> = {
   hell: "综合",
 };
 
+const MAJOR_SCALE_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
+const NOTE_LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
+const NATURAL_PITCH: Record<string, number> = {
+  C: 0,
+  D: 2,
+  E: 4,
+  F: 5,
+  G: 7,
+  A: 9,
+  B: 11,
+};
+
+const TRIAD_ROMANS = ["I", "ii", "iii", "IV", "V", "vi", "vii°"];
+const SEVENTH_ROMANS = ["Imaj7", "ii7", "iii7", "IVmaj7", "V7", "vi7", "viiø7"];
+const TRIAD_SUFFIXES = ["", "m", "m", "", "", "m", "dim"];
+const SEVENTH_SUFFIXES = ["maj7", "m7", "m7", "maj7", "7", "m7", "m7b5"];
+const TRIAD_QUALITY_NAMES = ["大三", "小三", "小三", "大三", "大三", "小三", "减三"];
+const SEVENTH_QUALITY_NAMES = ["大七", "小七", "小七", "大七", "属七", "小七", "半减七"];
+
+const MAJOR_PROGRESSIONS = [
+  { id: "1-6-2-5", display: "1-6-2-5", degrees: [1, 6, 2, 5], roman: "Imaj7 vi7 ii7 V7" },
+  { id: "ii-V-I", display: "ii-V-I", degrees: [2, 5, 1], roman: "ii7 V7 Imaj7" },
+  { id: "iii-vi-ii-V", display: "iii-vi-ii-V", degrees: [3, 6, 2, 5], roman: "iii7 vi7 ii7 V7" },
+  { id: "IV-iii-ii-I", display: "IV-iii-ii-I", degrees: [4, 3, 2, 1], roman: "IVmaj7 iii7 ii7 Imaj7" },
+];
+
+const DIATONIC_SPECIAL_QUESTIONS = [
+  q(
+    "Bm7b5-E7-Am7",
+    "Bm7b5 - E7 - Am7 在 C 大调里用罗马数字应怎样分析？",
+    "级数进行",
+    "viiø7 - V7/vi - vi7",
+    ["viiø7 V7/vi vi7", "viiø - V7/vi - vi", "viiø7 V7 of vi vi7", "viio7 V7/vi vi7", "vii07 V7/vi vi7", "viim7b5 V7/vi vi7", "vii m7b5 V7/vi vi7"],
+    "副属和弦",
+    ["罗马数字大小写有含义：大写表示大三/属功能，小写表示小三或减性和弦。", "Bm7b5 是 C 大调的 viiø7；E7 不是顺阶 iii7，而是指向 Am/vi 的副属七和弦。"],
+    ["在 C 大调视角下，Bm7b5 是 viiø7，E7 是 V7/vi，Am7 是 vi7。键盘不好输入 ø 时，可写 viiø7、viio7、vii07 或 viim7b5。若临时把 A minor 当中心听，也可理解为 A 小调的 iiø7 - V7 - i7。"],
+  ),
+  q(
+    "Dm7-G7-Cmaj7",
+    "Dm7 - G7 - Cmaj7 在 C 大调里用罗马数字怎样分析？",
+    "级数进行",
+    "ii7 - V7 - Imaj7",
+    ["ii7 V7 Imaj7", "ii V I", "2-5-1"],
+    "ii-V-I",
+    ["罗马数字大小写有含义：ii 是小七，V7 是属七，Imaj7 是大七。"],
+    ["Dm7 - G7 - Cmaj7 是 C 大调 ii7 - V7 - Imaj7。"],
+  ),
+];
+
 const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficultySeeds: Record<TheoryDifficultyId, { badge: string; description: string; questions: QuestionSeed[] }> }> = [
   {
     id: "fretboard-root",
@@ -121,38 +170,22 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       easy: {
         badge: "C 大调三和弦",
         description: "按级数写 C 大调顺阶三和弦：一四六大三，二三六小三，七级减三。",
-        questions: [
-          q("1级三和弦", "C 大调 1 级三和弦是什么？", "和弦", "C", ["Cmaj", "C major"], "三和弦级数", ["三和弦口诀：一四六大三，二三六小三，七级减三。"], ["C 大调 1 级三和弦是 C。"]),
-          q("2级三和弦", "C 大调 2 级三和弦是什么？", "和弦", "Dm", ["D-", "Dmin", "D minor"], "三和弦级数", ["C 大调音阶第 2 个音是 D；三和弦 2 级是小三。"], ["C 大调三和弦顺序是 C Dm Em F G Am Bdim，所以 2 级是 Dm。"]),
-          q("4级三和弦", "C 大调 4 级三和弦是什么？", "和弦", "F", ["Fmaj", "F major"], "三和弦级数", ["三和弦 4 级是大三，不是 Fmaj7。"], ["C 大调 4 级三和弦是 F。"]),
-          q("5级三和弦", "C 大调 5 级三和弦是什么？", "和弦", "G", ["Gmaj", "G major"], "三和弦级数", ["七和弦里五级是属七；三和弦里五级只是大三和弦。"], ["C 大调 5 级三和弦是 G，不是 G7。"]),
-          q("7级三和弦", "C 大调 7 级三和弦是什么？", "和弦", "Bdim", ["B°", "B diminished"], "三和弦级数", ["七和弦里七级是半减七；三和弦里七级是减三。"], ["C 大调 7 级三和弦是 Bdim，不是 Bm7b5。"]),
-        ],
+        questions: buildDiatonicDegreeQuestions("C", "triad"),
       },
       medium: {
         badge: "C 大调七和弦",
         description: "按级数写 C 大调顺阶七和弦：一四大七，二三六小七，五属七，七半减。",
-        questions: [
-          q("5级七和弦", "C 大调 5 级七和弦是什么？", "和弦", "G7", ["Gdom7"], "七和弦级数", ["口诀：五属。"], ["C 大调 5 级是 G，五级七和弦是属七，所以是 G7。"]),
-          q("6级七和弦", "C 大调 6 级七和弦是什么？", "和弦", "Am7", ["A-7", "Amin7"], "七和弦级数", ["口诀：二三六小。"], ["C 大调 6 级是 A，质量是 m7，所以是 Am7。"]),
-          q("7级七和弦", "C 大调 7 级七和弦是什么？", "和弦", "Bm7b5", ["Bø7", "B half diminished", "Bmin7b5"], "七和弦级数", ["七和弦口诀：七半减。"], ["C 大调 7 级七和弦是 Bm7b5，也写作 Bø7。"]),
-        ],
+        questions: buildDiatonicDegreeQuestions("C", "seventh"),
       },
       hard: {
         badge: "级数与和弦互推",
         description: "混合三和弦、七和弦、和弦反推级数。",
-        questions: [
-          q("Am7 级数", "Am7 在 C 大调里是几级七和弦？", "级数", "6级小七", ["6", "六级", "6级", "vi", "vi7"], "反推级数", ["A 是 C 大调第 6 个音。"], ["Am7 是 C 大调的 6 级小七。"]),
-          q("Fmaj7 级数", "Fmaj7 在 C 大调里是几级七和弦？", "级数", "4级大七", ["4", "四级", "4级", "IV", "IVmaj7"], "反推级数", ["口诀：一四大。"], ["Fmaj7 是 C 大调的 4 级大七。"]),
-        ],
+        questions: [...buildDiatonicReverseQuestions("C", "triad"), ...buildDiatonicReverseQuestions("C", "seventh")],
       },
       hell: {
         badge: "小调 ii-V-i 嵌入",
-        description: "用标准罗马数字判断 Bm7b5-E7-Am7 在 C 大调中的功能。",
-        questions: [
-          q("Bm7b5-E7-Am7", "Bm7b5 - E7 - Am7 在 C 大调里用罗马数字应怎样分析？", "级数进行", "viiø7 - V7/vi - vi7", ["viiø7 V7/vi vi7", "viiø - V7/vi - vi", "viiø7 V7 of vi vi7", "viio7 V7/vi vi7", "vii07 V7/vi vi7", "viim7b5 V7/vi vi7", "vii m7b5 V7/vi vi7"], "副属和弦", ["罗马数字大小写有含义：大写表示大三/属功能，小写表示小三或减性和弦。", "Bm7b5 是 C 大调的 viiø7；E7 不是顺阶 iii7，而是指向 Am/vi 的副属七和弦。"], ["在 C 大调视角下，Bm7b5 是 viiø7，E7 是 V7/vi，Am7 是 vi7。键盘不好输入 ø 时，可写 viiø7、viio7、vii07 或 viim7b5。若临时把 A minor 当中心听，也可理解为 A 小调的 iiø7 - V7 - i7。"]),
-          q("Dm7-G7-Cmaj7", "Dm7 - G7 - Cmaj7 在 C 大调里用罗马数字怎样分析？", "级数进行", "ii7 - V7 - Imaj7", ["ii7 V7 Imaj7", "ii V I", "2-5-1"], "ii-V-I", ["罗马数字大小写有含义：ii 是小七，V7 是属七，Imaj7 是大七。"], ["Dm7 - G7 - Cmaj7 是 C 大调 ii7 - V7 - Imaj7。"]),
-        ],
+        description: "用标准罗马数字判断 C 大调中的 ii-V-I 与副属和弦。",
+        questions: DIATONIC_SPECIAL_QUESTIONS,
       },
     },
   },
@@ -188,6 +221,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
           q("G13sus4", "G13sus4 里的 sus4 表示什么？", "含义", "三音被四音替代", ["3被4替代", "四音替代三音", "没有三音"], "sus 标记", ["sus 通常表示 suspended。"], ["G13sus4 中第三音 B 被第四音 C 替代。"], ["三音被四音替代", "五音被四音替代", "加入大七音", "加入降九音"]),
           q("G7(b13)", "G7(b13) 里的 b13 是什么？", "含义", "降十三音", ["b13", "降13", "降十三", "Eb"], "变化延伸音", ["G 的 13 是 E，b13 是 Eb。"], ["G7(b13) 表示 G 属七上加入降十三音 Eb。"], ["九音", "十一音", "降十三音", "根音转位"]),
           q("Cadd9 vs C9", "Cadd9 和 C9 是同一种标记吗？", "判断", "不是", ["否", "不同", "不是同一种"], "add9 与属九", ["add9 通常是在三和弦上加 9；C9 默认含属七 Bb。"], ["Cadd9 常表示 C E G D；C9 表示 C E G Bb D。C9 不是“只加 9”的意思。"], ["是", "不是"]),
+          q("C6 vs C13", "C6 和 C13 是同一种标记吗？", "判断", "不是", ["否", "不同", "不是同一种"], "六和弦与十三和弦", ["C6 通常是大三和弦加 6；C13 默认是属十三并包含 b7。"], ["C6 常表示 C E G A；C13 是 C 属七基础上加入 13 色彩，默认包含 Bb。6 和 13 是同一个字母级数，但和弦标记语境不同。"], ["是", "不是"]),
+          q("Csus2", "Csus2 表示什么？", "含义", "三音被二音替代", ["3被2替代", "二音替代三音", "没有三音"], "sus2 标记", ["sus2 里通常没有三音 E，而是用 D。"], ["Csus2 常表示 C D G：第三音 E 被第二音 D 替代。"], ["三音被二音替代", "三音被四音替代", "加入属七音", "加入降十三音"]),
           q("C/E", "C/E 这种 slash chord 说明什么？", "含义", "E 在低音", ["E做低音", "低音是E", "第一低音E"], "slash chord", ["斜线后面的音是低音。"], ["C/E 表示 C 和弦，但最低音放 E；它不改变上方和弦仍是 C。"], ["E 在低音", "E 是九音", "C 变成小和弦", "C 是属七"]),
         ],
       },
@@ -255,34 +290,24 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "C 大调级数",
         description: "先在 C 大调内练级数和七和弦属性。",
         questions: [
-          q("C 的 1-6-2-5", "C 大调 1-6-2-5 七和弦是什么？", "和弦进行", "Cmaj7 Am7 Dm7 G7", ["Cmaj7-Am7-Dm7-G7", "Cmaj7 Am7 Dm7 G7"], "级数转和弦", ["C 大调无升降号。"], ["C 的 1-6-2-5 是 Cmaj7 Am7 Dm7 G7。"]),
-          q("C 的 ii-V-I", "C 大调 ii-V-I 是什么？", "和弦进行", "Dm7 G7 Cmaj7", ["Dm7-G7-Cmaj7"], "ii-V-I", ["ii 是 Dm7，V 是 G7，I 是 Cmaj7。"], ["C 大调 ii-V-I = Dm7 G7 Cmaj7。"]),
-          q("1-6-2-5 映射", "在大调七和弦里，1-6-2-5 对应哪组罗马数字与和弦属性？", "映射", "Imaj7 vi7 ii7 V7", ["Imaj7-vi7-ii7-V7", "Imaj7 vi7 ii7 V7"], "数字级数与罗马数字", ["1 是 Imaj7，6 是 vi7，2 是 ii7，5 是 V7。"], ["1-6-2-5 不是另一套神秘体系；在大调七和弦里就是 Imaj7 - vi7 - ii7 - V7。"]),
+          ...buildProgressionQuestions(["C"], ["1-6-2-5", "ii-V-I", "iii-vi-ii-V", "IV-iii-ii-I"]),
+          buildProgressionMappingQuestion(),
         ],
       },
       medium: {
         badge: "常见调",
         description: "转到 G、D、F、Bb 等常见调。",
-        questions: [
-          q("Bb 的 1-6-2-5", "Bb 大调 1-6-2-5 七和弦是什么？", "和弦进行", "Bbmaj7 Gm7 Cm7 F7", ["Bbmaj7-Gm7-Cm7-F7"], "级数转调", ["Bb 大调音阶含 Bb、Eb。"], ["Bb 的 1-6-2-5 是 Bbmaj7 Gm7 Cm7 F7。"]),
-          q("D 的 ii-V-I", "D 大调 ii-V-I 是什么？", "和弦进行", "Em7 A7 Dmaj7", ["Em7-A7-Dmaj7"], "ii-V-I", ["D 大调 ii 是 E，V 是 A。"], ["D 大调 ii-V-I = Em7 A7 Dmaj7。"]),
-        ],
+        questions: buildProgressionQuestions(["G", "D", "F", "Bb"], ["1-6-2-5", "ii-V-I", "iii-vi-ii-V", "IV-iii-ii-I"]),
       },
       hard: {
         badge: "升降号较多的调",
         description: "练 A、E、Ab、Db 等更容易拼错的调。",
-        questions: [
-          q("A 的 1-6-2-5", "A 大调 1-6-2-5 七和弦是什么？", "和弦进行", "Amaj7 F#m7 Bm7 E7", ["Amaj7-F#m7-Bm7-E7"], "级数转调", ["A 大调有 F# C# G#。"], ["A 的 1-6-2-5 是 Amaj7 F#m7 Bm7 E7。"]),
-          q("Ab 的 ii-V-I", "Ab 大调 ii-V-I 是什么？", "和弦进行", "Bbm7 Eb7 Abmaj7", ["Bbm7-Eb7-Abmaj7"], "ii-V-I", ["Ab 大调 ii 是 Bb，V 是 Eb。"], ["Ab 大调 ii-V-I = Bbm7 Eb7 Abmaj7。"]),
-        ],
+        questions: buildProgressionQuestions(["A", "E", "B", "F#", "Eb", "Ab", "Db"], ["1-6-2-5", "ii-V-I", "iii-vi-ii-V", "IV-iii-ii-I"]),
       },
       hell: {
         badge: "反推调与级数",
         description: "给具体和弦，反推调和级数。",
-        questions: [
-          q("Amaj7 F#m7 Bm7 E7", "Amaj7 F#m7 Bm7 E7 是哪个调的什么级数进行？", "调与级数", "A大调 1-6-2-5", ["A 1-6-2-5", "A大调1-6-2-5"], "反推级数", ["看第一个大七和最后的 E7。"], ["这是 A 大调 1-6-2-5。"]),
-          q("Bbm7 Eb7 Abmaj7", "Bbm7 Eb7 Abmaj7 是哪个调的什么进行？", "调与级数", "Ab大调 ii-V-I", ["Ab ii-V-I", "Ab大调2-5-1"], "反推级数", ["Eb7 强烈指向 Abmaj7。"], ["这是 Ab 大调 ii-V-I。"]),
-        ],
+        questions: buildReverseProgressionQuestions(["C", "G", "D", "A", "E", "B", "F#", "F", "Bb", "Eb", "Ab", "Db"], ["1-6-2-5", "ii-V-I"]),
       },
     },
   },
@@ -322,7 +347,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "反推与关系小调",
         description: "给调号或关系小调，反推大调并保证拼写正确。",
         questions: [
-          q("A major 关系小调", "A major 的关系小调是什么？", "小调", "F# minor", ["F#m", "F#minor", "F#小调"], "关系大小调", ["大调第 6 级是关系小调。"], ["A major 的关系小调是 F# minor，不是 Gb minor。"]),
+          q("Eb major 关系小调", "Eb major 的关系小调是什么？", "小调", "C minor", ["Cm", "Cminor", "C小调"], "关系大小调", ["大调第 6 级是关系小调。"], ["Eb major 的关系小调是 C minor。"]),
           q("F# C# G#", "调号 F# C# G# 对应哪个大调？", "调", "A major", ["A", "A大调"], "调号反推", ["三个升号对应 A。"], ["F# C# G# 是 A major 的调号。"]),
         ],
       },
@@ -552,6 +577,197 @@ export function evaluateTheoryAnswer(question: TheoryQuestion, answer: string): 
     explanation: question.explanation,
     normalizedUserAnswer,
   };
+}
+
+function buildDiatonicDegreeQuestions(key: string, chordSize: "triad" | "seventh"): QuestionSeed[] {
+  return Array.from({ length: 7 }, (_, index) => {
+    const degree = index + 1;
+    const chord = getDiatonicChord(key, degree, chordSize);
+    const quality = chordSize === "triad" ? TRIAD_QUALITY_NAMES[index] : SEVENTH_QUALITY_NAMES[index];
+    const roman = chordSize === "triad" ? TRIAD_ROMANS[index] : SEVENTH_ROMANS[index];
+    const chordSizeName = chordSize === "triad" ? "三和弦" : "七和弦";
+    const formulaHint =
+      chordSize === "triad"
+        ? "三和弦口诀：一四六大三，二三六小三，七级减三。"
+        : "七和弦口诀：一四大七，二三六小七，五属七，七半减。";
+
+    return q(
+      `${degree}级${chordSizeName}`,
+      `${key} 大调 ${degree} 级${chordSizeName}是什么？`,
+      "和弦",
+      chord,
+      getChordAliases(chord),
+      `${chordSizeName}级数`,
+      [`${key} 大调音阶是 ${getMajorScale(key).join(" ")}。`, formulaHint],
+      [`${key} 大调 ${degree} 级是 ${getMajorScale(key)[index]}，${chordSizeName}质量是 ${quality}，所以答案是 ${chord}。标准罗马数字是 ${roman}。`],
+    );
+  });
+}
+
+function buildDiatonicReverseQuestions(key: string, chordSize: "triad" | "seventh"): QuestionSeed[] {
+  return Array.from({ length: 7 }, (_, index) => {
+    const degree = index + 1;
+    const chord = getDiatonicChord(key, degree, chordSize);
+    const quality = chordSize === "triad" ? TRIAD_QUALITY_NAMES[index] : SEVENTH_QUALITY_NAMES[index];
+    const roman = chordSize === "triad" ? TRIAD_ROMANS[index] : SEVENTH_ROMANS[index];
+    const chordSizeName = chordSize === "triad" ? "三和弦" : "七和弦";
+
+    return q(
+      `${chord} 级数`,
+      `${chord} 在 ${key} 大调里是几级${chordSizeName}？`,
+      "级数",
+      `${degree}级${quality}`,
+      [`${degree}`, `${degree}级`, toChineseDegree(degree), `${toChineseDegree(degree)}级`, roman],
+      "反推级数",
+      [`先写出 ${key} 大调音阶：${getMajorScale(key).join(" ")}。`, `${chord} 的根音是 ${getMajorScale(key)[index]}，对应第 ${degree} 级。`],
+      [`${chord} 是 ${key} 大调的 ${degree} 级${quality}${chordSizeName}，标准罗马数字是 ${roman}。`],
+    );
+  });
+}
+
+function buildProgressionQuestions(keys: string[], progressionIds: string[]): QuestionSeed[] {
+  return keys.flatMap((key) =>
+    getProgressions(progressionIds).map((progression) => {
+      const chords = progression.degrees.map((degree) => getDiatonicChord(key, degree, "seventh"));
+      const answer = chords.join(" ");
+
+      return q(
+        `${key} 的 ${progression.display}`,
+        `${key} 大调 ${progression.display} 七和弦是什么？`,
+        "和弦进行",
+        answer,
+        [chords.join("-"), chords.join(","), `${key} ${progression.display}`],
+        "级数转调",
+        [`${key} 大调音阶是 ${getMajorScale(key).join(" ")}。`, `${progression.display} 对应 ${progression.roman}。`],
+        [`${key} 大调 ${progression.display} = ${answer}。这就是把 ${progression.roman} 落到 ${key} 大调的真实和弦名。`],
+      );
+    }),
+  );
+}
+
+function buildReverseProgressionQuestions(keys: string[], progressionIds: string[]): QuestionSeed[] {
+  return keys.flatMap((key) =>
+    getProgressions(progressionIds).map((progression) => {
+      const chords = progression.degrees.map((degree) => getDiatonicChord(key, degree, "seventh"));
+      const answer = `${key}大调 ${progression.display}`;
+
+      return q(
+        chords.join(" "),
+        `${chords.join(" ")} 是哪个调的什么级数进行？`,
+        "调与级数",
+        answer,
+        [
+          `${key} ${progression.display}`,
+          `${key}大调${progression.display}`,
+          `${key} major ${progression.display}`,
+          `${key}大调 ${progression.roman}`,
+          ...getProgressionAliases(progression).flatMap((alias) => [`${key} ${alias}`, `${key}大调${alias}`]),
+        ],
+        "反推级数",
+        [`先看最后的解决目标或第一个大七和弦。`, `${chords.join(" ")} 对应 ${progression.roman}。`],
+        [`这是 ${key} 大调 ${progression.display}，也就是 ${progression.roman}。`],
+      );
+    }),
+  );
+}
+
+function buildProgressionMappingQuestion(): QuestionSeed {
+  return q(
+    "1-6-2-5 映射",
+    "在大调七和弦里，1-6-2-5 对应哪组罗马数字与和弦属性？",
+    "映射",
+    "Imaj7 vi7 ii7 V7",
+    ["Imaj7-vi7-ii7-V7", "Imaj7 vi7 ii7 V7"],
+    "数字级数与罗马数字",
+    ["1 是 Imaj7，6 是 vi7，2 是 ii7，5 是 V7。"],
+    ["1-6-2-5 不是另一套神秘体系；在大调七和弦里就是 Imaj7 - vi7 - ii7 - V7。"],
+  );
+}
+
+function getProgressions(ids: string[]) {
+  return MAJOR_PROGRESSIONS.filter((progression) => ids.includes(progression.id));
+}
+
+function getProgressionAliases(progression: (typeof MAJOR_PROGRESSIONS)[number]): string[] {
+  const numeric = progression.degrees.join("-");
+  const romanWithoutSevenths = progression.roman
+    .replace(/maj7/g, "")
+    .replace(/7/g, "")
+    .replace(/\s+/g, "-");
+
+  return Array.from(new Set([numeric, romanWithoutSevenths, progression.roman]));
+}
+
+function getDiatonicChord(key: string, degree: number, chordSize: "triad" | "seventh"): string {
+  const root = getMajorScale(key)[degree - 1];
+  const suffix = chordSize === "triad" ? TRIAD_SUFFIXES[degree - 1] : SEVENTH_SUFFIXES[degree - 1];
+  return `${root}${suffix}`;
+}
+
+function getMajorScale(key: string): string[] {
+  const root = parseNote(key);
+  const rootLetterIndex = NOTE_LETTERS.indexOf(root.letter);
+
+  return MAJOR_SCALE_INTERVALS.map((interval, index) => {
+    const letter = NOTE_LETTERS[(rootLetterIndex + index) % NOTE_LETTERS.length];
+    return spellPitchForLetter(letter, mod12(root.pitch + interval));
+  });
+}
+
+function getChordAliases(chord: string): string[] {
+  const match = chord.match(/^([A-G](?:#|b)*)(.*)$/);
+  if (!match) return [];
+
+  const [, root, suffix] = match;
+  const aliases: Record<string, string[]> = {
+    "": [`${root}maj`, `${root} major`],
+    m: [`${root}min`, `${root}-`, `${root} minor`],
+    dim: [`${root}°`, `${root} diminished`],
+    maj7: [`${root}M7`, `${root}△7`, `${root} major7`],
+    m7: [`${root}min7`, `${root}-7`, `${root} minor7`],
+    "7": [`${root}dom7`, `${root} dominant7`],
+    m7b5: [`${root}ø7`, `${root}min7b5`, `${root}-7b5`, `${root} half diminished`],
+  };
+
+  return aliases[suffix] ?? [];
+}
+
+function toChineseDegree(degree: number): string {
+  return ["一", "二", "三", "四", "五", "六", "七"][degree - 1] ?? String(degree);
+}
+
+function parseNote(note: string): { letter: string; pitch: number } {
+  const normalized = note.trim().replace(/♯/g, "#").replace(/♭/g, "b");
+  const letter = normalized.charAt(0).toUpperCase();
+  const offset = normalized
+    .slice(1)
+    .split("")
+    .reduce((sum, accidental) => {
+      if (accidental === "#") return sum + 1;
+      if (accidental === "b") return sum - 1;
+      return sum;
+    }, 0);
+
+  return {
+    letter,
+    pitch: mod12(NATURAL_PITCH[letter] + offset),
+  };
+}
+
+function spellPitchForLetter(letter: string, targetPitch: number): string {
+  const naturalPitch = NATURAL_PITCH[letter];
+  let diff = targetPitch - naturalPitch;
+
+  while (diff > 6) diff -= 12;
+  while (diff < -6) diff += 12;
+
+  if (diff === 0) return letter;
+  if (diff > 0) return `${letter}${"#".repeat(diff)}`;
+  return `${letter}${"b".repeat(Math.abs(diff))}`;
+}
+
+function mod12(value: number): number {
+  return ((value % 12) + 12) % 12;
 }
 
 function q(

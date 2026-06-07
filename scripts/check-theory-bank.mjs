@@ -36,6 +36,8 @@ const requiredSnippets = [
   ["difficultyId === \"hard\"", "音程困难档应只要求完整音程名，降低四字段填写摩擦"],
   ["Cdim7", "和弦标记题应区分减七和半减七"],
   ["Cadd9", "和弦标记题应区分 add9 与属九"],
+  ["C6", "和弦标记题应区分 6 和 13 的语境"],
+  ["Csus2", "和弦标记题应覆盖 sus2"],
   ["最后一个升号", "调号题应包含升号调经典速算法"],
   ["倒数第二个降号", "调号题应包含降号调经典速算法"],
   ["A小调 v7", "小调功能题应对比自然小调 v7 与和声小调 V7"],
@@ -44,6 +46,8 @@ const requiredSnippets = [
   ["RhythmStepSequencer", "16 分 pattern 题应使用点击式 step sequencer"],
   ["6+6+4", "节奏题应覆盖 3+3+3+3+4 以外的分组"],
   ["起点偏移", "节奏题应覆盖重音起点偏移"],
+  ["buildDiatonicDegreeQuestions", "顺阶和弦题库应由级数生成，避免手写小题池"],
+  ["buildProgressionQuestions", "级数转调题库应由 key + progression 参数化生成"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {
