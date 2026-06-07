@@ -1,4 +1,4 @@
-import { QuizStats } from "../types/quiz";
+import type { QuizStats } from "../types/quiz";
 
 export const REVIEW_DRAW_RATE = 0.65;
 export const SHOWN_QUESTION_MEMORY_LIMIT = 5;

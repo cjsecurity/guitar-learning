@@ -1,4 +1,5 @@
-import { QuestionPickOptions, normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+import { normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+import type { QuestionPickOptions } from "./reviewQueue";
 
 export type TheoryDifficultyId = "easy" | "medium" | "hard" | "hell";
 

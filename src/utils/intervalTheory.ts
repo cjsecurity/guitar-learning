@@ -1,4 +1,5 @@
-import { QuestionPickOptions, normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+import { normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+import type { QuestionPickOptions } from "./reviewQueue";
 
 export type IntervalDifficultyId = "easy" | "medium" | "hard" | "hell";
 export type IntervalQuestionMode = "identify" | "spell";

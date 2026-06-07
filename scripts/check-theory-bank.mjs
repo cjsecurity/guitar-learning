@@ -1,4 +1,7 @@
 import { readFileSync } from "node:fs";
+import { register } from "node:module";
+
+register("./ts-extension-loader.mjs", import.meta.url);
 
 const files = {
   courseTheory: readFileSync("src/utils/courseTheory.ts", "utf8"),
@@ -198,6 +201,8 @@ for (const [pattern, label] of requiredRhythmPatterns) {
   }
 }
 
+await runRuntimeTheoryChecks();
+
 if (failures.length > 0) {
   console.error("乐理题库自检未通过：");
   for (const failure of failures) {
@@ -207,3 +212,67 @@ if (failures.length > 0) {
 }
 
 console.log("乐理题库自检通过。");
+
+async function runRuntimeTheoryChecks() {
+  try {
+    const [musicTheory, intervalTheory, courseTheory] = await Promise.all([
+      import("../src/utils/musicTheory.ts"),
+      import("../src/utils/intervalTheory.ts"),
+      import("../src/utils/courseTheory.ts"),
+    ]);
+
+    const dSharpMaj9 = musicTheory.buildQuestion("D#", "maj9");
+    const dSharpMaj9Notes = musicTheory.getChordNotes(dSharpMaj9).join(" ");
+    assertRuntime(dSharpMaj9Notes === "D# F## A# C## E#", `D#maj9 应严格拼写为 D# F## A# C## E#，当前为 ${dSharpMaj9Notes}`);
+    assertRuntime(
+      musicTheory.buildHint(dSharpMaj9).some((line) => line.includes("Ebmaj9")),
+      "D#maj9 出现双升时应提示实际谱面常可写作 Ebmaj9",
+    );
+
+    const dMajor = musicTheory.buildQuestion("D", "maj");
+    assertRuntime(
+      musicTheory.evaluateAnswer(dMajor, "D F A", "D F# A", false).isFullyCorrect,
+      "D 大三和弦按 1-3-5 顺序写 D F# A 应判为正确",
+    );
+    assertRuntime(
+      !musicTheory.evaluateAnswer(dMajor, "D F A", "F# A D", false).isFullyCorrect,
+      "和弦音构成题应保持 1-3-5 顺序，不应把转位顺序 F# A D 判为全对",
+    );
+
+    const majorSixth = intervalTheory.INTERVALS.find((interval) => interval.id === "M6");
+    const octave = intervalTheory.INTERVALS.find((interval) => interval.id === "P8");
+    assertRuntime(Boolean(majorSixth && octave), "音程定义应包含 M6 与 P8");
+    const [fRoot, upperD] = intervalTheory.getIntervalAudioFrequencies("F", majorSixth);
+    assertRuntime(isCloseRatio(upperD / fRoot, 2 ** (9 / 12)), `F -> D 的音频应播放向上大六度，当前频率比为 ${upperD / fRoot}`);
+    const [cRoot, highC] = intervalTheory.getIntervalAudioFrequencies("C", octave);
+    assertRuntime(isCloseRatio(highC / cRoot, 2), `八度音频应播放同音名高一组，当前频率比为 ${highC / cRoot}`);
+
+    const diatonicHell = courseTheory.getTheoryDifficulty("diatonic-chords", "hell");
+    const secondaryDominant = diatonicHell.questions.find((question) => question.label === "Bm7b5-E7-Am7");
+    assertRuntime(Boolean(secondaryDominant), "顺阶和弦综合档应包含 Bm7b5-E7-Am7");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(secondaryDominant, "viio7 V7/vi vi7").isFullyCorrect,
+      "Bm7b5-E7-Am7 应接受 viio7 V7/vi vi7 这种可打字写法",
+    );
+
+    const fretboardHell = courseTheory.getTheoryDifficulty("fretboard-root", "hell");
+    const cmaj7Root = fretboardHell.questions.find((question) => question.label === "Cmaj7 六弦系统");
+    assertRuntime(Boolean(cmaj7Root), "指板根音综合档应包含 Cmaj7 六弦系统");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(cmaj7Root, "六弦八品拍六弦").isFullyCorrect,
+      "指板根音题应接受全中文数字输入：六弦八品拍六弦",
+    );
+  } catch (error) {
+    failures.push(`运行时乐理自检无法执行：${error.message}`);
+  }
+}
+
+function assertRuntime(condition, message) {
+  if (!condition) {
+    failures.push(message);
+  }
+}
+
+function isCloseRatio(actual, expected) {
+  return Math.abs(actual - expected) < 0.000001;
+}
