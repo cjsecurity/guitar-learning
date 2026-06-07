@@ -8,9 +8,11 @@ import {
   IntervalQuestion,
   createRandomIntervalQuestion,
 } from "../utils/intervalTheory";
+import { getKnowledgeCard } from "../utils/knowledgeCards";
 import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { IntervalQuizCard } from "./IntervalQuizCard";
+import { KnowledgeCard } from "./KnowledgeCard";
 import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 
@@ -62,6 +64,8 @@ export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetSta
             </button>
           </div>
         </header>
+
+        <KnowledgeCard card={getKnowledgeCard("interval")} />
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <IntervalQuizCard

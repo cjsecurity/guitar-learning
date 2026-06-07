@@ -7,6 +7,8 @@ const files = {
   audioEngine: readFileSync("src/utils/audioEngine.ts", "utf8"),
   app: readFileSync("src/App.tsx", "utf8"),
   quizTypes: readFileSync("src/types/quiz.ts", "utf8"),
+  knowledgeCards: readFileSync("src/utils/knowledgeCards.ts", "utf8"),
+  knowledgeCardComponent: readFileSync("src/components/KnowledgeCard.tsx", "utf8"),
   rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
   minorFunctionAudioPanel: readFileSync("src/components/MinorFunctionAudioPanel.tsx", "utf8"),
   pentatonicBoxDiagram: readFileSync("src/components/PentatonicBoxDiagram.tsx", "utf8"),
@@ -71,11 +73,37 @@ const requiredSnippets = [
   ["timedAnswers", "平均用时应只统计已有秒表记录的答题"],
   ["normalizeLoadedStats", "旧 localStorage 统计应能迁移到含用时字段的新结构"],
   ["bestResponseSeconds", "统计模块应保留最快速答"],
+  ["KnowledgeCard", "每个章节进入测验前应有 30 秒知识卡"],
+  ["knowledge-card-toggle", "知识卡折叠按钮需要稳定测试定位"],
+  ["30 秒知识卡", "知识卡标题需要明确它是进测验前的快速规则预习"],
+  ["getKnowledgeCard", "答题页应通过统一入口读取章节知识卡"],
+  ["selfCheck", "知识卡应包含过关自查标准"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {
   if (!source.includes(snippet)) {
     failures.push(`缺少关键审校片段“${snippet}”：${reason}`);
+  }
+}
+
+const requiredKnowledgeCards = [
+  "interval",
+  "chord",
+  "fretboard-root",
+  "diatonic-chords",
+  "chord-symbols",
+  "extensions-omissions",
+  "progression-transpose",
+  "key-signatures",
+  "relative-pentatonic",
+  "minor-function",
+  "borrowed-chords",
+  "rhythm-grid",
+];
+
+for (const chapterId of requiredKnowledgeCards) {
+  if (!files.knowledgeCards.includes(`chapterId: "${chapterId}"`)) {
+    failures.push(`缺少章节 ${chapterId} 的 30 秒知识卡`);
   }
 }
 

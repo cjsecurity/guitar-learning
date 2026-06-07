@@ -1,9 +1,11 @@
 import { ArrowLeft, Home, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { QuizHistoryItem, QuizStats } from "../types/quiz";
+import { getKnowledgeCard } from "../utils/knowledgeCards";
 import { CHORD_CHAPTER, DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
 import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
+import { KnowledgeCard } from "./KnowledgeCard";
 import { QuizCard } from "./QuizCard";
 import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
@@ -56,6 +58,8 @@ export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBa
             </button>
           </div>
         </header>
+
+        <KnowledgeCard card={getKnowledgeCard("chord")} />
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <QuizCard

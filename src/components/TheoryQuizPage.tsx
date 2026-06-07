@@ -2,8 +2,10 @@ import { ArrowLeft, Home, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { QuizStats } from "../types/quiz";
 import { TheoryChapter, TheoryDifficultyConfig, TheoryEvaluationResult, TheoryQuestion, createRandomTheoryQuestion } from "../utils/courseTheory";
+import { getKnowledgeCard } from "../utils/knowledgeCards";
 import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
+import { KnowledgeCard } from "./KnowledgeCard";
 import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 import { TheoryQuizCard } from "./TheoryQuizCard";
@@ -57,6 +59,8 @@ export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onR
             </button>
           </div>
         </header>
+
+        <KnowledgeCard card={getKnowledgeCard(chapter.id)} />
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <TheoryQuizCard
