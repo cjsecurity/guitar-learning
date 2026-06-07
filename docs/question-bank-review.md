@@ -54,10 +54,10 @@
 | G、D、F、Bb 的四类进行 | 常见调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
 | A、E、B、F#、Eb、Ab、Db 的四类进行 | 带升降号调转调 | 通过，由 `buildProgressionQuestions` 参数化生成 |
 | 12 个常用拼写大调的 1-6-2-5 / ii-V-I 反推 | 和弦反推调与级数 | 通过，由 `buildReverseProgressionQuestions` 参数化生成 |
-| G major 调号 / Bb major 调号 / 五度圈相邻升号调 | 五度圈与基础调号 | 通过，提示包含“最后一个升号+半音=调名”和“倒数第二个降号=调名”，题卡提供五度圈速查图 |
-| A major 调号 / Ab major 调号 | 中等调号 | 通过 |
-| B major 调号 / Db major 调号 | 复杂调号 | 通过 |
-| Eb major 关系小调 / F# C# G# | 关系小调与调号反推 | 通过，避免和关系大小调章节重复使用 A major 关系小调 |
+| C/G/D/F/Bb 调号 + 五度圈相邻调 | 基础调号与五度圈方向 | 通过，由 `buildKeySignatureQuestions` 与 `buildCircleNeighborQuestions` 参数化生成，题卡提供五度圈速查图 |
+| A/E/Eb/Ab 调号与反推 | 中等调号 | 通过，由标准调号表生成，提示包含“最后一个升号+半音=调名”和“倒数第二个降号=调名” |
+| B/F#/C#/Db/Gb/Cb 调号与反推 | 复杂调号 | 通过，覆盖升号多、降号多的大调拼写 |
+| C/G/D/F/Bb/Eb/A/E/Ab/Db 关系小调 + 12 个常用调号反推 | 关系小调与调号反推 | 通过，由 `buildRelativeMinorQuestions` 与 `buildReverseKeySignatureQuestions` 参数化生成 |
 | G 的关系小调 / E minor 关系大调 | 关系大小调 | 通过 |
 | E 小调五声 / G 大调五声 | 小调五声与大调五声公式 | 通过，题卡提供 E minor / G major 共用五声盒子 |
 | A 的关系小调 / Bb 大调五声 | 带升降号调的关系小调与五声音阶 | 通过，Bb 大调五声题卡连接 G minor / Bb major 共用盒子 |
@@ -87,6 +87,6 @@
 - 额外节奏 pattern 如 `3+3+2+3+3+2`、`6+6+4`、起点偏移必须保持 16 格。
 - 节奏 pattern 题必须保留 16 步点击网格、播放能力与跟拍检测。
 - 标准副属和弦、导音减七、同主音借用、纯四度说明、罗马数字大小写保护必须存在。
-- 顺阶和弦、级数转调必须保留参数化生成函数，避免回到静态小题池。
+- 顺阶和弦、级数转调、调号与五度圈必须保留参数化生成函数，避免回到静态小题池。
 - 小调功能章节必须保留 v7/V7/vii°7 到 i 的音频对比。
 - 关系大小调五声题必须保留共用五声盒子指板图，帮助学生把中心感落到吉他指板。

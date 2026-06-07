@@ -87,6 +87,36 @@ const MAJOR_PROGRESSIONS = [
   { id: "IV-iii-ii-I", display: "IV-iii-ii-I", degrees: [4, 3, 2, 1], roman: "IVmaj7 iii7 ii7 Imaj7" },
 ];
 
+type KeySignatureKind = "none" | "sharp" | "flat";
+
+interface KeySignatureDefinition {
+  key: string;
+  accidentals: string[];
+  kind: KeySignatureKind;
+  relativeMinor: string;
+}
+
+const SHARP_KEY_ORDER = ["C", "G", "D", "A", "E", "B", "F#", "C#"];
+const FLAT_KEY_ORDER = ["C", "F", "Bb", "Eb", "Ab", "Db", "Gb", "Cb"];
+
+const KEY_SIGNATURES: KeySignatureDefinition[] = [
+  { key: "C", accidentals: [], kind: "none", relativeMinor: "A minor" },
+  { key: "G", accidentals: ["F#"], kind: "sharp", relativeMinor: "E minor" },
+  { key: "D", accidentals: ["F#", "C#"], kind: "sharp", relativeMinor: "B minor" },
+  { key: "A", accidentals: ["F#", "C#", "G#"], kind: "sharp", relativeMinor: "F# minor" },
+  { key: "E", accidentals: ["F#", "C#", "G#", "D#"], kind: "sharp", relativeMinor: "C# minor" },
+  { key: "B", accidentals: ["F#", "C#", "G#", "D#", "A#"], kind: "sharp", relativeMinor: "G# minor" },
+  { key: "F#", accidentals: ["F#", "C#", "G#", "D#", "A#", "E#"], kind: "sharp", relativeMinor: "D# minor" },
+  { key: "C#", accidentals: ["F#", "C#", "G#", "D#", "A#", "E#", "B#"], kind: "sharp", relativeMinor: "A# minor" },
+  { key: "F", accidentals: ["Bb"], kind: "flat", relativeMinor: "D minor" },
+  { key: "Bb", accidentals: ["Bb", "Eb"], kind: "flat", relativeMinor: "G minor" },
+  { key: "Eb", accidentals: ["Bb", "Eb", "Ab"], kind: "flat", relativeMinor: "C minor" },
+  { key: "Ab", accidentals: ["Bb", "Eb", "Ab", "Db"], kind: "flat", relativeMinor: "F minor" },
+  { key: "Db", accidentals: ["Bb", "Eb", "Ab", "Db", "Gb"], kind: "flat", relativeMinor: "Bb minor" },
+  { key: "Gb", accidentals: ["Bb", "Eb", "Ab", "Db", "Gb", "Cb"], kind: "flat", relativeMinor: "Eb minor" },
+  { key: "Cb", accidentals: ["Bb", "Eb", "Ab", "Db", "Gb", "Cb", "Fb"], kind: "flat", relativeMinor: "Ab minor" },
+];
+
 const DIATONIC_SPECIAL_QUESTIONS = [
   q(
     "Bm7b5-E7-Am7",
@@ -324,33 +354,37 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "基础调号",
         description: "C、G、D、F、Bb 等入门调。",
         questions: [
-          q("G major 调号", "G major 有哪些升号？", "调号", "F#", ["F♯", "升F", "一个升号F#"], "升号调", ["升号顺序从 F 开始；最后一个升号 F# 往上半音就是 G。"], ["G major 是 1 个升号：F#。升号调反推时，用“最后一个升号 + 半音 = 调名”。"]),
-          q("Bb major 调号", "Bb major 有哪些降号？", "调号", "Bb Eb", ["Bb,Eb", "B♭ E♭", "降B降E"], "降号调", ["降号顺序 B E A D G C F；两个以上降号时，倒数第二个降号就是调名。"], ["Bb major 有两个降号：Bb Eb。降号调反推时，倒数第二个降号 Bb 就是调名。"]),
-          q("五度圈相邻升号调", "五度圈上 C 往顺时针走一个调是什么？", "调", "G major", ["G", "G大调"], "五度圈相邻调", ["顺时针每走一步多一个升号。"], ["五度圈顺时针从 C 到 G，G major 有 1 个升号。"]),
+          ...buildKeySignatureQuestions(["C", "G", "D", "F", "Bb"]),
+          ...buildCircleNeighborQuestions(["C", "G"], "sharp"),
+          ...buildCircleNeighborQuestions(["C", "F"], "flat"),
         ],
       },
       medium: {
         badge: "中等调号",
         description: "A、E、Eb、Ab 等常见但更容易错的调。",
         questions: [
-          q("A major 调号", "A major 有哪些升号？", "调号", "F# C# G#", ["F# C# G#", "F♯ C♯ G♯"], "升号调", ["A major 的最后一个升号是 G#；G# 往上半音就是 A。"], ["A major 有 F# C# G#。"]),
-          q("Ab major 调号", "Ab major 有哪些降号？", "调号", "Bb Eb Ab Db", ["Bb Eb Ab Db", "B♭ E♭ A♭ D♭"], "降号调", ["Ab major 的调号到 Db 为止；倒数第二个降号 Ab 就是调名。"], ["Ab major 有 Bb Eb Ab Db。"]),
+          ...buildKeySignatureQuestions(["A", "E", "Eb", "Ab"]),
+          ...buildReverseKeySignatureQuestions(["A", "E", "Eb", "Ab"]),
+          ...buildCircleNeighborQuestions(["D", "A"], "sharp"),
+          ...buildCircleNeighborQuestions(["Bb", "Eb"], "flat"),
         ],
       },
       hard: {
         badge: "复杂调号",
         description: "B、F#、Db、Gb 等升降号较多的调。",
         questions: [
-          q("B major 调号", "B major 有哪些升号？", "调号", "F# C# G# D# A#", ["F# C# G# D# A#"], "升号调", ["最后一个升号 A# 往上半音是 B。"], ["B major 有 F# C# G# D# A#。"]),
-          q("Db major 调号", "Db major 有哪些降号？", "调号", "Bb Eb Ab Db Gb", ["Bb Eb Ab Db Gb"], "降号调", ["倒数第二个降号 Db 就是调名。"], ["Db major 有 Bb Eb Ab Db Gb。"]),
+          ...buildKeySignatureQuestions(["B", "F#", "C#", "Db", "Gb", "Cb"]),
+          ...buildReverseKeySignatureQuestions(["B", "F#", "Db", "Gb"]),
+          ...buildCircleNeighborQuestions(["E", "B"], "sharp"),
+          ...buildCircleNeighborQuestions(["Ab", "Db"], "flat"),
         ],
       },
       hell: {
         badge: "反推与关系小调",
         description: "给调号或关系小调，反推大调并保证拼写正确。",
         questions: [
-          q("Eb major 关系小调", "Eb major 的关系小调是什么？", "小调", "C minor", ["Cm", "Cminor", "C小调"], "关系大小调", ["大调第 6 级是关系小调。"], ["Eb major 的关系小调是 C minor。"]),
-          q("F# C# G#", "调号 F# C# G# 对应哪个大调？", "调", "A major", ["A", "A大调"], "调号反推", ["三个升号对应 A。"], ["F# C# G# 是 A major 的调号。"]),
+          ...buildRelativeMinorQuestions(["C", "G", "D", "F", "Bb", "Eb", "A", "E", "Ab", "Db"]),
+          ...buildReverseKeySignatureQuestions(["C", "D", "A", "E", "F", "Bb", "Eb", "Ab", "Db", "B", "F#", "Gb"]),
         ],
       },
     },
@@ -680,6 +714,164 @@ function buildProgressionMappingQuestion(): QuestionSeed {
     ["1 是 Imaj7，6 是 vi7，2 是 ii7，5 是 V7。"],
     ["1-6-2-5 不是另一套神秘体系；在大调七和弦里就是 Imaj7 - vi7 - ii7 - V7。"],
   );
+}
+
+function buildKeySignatureQuestions(keys: string[]): QuestionSeed[] {
+  return keys.map((key) => {
+    const signature = getKeySignature(key);
+    const expected = formatAccidentals(signature);
+    const typeLabel = signature.kind === "sharp" ? "升号调" : signature.kind === "flat" ? "降号调" : "无升降号调";
+
+    return q(
+      `${key} major 调号`,
+      `${key} major 的调号是什么？`,
+      "调号",
+      expected,
+      getAccidentalAliases(signature),
+      typeLabel,
+      getKeySignatureHint(signature),
+      getKeySignatureExplanation(signature),
+    );
+  });
+}
+
+function buildReverseKeySignatureQuestions(keys: string[]): QuestionSeed[] {
+  return keys.map((key) => {
+    const signature = getKeySignature(key);
+    const accidentals = formatAccidentals(signature);
+
+    return q(
+      `${accidentals} -> major`,
+      `调号 ${accidentals} 对应哪个大调？`,
+      "调",
+      `${key} major`,
+      [key, `${key}大调`],
+      "调号反推",
+      getKeySignatureReverseHint(signature),
+      [`${accidentals} 是 ${key} major 的调号。${getKeySignatureRuleText(signature)}`],
+    );
+  });
+}
+
+function buildCircleNeighborQuestions(keys: string[], direction: "sharp" | "flat"): QuestionSeed[] {
+  const order = direction === "sharp" ? SHARP_KEY_ORDER : FLAT_KEY_ORDER;
+  const directionText = direction === "sharp" ? "顺时针" : "逆时针";
+  const typeLabel = direction === "sharp" ? "五度圈相邻升号调" : "五度圈相邻降号调";
+
+  return keys
+    .map((key) => {
+      const index = order.indexOf(key);
+      const nextKey = order[index + 1];
+
+      if (index < 0 || !nextKey) {
+        return null;
+      }
+
+      return q(
+        `五度圈 ${key} -> ${nextKey}`,
+        `五度圈上 ${key} major 往${directionText}走一个调是什么？`,
+        "调",
+        `${nextKey} major`,
+        [nextKey, `${nextKey}大调`],
+        typeLabel,
+        [direction === "sharp" ? "顺时针每走一步多一个升号。" : "逆时针每走一步多一个降号。"],
+        [`五度圈${directionText}从 ${key} 到 ${nextKey}，所以答案是 ${nextKey} major。`],
+      );
+    })
+    .filter((question): question is QuestionSeed => Boolean(question));
+}
+
+function buildRelativeMinorQuestions(keys: string[]): QuestionSeed[] {
+  return keys.map((key) => {
+    const signature = getKeySignature(key);
+    const minorRoot = signature.relativeMinor.replace(" minor", "");
+
+    return q(
+      `${key} major 关系小调`,
+      `${key} major 的关系小调是什么？`,
+      "小调",
+      signature.relativeMinor,
+      [`${minorRoot}m`, `${minorRoot}minor`, `${minorRoot}小调`],
+      "关系大小调",
+      ["大调第 6 级是关系小调；关系大小调共用同一组调号。"],
+      [`${key} major 的关系小调是 ${signature.relativeMinor}，它们共用 ${formatAccidentals(signature)} 这组调号。`],
+    );
+  });
+}
+
+function getKeySignature(key: string): KeySignatureDefinition {
+  const signature = KEY_SIGNATURES.find((item) => item.key === key);
+
+  if (!signature) {
+    throw new Error(`Unsupported key signature: ${key}`);
+  }
+
+  return signature;
+}
+
+function formatAccidentals(signature: KeySignatureDefinition): string {
+  return signature.accidentals.length > 0 ? signature.accidentals.join(" ") : "无升降号";
+}
+
+function getAccidentalAliases(signature: KeySignatureDefinition): string[] {
+  if (signature.accidentals.length === 0) {
+    return ["无", "没有", "0", "none"];
+  }
+
+  const accidentals = signature.accidentals.join(" ");
+  return [
+    accidentals,
+    accidentals.replace(/#/g, "♯").replace(/b/g, "♭"),
+    accidentals.replace(/\s+/g, ","),
+  ];
+}
+
+function getKeySignatureHint(signature: KeySignatureDefinition): string[] {
+  if (signature.kind === "none") {
+    return ["C major 是五度圈中心，没有升号也没有降号。"];
+  }
+
+  if (signature.kind === "sharp") {
+    const lastSharp = signature.accidentals[signature.accidentals.length - 1];
+    return [`升号顺序是 F C G D A E B；${signature.key} major 的最后一个升号是 ${lastSharp}，${lastSharp} 往上半音就是 ${signature.key}。`];
+  }
+
+  if (signature.accidentals.length === 1) {
+    return ["F major 只有一个降号 Bb；倒数第二个降号规则从两个以上降号开始用。"];
+  }
+
+  const secondLastFlat = signature.accidentals[signature.accidentals.length - 2];
+  return [`降号顺序是 B E A D G C F；两个以上降号时，倒数第二个降号 ${secondLastFlat} 就是调名。`];
+}
+
+function getKeySignatureReverseHint(signature: KeySignatureDefinition): string[] {
+  if (signature.kind === "none") {
+    return ["没有升降号时，对应 C major 或 A minor；本题问大调，所以是 C major。"];
+  }
+
+  return [getKeySignatureRuleText(signature)];
+}
+
+function getKeySignatureExplanation(signature: KeySignatureDefinition): string[] {
+  return [`${signature.key} major 的调号是 ${formatAccidentals(signature)}。${getKeySignatureRuleText(signature)}`];
+}
+
+function getKeySignatureRuleText(signature: KeySignatureDefinition): string {
+  if (signature.kind === "none") {
+    return "C major 位于五度圈中心，没有升降号。";
+  }
+
+  if (signature.kind === "sharp") {
+    const lastSharp = signature.accidentals[signature.accidentals.length - 1];
+    return `升号调反推时，用“最后一个升号 + 半音 = 调名”：${lastSharp} 上行半音到 ${signature.key}。`;
+  }
+
+  if (signature.accidentals.length === 1) {
+    return "F major 是一个特殊基础调，只有 Bb 这一个降号。";
+  }
+
+  const secondLastFlat = signature.accidentals[signature.accidentals.length - 2];
+  return `降号调反推时，倒数第二个降号 = 调名：${secondLastFlat} 就是 ${signature.key}。`;
 }
 
 function getProgressions(ids: string[]) {
