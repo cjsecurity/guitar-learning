@@ -1,5 +1,6 @@
 import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
 import { CHORD_CHAPTER, DIFFICULTIES, DifficultyConfig, DifficultyId } from "../utils/musicTheory";
+import { PassScopePanel } from "./PassScopePanel";
 
 interface DifficultySelectProps {
   onBackHome: () => void;
@@ -29,6 +30,8 @@ export function DifficultySelect({ onBackHome, onSelect }: DifficultySelectProps
             建议从简单开始。真正的目标不是背答案，而是让“根音 → 字母骨架 → 公式变化”变成稳定反应。
           </p>
         </header>
+
+        <PassScopePanel scopeId={CHORD_CHAPTER.id} />
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {DIFFICULTIES.map((difficulty) => (

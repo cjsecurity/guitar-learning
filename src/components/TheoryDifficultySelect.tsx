@@ -1,5 +1,6 @@
 import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
 import { TheoryChapter, TheoryDifficultyId } from "../utils/courseTheory";
+import { PassScopePanel } from "./PassScopePanel";
 
 interface TheoryDifficultySelectProps {
   chapter: TheoryChapter;
@@ -30,6 +31,8 @@ export function TheoryDifficultySelect({ chapter, onBackHome, onSelect }: Theory
             {chapter.description} 对应课程：{chapter.lessonRefs}。
           </p>
         </header>
+
+        <PassScopePanel scopeId={chapter.id} />
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {chapter.difficulties.map((difficulty) => {

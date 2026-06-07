@@ -1,5 +1,6 @@
 import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
 import { INTERVAL_CHAPTER, INTERVAL_DIFFICULTIES, IntervalDifficultyConfig, IntervalDifficultyId } from "../utils/intervalTheory";
+import { PassScopePanel } from "./PassScopePanel";
 
 interface IntervalDifficultySelectProps {
   onBackHome: () => void;
@@ -29,6 +30,8 @@ export function IntervalDifficultySelect({ onBackHome, onSelect }: IntervalDiffi
             建议先把 C 根音练熟。音程练习的顺序是：度数看字母，性质看半音，最后分清完全协和、不完全协和与不协和。
           </p>
         </header>
+
+        <PassScopePanel scopeId={INTERVAL_CHAPTER.id} />
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {INTERVAL_DIFFICULTIES.map((difficulty) => (
