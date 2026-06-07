@@ -409,8 +409,8 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "C minor 借用",
         description: "识别 bIIImaj7、bVImaj7、bVII7。",
         questions: [
-          q("bIIImaj7", "C minor 借来的 bIIImaj7 是哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "借用级数", ["C 的 b3 是 Eb。"], ["C minor 的 bIIImaj7 是 Ebmaj7。"]),
-          q("bVImaj7", "C minor 借来的 bVImaj7 是哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "借用级数", ["C 的 b6 是 Ab。"], ["C minor 的 bVImaj7 是 Abmaj7。"]),
+          q("bIIImaj7", "C major 从同主音 C minor 借来的 bIIImaj7 是哪个和弦？", "和弦", "Ebmaj7", ["Eb△7", "EbM7"], "借用级数", ["从 C major 看，b3 是 Eb。"], ["C major 从 C minor 借来的 bIIImaj7 是 Ebmaj7。"]),
+          q("bVImaj7", "C major 从同主音 C minor 借来的 bVImaj7 是哪个和弦？", "和弦", "Abmaj7", ["Ab△7", "AbM7"], "借用级数", ["从 C major 看，b6 是 Ab。"], ["C major 从 C minor 借来的 bVImaj7 是 Abmaj7。"]),
         ],
       },
       hard: {
@@ -449,7 +449,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "重音位置判断",
         description: "给 pattern，判断是否是三个十六分音符一组的重音移位。",
         questions: [
-          q("X..X..X..X....", "X..X..X..X.... 表示哪种分组？", "分组", "3+3+3+3+4", ["3 3 3 3 4", "三三三三四"], "重音移位", ["每个 X 后面两个点，前四组都是 3。"], ["这是 3+3+3+3+4。"]),
+          q("X..X..X..X..X...", "X..X..X..X..X... 表示哪种 16 格重音分组？", "分组", "3+3+3+3+4", ["3 3 3 3 4", "三三三三四"], "重音移位", ["前四组都是 X..，每组 3 个十六分格；最后一组 X...，共 4 个十六分格。"], ["X..X..X..X..X... 一共 16 格，对应 3+3+3+3+4。"]),
           q("三个十六分一组", "课堂里的“三个十六分音符一组”是三连音吗？", "判断", "不是", ["否", "不是三连音"], "概念区分", ["它是在 16 分网格里每三个格子一组。"], ["这里不是三连音，而是在十六分音符网格中做 3+3+3+3+4 的重音移位。"], ["是", "不是"]),
         ],
       },
@@ -457,7 +457,7 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "排 16 格",
         description: "用文本排出一小节重音网格。",
         questions: [
-          q("排出 3+3+3+3+4", "用 X 和 . 写出 3+3+3+3+4 的 16 格重音 pattern。", "pattern", "X..X..X..X....", ["X..X..X..X....", "X.. X.. X.. X...."], "网格输入", ["X 是重音，. 是经过的 16 分格。"], ["3+3+3+3+4 可写成 X..X..X..X....。"]),
+          q("排出 3+3+3+3+4", "用 X 和 . 写出 3+3+3+3+4 的 16 格重音 pattern。", "pattern", "X..X..X..X..X...", ["X..X..X..X..X...", "X.. X.. X.. X.. X..."], "网格输入", ["X 是重音，. 是经过的 16 分格。"], ["3+3+3+3+4 可写成 X..X..X..X..X...，总长度正好 16 格。"]),
         ],
       },
       hell: {

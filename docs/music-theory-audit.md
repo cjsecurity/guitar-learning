@@ -2,6 +2,25 @@
 
 本项目题库优先使用正统乐理术语，课堂口语只作为辅助解释，不作为标准答案名称。
 
+主要外部审校依据：
+
+- Open Music Theory: Intervals and dyads  
+  https://open-musictheory.github.io/docs/fundamentals/intervals/
+- Open Music Theory: Roman Numerals and SATB Chord Construction  
+  https://pressbooks.nebraska.edu/openmusictheory/chapter/roman-numerals/
+- Open Music Theory: Seventh Chords  
+  https://viva.pressbooks.pub/openmusictheory/chapter/seventh-chords/
+- Open Music Theory: Chord Symbols  
+  https://viva.pressbooks.pub/openmusictheory/chapter/chord-symbols/
+- Open Music Theory: Applied Chords  
+  https://viva.pressbooks.pub/openmusictheorycopy/chapter/applied-chords/
+- Open Music Theory: Key Signatures  
+  https://openmusictheory.github.io/keySignatures.html
+- Open Music Theory: Modal Mixture  
+  https://openmusictheory.github.io/modalMixture.html
+
+课程内部依据来自 7 节课历史记录；若课堂口语与正统术语并存，页面标准答案采用正统术语，解释区再补课堂语境。
+
 ## 音程
 
 - 音程度数先看字母/谱表位置，升降号不改变“几度”。
@@ -46,4 +65,5 @@
 ## 节奏
 
 - `3+3+3+3+4` 描述的是十六分音符网格中的重音移位，不是三连音。
+- 正确 16 格文本 pattern 是 `X..X..X..X..X...`，重音落在第 1、4、7、10、13 格。
 - “回到 one”在页面中写作“回到下一小节第一拍（one）”，让课堂口语对应到正式节拍概念。

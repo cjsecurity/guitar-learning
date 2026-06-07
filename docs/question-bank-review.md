@@ -1,0 +1,83 @@
+# 题库逐项审校索引
+
+本索引用于证明当前题库已按正统乐理概念逐项审查。标准答案采用通用音乐理论术语；吉他课堂口语只保留在解释或可接受输入中。
+
+## 审校来源
+
+- Open Music Theory: Intervals and dyads  
+  https://open-musictheory.github.io/docs/fundamentals/intervals/
+- Open Music Theory: Roman Numerals and SATB Chord Construction  
+  https://pressbooks.nebraska.edu/openmusictheory/chapter/roman-numerals/
+- Open Music Theory: Seventh Chords  
+  https://viva.pressbooks.pub/openmusictheory/chapter/seventh-chords/
+- Open Music Theory: Chord Symbols  
+  https://viva.pressbooks.pub/openmusictheory/chapter/chord-symbols/
+- Open Music Theory: Applied Chords  
+  https://viva.pressbooks.pub/openmusictheorycopy/chapter/applied-chords/
+- Open Music Theory: Key Signatures  
+  https://openmusictheory.github.io/keySignatures.html
+- Open Music Theory: Modal Mixture  
+  https://openmusictheory.github.io/modalMixture.html
+- 课程历史：第 1-7 课吉他乐理、指板、和弦、调号、律动记录
+
+## 随机生成题
+
+| 模块 | 覆盖范围 | 审校结论 |
+| --- | --- | --- |
+| 音程距离速算 | P1、m2、M2、m3、M3、P4、A4、d5、P5、m6、M6、m7、M7、P8 | 度数按字母，性质按半音；A4/d5 区分等音异名；基础协和分类保留纯四度为完全协和，并在反馈说明严格声部写作语境。 |
+| 和弦音构成速算 | maj、m、dim、aug、maj7、7、m7、m7b5、maj9、9、m9 | 按字母骨架叠三度，再按公式调整音程；理论拼写保留 E#、B#、Fb、Cb、双降号等，等音只作为解释。 |
+
+## 静态题库审校
+
+| 题目 label | 对应标准概念 | 结论 |
+| --- | --- | --- |
+| C 在五弦 / C 在六弦 / G 在六弦 | 标准调弦下 5、6 弦根音定位 | 通过 |
+| Bb 在五弦 / Eb 在五弦 / Ab 在六弦 | 等音位置与降号调拼写 | 通过，问品位时只接受品位，不把等音名当品位答案 |
+| 6弦8品 / 5弦6品 / 6弦4品 | 品位反推音名 | 通过，等音名只在反推音名题中接受 |
+| Cmaj7 六弦系统 / Dm9 五弦系统 | 吉他根音系统与右手落点 | 通过，属于课程演奏技术，不伪装成通用和声概念 |
+| 2级三和弦 / 7级三和弦 | 大调顺阶三和弦 I ii iii IV V vi vii° | 通过 |
+| 5级七和弦 / 6级七和弦 | 大调顺阶七和弦 Imaj7 ii7 iii7 IVmaj7 V7 vi7 viiø7 | 通过 |
+| Am7 级数 / Fmaj7 级数 | 罗马数字大小写与和弦性质 | 通过，判题保留 IV/iv、vi/VI 大小写差异 |
+| Bm7b5-E7-Am7 | 副属和弦 / applied chord | 通过，标准写法为 viiø7 - V7/vi - vi7 |
+| Cm / Caug | 三和弦标记 | 通过 |
+| C7 / Cø7 | 属七与半减七标记 | 通过 |
+| G13sus4 / G7(b13) | sus 与变化延伸音 | 通过 |
+| Bø7 / C△7 | 和弦符号多写法 | 通过 |
+| 9 的来源 / 13 的来源 | 延伸音 2->9、6->13 | 通过 |
+| Dm9 | 九和弦完整结构 | 通过，强调 D F C E 是 Dm9(no5) |
+| G13 | lead-sheet / guitar voicing 的属十三核心音 | 通过，题干已避免把核心 voicing 说成完整叠三度结构 |
+| Dm9(no5) / G13(no5) | 省略五音 | 通过 |
+| G13sus4 到 G13 / G13 到 G7(b13) | sus 解决与 13 到 b13 的声部变化 | 通过 |
+| C 的 1-6-2-5 / C 的 ii-V-I | C 大调级数进行 | 通过 |
+| Bb 的 1-6-2-5 / D 的 ii-V-I | 常见调转调 | 通过 |
+| A 的 1-6-2-5 / Ab 的 ii-V-I | 带升降号调转调 | 通过 |
+| Amaj7 F#m7 Bm7 E7 / Bbm7 Eb7 Abmaj7 | 和弦反推调与级数 | 通过 |
+| G major 调号 / Bb major 调号 | 五度圈与基础调号 | 通过 |
+| A major 调号 / Ab major 调号 | 中等调号 | 通过 |
+| B major 调号 / Db major 调号 | 复杂调号 | 通过 |
+| A major 关系小调 / F# C# G# | 关系小调与调号反推 | 通过 |
+| G 的关系小调 / E minor 关系大调 | 关系大小调 | 通过 |
+| E 小调五声 / G 大调五声 | 小调五声与大调五声公式 | 通过 |
+| A 的关系小调 / Bb 大调五声 | 带升降号调的关系小调与五声音阶 | 通过 |
+| E G A B D / A C D E G | 同音集合下的大小调五声中心 | 通过 |
+| A自然小调 / A和声小调 | 自然小调与和声小调音阶差异 | 通过 |
+| A小调 V7 / A小调 vii°7 | 和声小调中的属七与导音减七 | 通过 |
+| D小调 V7 / E小调 V7 | 换小调后的属功能 | 通过 |
+| G#°7 功能 / C#°7 功能 | 导音减七与省略根音的属七降九 | 通过，反馈区区分功能和声与爵士/吉他语境 |
+| Ebmaj7 / Fmaj7 | C major 内外判断 | 通过 |
+| bIIImaj7 / bVImaj7 | C major 从同主音 C minor 借用 | 通过，题干已明确借用方向 |
+| Cmaj7 Ebmaj7 Abmaj7 Gm7 | 同主音小调借用进行 | 通过 |
+| G 的 bVImaj7 / F 的 bIIImaj7 | 换调后的同主音借用 | 通过 |
+| 4/4 的 16 分格 / 每拍口令 | 十六分音符细分 | 通过 |
+| X..X..X..X..X... | 3+3+3+3+4 的 16 格重音移位 | 通过，长度 16，重音在 1、4、7、10、13 |
+| 三个十六分一组 | 十六分重音移位与三连音区别 | 通过 |
+| 排出 3+3+3+3+4 | 16 格 pattern 输入 | 通过，标准答案为 X..X..X..X..X... |
+| 四组三音加四格 / 五组三音 | 是否回到下一小节第一拍 | 通过 |
+
+## 自动护栏
+
+`npm run check:theory` 会检查：
+
+- 源码题库不出现“地狱”“37”“rootless”等非标准展示词。
+- `3+3+3+3+4` 的 pattern 必须是 16 格。
+- 标准副属和弦、导音减七、同主音借用、纯四度说明、罗马数字大小写保护必须存在。

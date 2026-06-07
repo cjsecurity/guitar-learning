@@ -68,7 +68,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               {question.mode === "spell" ? "根据根音和音程名，写出目标音。" : "根据根音和目标音，判断音程。"}
             </p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
-              练习顺序：度数看字母，性质看半音，最后判断协和分类。
+              练习顺序：度数看字母，性质看半音，最后判断基础协和分类。
             </p>
           </div>
           <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
@@ -118,7 +118,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <input className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 大三度 或 M3" />
             </label>
             <div className="space-y-2 md:col-span-2">
-              <span className="label">协和分类</span>
+              <span className="label">基础协和分类</span>
               <FeelPicker value={feel} onChange={setFeel} />
             </div>
           </div>
@@ -141,7 +141,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <ol className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
-              <li>3. 协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
+              <li>3. 本课程的基础协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
               {question.mode === "spell" && <li>4. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -162,7 +162,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <ResultBadge label="度数" ok={question.mode === "spell" || result.degreeCorrect} value={result.expectedDegree} />
               <ResultBadge label="半音" ok={question.mode === "spell" || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
               <ResultBadge label="音程名" ok={question.mode === "spell" || result.qualityCorrect} value={result.expectedQuality} />
-              {question.mode === "identify" && <ResultBadge label="协和分类" ok={result.feelCorrect} value={result.expectedFeel} />}
+              {question.mode === "identify" && <ResultBadge label="基础协和分类" ok={result.feelCorrect} value={result.expectedFeel} />}
               {question.mode === "spell" && <ResultBadge label="目标音" ok={result.targetCorrect} value={result.expectedTarget} />}
             </div>
 

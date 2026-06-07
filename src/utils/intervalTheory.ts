@@ -89,8 +89,8 @@ const NATURAL_PITCH: Record<string, number> = {
 export const INTERVAL_CHAPTER: IntervalChapter = {
   id: "interval",
   title: "音程距离速算",
-  subtitle: "度数、半音、协和感训练",
-  description: "看到根音和目标音，判断它们是几度、几个半音，并分清完全协和、不完全协和与不协和。",
+  subtitle: "度数、半音、基础协和分类训练",
+  description: "看到根音和目标音，判断它们是几度、几个半音，并按入门和声听感分清完全协和、不完全协和与不协和。",
   status: "available",
 };
 
@@ -274,8 +274,12 @@ function buildIntervalExplanation(question: IntervalQuestion): string[] {
   const lines = [
     `${question.root} 到 ${question.target} 的度数先看字母：数到 ${question.target.charAt(0).toUpperCase()} 是 ${interval.degreeName}。`,
     `再数半音：一共 ${interval.semitones} 个半音，所以性质是 ${interval.qualityName}，完整名称是 ${interval.fullName}。`,
-    `协和分类：${interval.feel}。`,
+    `基础协和分类：${interval.feel}。`,
   ];
+
+  if (interval.id === "P4") {
+    lines.push("本课程按入门听感把纯四度归入完全协和；进入严格对位或四部和声时，纯四度在低音上方还要看具体语境。");
+  }
 
   if (interval.id === "A4" || interval.id === "d5") {
     lines.push("增四度和减五度都是 6 个半音，也都叫三全音；区别在于目标音字母不同。");
