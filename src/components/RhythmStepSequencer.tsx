@@ -9,6 +9,7 @@ interface RhythmStepSequencerProps {
 }
 
 const STEP_LABELS = ["1", "e", "&", "a", "2", "e", "&", "a", "3", "e", "&", "a", "4", "e", "&", "a"];
+const BEAT_LABELS = ["第 1 拍", "第 2 拍", "第 3 拍", "第 4 拍"];
 const EMPTY_PATTERN = "................";
 
 export function RhythmStepSequencer({ question, value, onChange }: RhythmStepSequencerProps) {
@@ -30,6 +31,7 @@ export function RhythmStepSequencer({ question, value, onChange }: RhythmStepSeq
           </div>
           <p className="mt-2 text-sm leading-6 text-stone-600">
             点亮每组开头的重音格。`X` 是重音，`.` 是经过的十六分格。
+            手机上按 4 拍折行，每拍都是 1 e & a 四个十六分格。
           </p>
         </div>
 
@@ -49,41 +51,48 @@ export function RhythmStepSequencer({ question, value, onChange }: RhythmStepSeq
         </div>
       </div>
 
-      <div className="mt-4 overflow-x-auto">
-        <div className="min-w-[720px]">
-          <div className="grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1">
-            {STEP_LABELS.map((label, index) => (
-              <div key={`${label}-${index}`} className="text-center text-xs font-bold text-stone-500">
-                {label}
-              </div>
-            ))}
-          </div>
+      <div data-testid="rhythm-mobile-beat-grid" className="mt-4 grid gap-3 sm:grid-cols-4">
+        {BEAT_LABELS.map((beatLabel, beatIndex) => {
+          const beatSteps = currentPattern.slice(beatIndex * 4, beatIndex * 4 + 4).split("");
 
-          <div className="mt-2 grid grid-cols-[repeat(16,minmax(0,1fr))] gap-1">
-            {currentPattern.split("").map((step, index) => {
-              const active = step === "X";
-              const beatStart = index % 4 === 0;
-              return (
-                <button
-                  key={`${index}-${step}`}
-                  type="button"
-                  data-testid={`rhythm-step-${index + 1}`}
-                  className={`h-11 rounded-md border text-sm font-black transition ${
-                    active
-                      ? "border-leaf bg-leaf text-white shadow-sm"
-                      : beatStart
-                        ? "border-stone-300 bg-white text-stone-400 hover:border-leaf"
-                        : "border-stone-200 bg-mist text-stone-400 hover:border-leaf"
-                  }`}
-                  aria-label={`第 ${index + 1} 格${active ? "已点亮" : "未点亮"}`}
-                  onClick={() => toggleStep(index)}
-                >
-                  {active ? "X" : "."}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+          return (
+            <div key={beatLabel} data-testid={`rhythm-beat-group-${beatIndex + 1}`} className="rounded-lg border border-stone-200 bg-mist px-3 py-3">
+              <div className="mb-2 flex items-center justify-between gap-2">
+                <p className="text-xs font-black text-ink">{beatLabel}</p>
+                <p className="text-xs font-semibold text-stone-500">1 e & a</p>
+              </div>
+
+              <div className="grid grid-cols-4 gap-1">
+                {beatSteps.map((step, stepOffset) => {
+                  const index = beatIndex * 4 + stepOffset;
+                  const active = step === "X";
+                  const beatStart = stepOffset === 0;
+
+                  return (
+                    <div key={`${STEP_LABELS[index]}-${index}`} className="space-y-1">
+                      <div className="text-center text-xs font-bold text-stone-500">{STEP_LABELS[index]}</div>
+                      <button
+                        type="button"
+                        data-testid={`rhythm-step-${index + 1}`}
+                        className={`h-12 w-full rounded-md border text-sm font-black transition ${
+                          active
+                            ? "border-leaf bg-leaf text-white shadow-sm"
+                            : beatStart
+                              ? "border-stone-300 bg-white text-stone-500 hover:border-leaf"
+                              : "border-stone-200 bg-white text-stone-400 hover:border-leaf"
+                        }`}
+                        aria-label={`第 ${index + 1} 格${active ? "已点亮" : "未点亮"}`}
+                        onClick={() => toggleStep(index)}
+                      >
+                        {active ? "X" : "."}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <div className="mt-4 rounded-md bg-mist px-3 py-2 text-sm">
