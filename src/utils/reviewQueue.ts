@@ -10,6 +10,7 @@ export interface LabeledQuestion {
 export interface QuestionPickOptions<T extends LabeledQuestion> {
   previous?: T;
   reviewLabels?: string[];
+  recentLabels?: string[];
   reviewRate?: number;
 }
 
@@ -20,7 +21,7 @@ export function normalizeQuestionPickOptions<T extends LabeledQuestion>(
     return {};
   }
 
-  if ("previous" in previousOrOptions || "reviewLabels" in previousOrOptions || "reviewRate" in previousOrOptions) {
+  if ("previous" in previousOrOptions || "reviewLabels" in previousOrOptions || "recentLabels" in previousOrOptions || "reviewRate" in previousOrOptions) {
     return previousOrOptions as QuestionPickOptions<T>;
   }
 
@@ -31,7 +32,10 @@ export function pickQuestionCandidate<T extends LabeledQuestion>(
   questions: T[],
   options: QuestionPickOptions<T> = {},
 ): T {
-  const pool = withoutPrevious(questions, options.previous);
+  const previousPool = withoutPrevious(questions, options.previous);
+  const basePool = previousPool.length > 0 ? previousPool : questions;
+  const freshPool = withoutRecent(basePool, options.recentLabels);
+  const pool = freshPool.length > 0 ? freshPool : basePool;
   const reviewLabels = new Set(options.reviewLabels ?? []);
   const reviewPool = pool.filter((question) => reviewLabels.has(question.label));
   const reviewRate = options.reviewRate ?? REVIEW_DRAW_RATE;
@@ -66,6 +70,22 @@ export function getReviewQuestionLabels(stats: QuizStats, limit = 5): string[] {
   return labels;
 }
 
+export function getRecentQuestionLabels(stats: QuizStats, limit = 3): string[] {
+  const labels: string[] = [];
+
+  for (const item of stats.history) {
+    if (!labels.includes(item.questionLabel)) {
+      labels.push(item.questionLabel);
+    }
+
+    if (labels.length >= limit) {
+      break;
+    }
+  }
+
+  return labels;
+}
+
 function withoutPrevious<T extends LabeledQuestion>(questions: T[], previous?: T): T[] {
   if (!previous || questions.length <= 1) {
     return questions;
@@ -73,6 +93,15 @@ function withoutPrevious<T extends LabeledQuestion>(questions: T[], previous?: T
 
   const previousKey = getQuestionKey(previous);
   return questions.filter((question) => getQuestionKey(question) !== previousKey);
+}
+
+function withoutRecent<T extends LabeledQuestion>(questions: T[], recentLabels?: string[]): T[] {
+  if (!recentLabels || recentLabels.length === 0 || questions.length <= 1) {
+    return questions;
+  }
+
+  const recent = new Set(recentLabels);
+  return questions.filter((question) => !recent.has(question.label));
 }
 
 function getQuestionKey(question: LabeledQuestion): string {

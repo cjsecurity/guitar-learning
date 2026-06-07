@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { QuizHistoryItem, QuizStats } from "../types/quiz";
 import { getKnowledgeCard } from "../utils/knowledgeCards";
 import { CHORD_CHAPTER, DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
-import { getReviewQuestionLabels } from "../utils/reviewQueue";
+import { getRecentQuestionLabels, getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { KnowledgeCard } from "./KnowledgeCard";
 import { QuizCard } from "./QuizCard";
@@ -20,8 +20,9 @@ interface QuizPageProps {
 }
 
 export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: QuizPageProps) {
-  const [question, setQuestion] = useState<Question>(() => createRandomQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats) }));
+  const [question, setQuestion] = useState<Question>(() => createRandomQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats), recentLabels: getRecentQuestionLabels(stats) }));
   const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
+  const recentLabels = useMemo(() => getRecentQuestionLabels(stats), [stats]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立手感";
@@ -65,7 +66,7 @@ export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBa
           <QuizCard
             question={question}
             onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
-            onNext={() => setQuestion((current) => createRandomQuestion(difficulty, { previous: current, reviewLabels }))}
+            onNext={() => setQuestion((current) => createRandomQuestion(difficulty, { previous: current, reviewLabels, recentLabels }))}
           />
 
           <aside className="space-y-5">

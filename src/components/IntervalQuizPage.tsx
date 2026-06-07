@@ -9,7 +9,7 @@ import {
   createRandomIntervalQuestion,
 } from "../utils/intervalTheory";
 import { getKnowledgeCard } from "../utils/knowledgeCards";
-import { getReviewQuestionLabels } from "../utils/reviewQueue";
+import { getRecentQuestionLabels, getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { IntervalQuizCard } from "./IntervalQuizCard";
 import { KnowledgeCard } from "./KnowledgeCard";
@@ -26,8 +26,9 @@ interface IntervalQuizPageProps {
 }
 
 export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: IntervalQuizPageProps) {
-  const [question, setQuestion] = useState<IntervalQuestion>(() => createRandomIntervalQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats) }));
+  const [question, setQuestion] = useState<IntervalQuestion>(() => createRandomIntervalQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats), recentLabels: getRecentQuestionLabels(stats) }));
   const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
+  const recentLabels = useMemo(() => getRecentQuestionLabels(stats), [stats]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立耳朵和尺子";
@@ -71,7 +72,7 @@ export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetSta
           <IntervalQuizCard
             question={question}
             onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
-            onNext={() => setQuestion((current) => createRandomIntervalQuestion(difficulty, { previous: current, reviewLabels }))}
+            onNext={() => setQuestion((current) => createRandomIntervalQuestion(difficulty, { previous: current, reviewLabels, recentLabels }))}
           />
 
           <aside className="space-y-5">
