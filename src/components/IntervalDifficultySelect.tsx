@@ -1,9 +1,10 @@
-import { ArrowLeft, Flame, Gauge, Sprout, Trophy } from "lucide-react";
+import { ArrowLeft, Flame, Gauge, MousePointerClick, Sprout, Trophy } from "lucide-react";
 import { INTERVAL_CHAPTER, INTERVAL_DIFFICULTIES, IntervalDifficultyConfig, IntervalDifficultyId } from "../utils/intervalTheory";
 import { PassScopePanel } from "./PassScopePanel";
 
 interface IntervalDifficultySelectProps {
   onBackHome: () => void;
+  onOpenNaturalIntervalTrainer: () => void;
   onSelect: (difficultyId: IntervalDifficultyId) => void;
 }
 
@@ -14,7 +15,7 @@ const icons: Record<IntervalDifficultyId, typeof Sprout> = {
   hell: Trophy,
 };
 
-export function IntervalDifficultySelect({ onBackHome, onSelect }: IntervalDifficultySelectProps) {
+export function IntervalDifficultySelect({ onBackHome, onOpenNaturalIntervalTrainer, onSelect }: IntervalDifficultySelectProps) {
   return (
     <main className="min-h-screen bg-mist px-4 py-6 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
@@ -32,6 +33,30 @@ export function IntervalDifficultySelect({ onBackHome, onSelect }: IntervalDiffi
         </header>
 
         <PassScopePanel scopeId={INTERVAL_CHAPTER.id} />
+
+        <section className="panel mb-5 overflow-hidden">
+          <div className="grid gap-0 lg:grid-cols-[minmax(0,1fr)_280px]">
+            <div className="p-5">
+              <p className="text-sm font-semibold text-leaf">新增训练段</p>
+              <h2 className="mt-2 text-2xl font-black text-ink">自然音速认选择题</h2>
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-600">
+                看到 A-C、D-B、B-F 这类自然音组合，直接判断小三度、大六度、减五度。这个训练不替代原来的推算题，而是帮助你从“绕 C 坐标慢算”进化到“自然音模式识别”。
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold text-stone-600">
+                <span className="rounded-full bg-mist px-3 py-1">只用 C D E F G A B</span>
+                <span className="rounded-full bg-mist px-3 py-1">上行音程</span>
+                <span className="rounded-full bg-mist px-3 py-1">四选一</span>
+                <span className="rounded-full bg-mist px-3 py-1">2 秒速认目标</span>
+              </div>
+            </div>
+            <div className="flex items-center border-t border-stone-200 bg-mist p-5 lg:border-l lg:border-t-0">
+              <button type="button" data-testid="open-natural-interval-trainer" className="btn-primary w-full" onClick={onOpenNaturalIntervalTrainer}>
+                <MousePointerClick size={18} aria-hidden="true" />
+                进入自然音速认
+              </button>
+            </div>
+          </div>
+        </section>
 
         <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {INTERVAL_DIFFICULTIES.map((difficulty) => (

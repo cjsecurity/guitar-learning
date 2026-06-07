@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "check:theory": "node scripts/check-theory-bank.mjs"
+    "check:theory": "node scripts/check-theory-bank.mjs",
+    "test:natural-interval": "node scripts/check-natural-interval-recognition.mjs",
+    "test": "npm run test:natural-interval && npm run check:theory"
   },
   "dependencies": {
     "react": "^18.3.1",

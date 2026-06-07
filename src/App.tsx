@@ -3,6 +3,7 @@ import { DifficultySelect } from "./components/DifficultySelect";
 import { HomePage } from "./components/HomePage";
 import { IntervalDifficultySelect } from "./components/IntervalDifficultySelect";
 import { IntervalQuizPage } from "./components/IntervalQuizPage";
+import { NaturalIntervalTrainer } from "./components/NaturalIntervalTrainer";
 import { QuizPage } from "./components/QuizPage";
 import { TheoryDifficultySelect } from "./components/TheoryDifficultySelect";
 import { TheoryQuizPage } from "./components/TheoryQuizPage";
@@ -16,6 +17,7 @@ const STORAGE_KEY = "guitar-theory-challenge-stats-v3";
 type ViewState =
   | { name: "home" }
   | { name: "interval-difficulty" }
+  | { name: "natural-interval-trainer" }
   | { name: "interval-quiz"; difficultyId: IntervalDifficultyId }
   | { name: "chord-difficulty" }
   | { name: "chord-quiz"; difficultyId: DifficultyId }
@@ -135,7 +137,17 @@ export default function App() {
   }
 
   if (view.name === "interval-difficulty") {
-    return <IntervalDifficultySelect onBackHome={() => setView({ name: "home" })} onSelect={(difficultyId) => setView({ name: "interval-quiz", difficultyId })} />;
+    return (
+      <IntervalDifficultySelect
+        onBackHome={() => setView({ name: "home" })}
+        onOpenNaturalIntervalTrainer={() => setView({ name: "natural-interval-trainer" })}
+        onSelect={(difficultyId) => setView({ name: "interval-quiz", difficultyId })}
+      />
+    );
+  }
+
+  if (view.name === "natural-interval-trainer") {
+    return <NaturalIntervalTrainer onBackHome={() => setView({ name: "home" })} onBackDifficulty={() => setView({ name: "interval-difficulty" })} />;
   }
 
   if (view.name === "interval-quiz") {
