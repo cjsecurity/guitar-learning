@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TheoryEvaluationResult, TheoryQuestion, evaluateTheoryAnswer } from "../utils/courseTheory";
 import { FretboardDiagram } from "./FretboardDiagram";
 import { MinorFunctionAudioPanel } from "./MinorFunctionAudioPanel";
+import { PentatonicBoxDiagram } from "./PentatonicBoxDiagram";
 import { RhythmStepSequencer, isRhythmGridQuestion } from "./RhythmStepSequencer";
 
 interface TheoryQuizCardProps {
@@ -49,6 +50,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
         <FretboardDiagram question={question} />
+        <PentatonicBoxDiagram question={question} />
         <MinorFunctionAudioPanel question={question} />
         {isRhythmGrid && <RhythmStepSequencer question={question} value={answer} onChange={setAnswer} />}
 

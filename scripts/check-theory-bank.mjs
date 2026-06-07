@@ -7,6 +7,7 @@ const files = {
   audioEngine: readFileSync("src/utils/audioEngine.ts", "utf8"),
   rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
   minorFunctionAudioPanel: readFileSync("src/components/MinorFunctionAudioPanel.tsx", "utf8"),
+  pentatonicBoxDiagram: readFileSync("src/components/PentatonicBoxDiagram.tsx", "utf8"),
 };
 
 const source = Object.values(files).join("\n");
@@ -53,6 +54,10 @@ const requiredSnippets = [
   ["MinorFunctionAudioPanel", "自然小调 v7 与和声小调 V7 应提供听觉对比"],
   ["Em7 -> Am", "小调功能题应听自然小调 v7 回 i"],
   ["E7 -> Am", "小调功能题应听和声小调 V7 回 i"],
+  ["PentatonicBoxDiagram", "关系大小调五声题应提供共用盒子指板图"],
+  ["E minor / G major 共用五声盒子", "E 小调五声与 G 大调五声应落到同一指板盒子"],
+  ["A minor / C major 共用五声盒子", "A 小调五声与 C 大调五声应落到同一指板盒子"],
+  ["G minor / Bb major 共用五声盒子", "Bb 大调五声应连接到关系小调盒子"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {
