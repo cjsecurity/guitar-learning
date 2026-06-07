@@ -400,33 +400,31 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
         badge: "常见关系大小调",
         description: "C/A、G/E、F/D 等关系大小调。",
         questions: [
-          q("G 的关系小调", "G major 的关系小调是什么？", "小调", "E minor", ["Em", "E小调"], "关系大小调", ["大调第 6 级是关系小调。"], ["G major 的关系小调是 E minor。"]),
-          q("E minor 关系大调", "E minor 的关系大调是什么？", "大调", "G major", ["G", "G大调"], "关系大小调", ["小调上方小三度找关系大调。"], ["E minor 的关系大调是 G major。"]),
+          ...buildRelativeMinorQuestions(["C", "G", "F"]),
+          ...buildRelativeMajorQuestions(["A", "E", "D"]),
         ],
       },
       medium: {
         badge: "自然音调五声",
         description: "写自然音调的大/小调五声音阶。",
         questions: [
-          q("E 小调五声", "E minor pentatonic 是哪五个音？", "音名", "E G A B D", ["E,G,A,B,D"], "小调五声", ["公式：1 b3 4 5 b7。"], ["E 小调五声是 E G A B D。"]),
-          q("G 大调五声", "G major pentatonic 是哪五个音？", "音名", "G A B D E", ["G,A,B,D,E"], "大调五声", ["公式：1 2 3 5 6。"], ["G 大调五声是 G A B D E。"]),
+          ...buildMinorPentatonicQuestions(["A", "E", "D"]),
+          ...buildMajorPentatonicQuestions(["C", "G", "F"]),
         ],
       },
       hard: {
         badge: "带升降号调",
         description: "加入 A/F#、Bb/G 等带升降号关系。",
         questions: [
-          q("A 的关系小调", "A major 的关系小调是什么？", "小调", "F# minor", ["F#m", "F#小调"], "关系大小调", ["A major 有 F#，不要写 Gb。"], ["A major 的关系小调是 F# minor。"]),
-          q("Bb 大调五声", "Bb major pentatonic 是哪五个音？", "音名", "Bb C D F G", ["Bb,C,D,F,G", "B♭ C D F G"], "大调五声", ["大调五声公式 1 2 3 5 6。"], ["Bb 大调五声是 Bb C D F G。"]),
+          ...buildRelativeMinorQuestions(["A", "E", "Bb", "Eb"]),
+          ...buildMajorPentatonicQuestions(["A", "E", "Bb", "Eb"]),
+          ...buildMinorPentatonicQuestions(["F#", "C#", "G", "C"]),
         ],
       },
       hell: {
         badge: "五音反推中心",
         description: "给五个音，判断可能的大调五声和小调五声中心。",
-        questions: [
-          q("E G A B D", "E G A B D 可以是哪组关系大小调五声？", "中心", "E minor / G major", ["Em/G", "E小调/G大调", "E minor G major"], "五声中心", ["同一批音，中心不同。"], ["E G A B D 是 E 小调五声，也可看作 G 大调五声。吉他上常见 E minor pentatonic 盒子和 G major pentatonic 共用同一批音；6 弦开放 E 与 6 弦 3 品 G 只是中心不同。"]),
-          q("A C D E G", "A C D E G 可以是哪组关系大小调五声？", "中心", "A minor / C major", ["Am/C", "A小调/C大调", "A minor C major"], "五声中心", ["A 小调五声的关系大调是 C。"], ["A C D E G 是 A 小调五声，也可看作 C 大调五声。吉他上 A minor pentatonic 与 C major pentatonic 可共用同一盒子，听感差在落点中心。"]),
-        ],
+        questions: buildPentatonicCenterQuestions(["C", "G", "F", "Bb", "Eb", "A"]),
       },
     },
   },
@@ -799,11 +797,114 @@ function buildRelativeMinorQuestions(keys: string[]): QuestionSeed[] {
   });
 }
 
+function buildRelativeMajorQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.map((minorRoot) => {
+    const signature = getKeySignatureByRelativeMinor(minorRoot);
+
+    return q(
+      `${minorRoot} minor 关系大调`,
+      `${minorRoot} minor 的关系大调是什么？`,
+      "大调",
+      `${signature.key} major`,
+      [signature.key, `${signature.key}大调`],
+      "关系大小调",
+      ["小调上方小三度找关系大调；关系大小调共用同一组调号。"],
+      [`${minorRoot} minor 的关系大调是 ${signature.key} major，它们共用 ${formatAccidentals(signature)} 这组调号。`],
+    );
+  });
+}
+
+function buildMajorPentatonicQuestions(keys: string[]): QuestionSeed[] {
+  return keys.map((key) => {
+    const notes = getMajorPentatonic(key);
+
+    return q(
+      `${key} 大调五声`,
+      `${key} major pentatonic 是哪五个音？`,
+      "音名",
+      notes.join(" "),
+      [notes.join(","), notes.join(" ")],
+      "大调五声",
+      ["大调五声公式是 1 2 3 5 6。"],
+      [`${key} major pentatonic = ${notes.join(" ")}，来自大调音阶的 1、2、3、5、6。`],
+    );
+  });
+}
+
+function buildMinorPentatonicQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.map((minorRoot) => {
+    const notes = getMinorPentatonic(minorRoot);
+    const relativeMajor = getKeySignatureByRelativeMinor(minorRoot).key;
+
+    return q(
+      `${minorRoot} 小调五声`,
+      `${minorRoot} minor pentatonic 是哪五个音？`,
+      "音名",
+      notes.join(" "),
+      [notes.join(","), notes.join(" ")],
+      "小调五声",
+      ["小调五声公式是 1 b3 4 5 b7。"],
+      [`${minorRoot} minor pentatonic = ${notes.join(" ")}。它和 ${relativeMajor} major pentatonic 共用同一批音，但中心落在 ${minorRoot}。`],
+    );
+  });
+}
+
+function buildPentatonicCenterQuestions(majorKeys: string[]): QuestionSeed[] {
+  return majorKeys.map((majorKey) => {
+    const signature = getKeySignature(majorKey);
+    const minorRoot = signature.relativeMinor.replace(" minor", "");
+    const notes = getMinorPentatonic(minorRoot);
+
+    return q(
+      notes.join(" "),
+      `${notes.join(" ")} 可以是哪组关系大小调五声？`,
+      "中心",
+      `${minorRoot} minor / ${majorKey} major`,
+      [`${minorRoot}m/${majorKey}`, `${minorRoot} minor ${majorKey} major`, `${minorRoot}小调/${majorKey}大调`],
+      "五声中心",
+      ["同一批音，中心不同；先找小调 1，再找上方小三度的关系大调中心。"],
+      [`${notes.join(" ")} 是 ${minorRoot} 小调五声，也可看作 ${majorKey} 大调五声。吉他上同一盒子可以因为落点中心不同而听成不同调性。`],
+    );
+  });
+}
+
+function getMajorPentatonic(key: string): string[] {
+  const scale = getMajorScale(key);
+  return [scale[0], scale[1], scale[2], scale[4], scale[5]];
+}
+
+function getMinorPentatonic(minorRoot: string): string[] {
+  const root = parseNote(minorRoot);
+  const rootLetterIndex = NOTE_LETTERS.indexOf(root.letter);
+  const degreeOffsets = [
+    { degree: 1, semitones: 0 },
+    { degree: 3, semitones: 3 },
+    { degree: 4, semitones: 5 },
+    { degree: 5, semitones: 7 },
+    { degree: 7, semitones: 10 },
+  ];
+
+  return degreeOffsets.map(({ degree, semitones }) => {
+    const letter = NOTE_LETTERS[(rootLetterIndex + degree - 1) % NOTE_LETTERS.length];
+    return spellPitchForLetter(letter, mod12(root.pitch + semitones));
+  });
+}
+
 function getKeySignature(key: string): KeySignatureDefinition {
   const signature = KEY_SIGNATURES.find((item) => item.key === key);
 
   if (!signature) {
     throw new Error(`Unsupported key signature: ${key}`);
+  }
+
+  return signature;
+}
+
+function getKeySignatureByRelativeMinor(minorRoot: string): KeySignatureDefinition {
+  const signature = KEY_SIGNATURES.find((item) => item.relativeMinor === `${minorRoot} minor`);
+
+  if (!signature) {
+    throw new Error(`Unsupported relative minor: ${minorRoot}`);
   }
 
   return signature;
