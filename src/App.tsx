@@ -34,11 +34,14 @@ export default function App() {
     return statsByScope[key] ?? createEmptyStats();
   }
 
-  function updateStats(key: StatsKey, historyItem: QuizHistoryItem, mistakeKey: string, isCorrect: boolean) {
+  function updateStats(key: StatsKey, historyItem: QuizHistoryItem, mistakeKey: string, isCorrect: boolean, responseSeconds: number) {
     setStatsByScope((current) => {
       const currentStats = current[key] ?? createEmptyStats();
       const nextStreak = isCorrect ? currentStats.currentStreak + 1 : 0;
       const nextMistakes = { ...currentStats.mistakesByType };
+      const previousTotalSeconds = currentStats.totalResponseSeconds ?? 0;
+      const previousTimedAnswers = currentStats.timedAnswers ?? 0;
+      const previousBestSeconds = currentStats.bestResponseSeconds;
 
       if (!isCorrect) {
         nextMistakes[mistakeKey] = (nextMistakes[mistakeKey] ?? 0) + 1;
@@ -51,6 +54,9 @@ export default function App() {
           correctAnswers: currentStats.correctAnswers + (isCorrect ? 1 : 0),
           currentStreak: nextStreak,
           bestStreak: Math.max(currentStats.bestStreak, nextStreak),
+          totalResponseSeconds: previousTotalSeconds + responseSeconds,
+          timedAnswers: previousTimedAnswers + 1,
+          bestResponseSeconds: previousBestSeconds === undefined ? responseSeconds : Math.min(previousBestSeconds, responseSeconds),
           mistakesByType: nextMistakes,
           history: [historyItem, ...currentStats.history].slice(0, 10),
         },
@@ -58,7 +64,7 @@ export default function App() {
     });
   }
 
-  function handleChordSubmitResult(difficultyId: DifficultyId, question: Question, result: EvaluationResult) {
+  function handleChordSubmitResult(difficultyId: DifficultyId, question: Question, result: EvaluationResult, responseSeconds: number) {
     const key = makeStatsKey("chord", difficultyId);
     updateStats(
       key,
@@ -71,13 +77,15 @@ export default function App() {
         correct: result.isFullyCorrect,
         expectedFinal: result.expectedFinal.join(" "),
         time: formatTime(),
+        responseSeconds,
       },
       question.type,
       result.isFullyCorrect,
+      responseSeconds,
     );
   }
 
-  function handleIntervalSubmitResult(difficultyId: IntervalDifficultyId, question: IntervalQuestion, result: IntervalEvaluationResult) {
+  function handleIntervalSubmitResult(difficultyId: IntervalDifficultyId, question: IntervalQuestion, result: IntervalEvaluationResult, responseSeconds: number) {
     const key = makeStatsKey("interval", difficultyId);
     updateStats(
       key,
@@ -90,13 +98,15 @@ export default function App() {
         correct: result.isFullyCorrect,
         expectedFinal: question.mode === "spell" ? result.expectedTarget : `${result.expectedIntervalName} · ${result.expectedSemitones} 半音 · ${result.expectedFeel}`,
         time: formatTime(),
+        responseSeconds,
       },
       question.mode === "spell" ? "反向拼写" : result.expectedIntervalName,
       result.isFullyCorrect,
+      responseSeconds,
     );
   }
 
-  function handleTheorySubmitResult(difficultyId: TheoryDifficultyId, question: TheoryQuestion, result: TheoryEvaluationResult) {
+  function handleTheorySubmitResult(difficultyId: TheoryDifficultyId, question: TheoryQuestion, result: TheoryEvaluationResult, responseSeconds: number) {
     const key = makeStatsKey(question.chapterId, difficultyId);
     updateStats(
       key,
@@ -109,9 +119,11 @@ export default function App() {
         correct: result.isFullyCorrect,
         expectedFinal: result.expectedFinal,
         time: formatTime(),
+        responseSeconds,
       },
       result.typeLabel,
       result.isFullyCorrect,
+      responseSeconds,
     );
   }
 
@@ -134,7 +146,7 @@ export default function App() {
       <IntervalQuizPage
         difficulty={difficulty}
         stats={getStats(key)}
-        onSubmitResult={(question, result) => handleIntervalSubmitResult(view.difficultyId, question, result)}
+        onSubmitResult={(question, result, responseSeconds) => handleIntervalSubmitResult(view.difficultyId, question, result, responseSeconds)}
         onResetStats={() => handleResetStats(key)}
         onBackHome={() => setView({ name: "home" })}
         onBackDifficulty={() => setView({ name: "interval-difficulty" })}
@@ -154,7 +166,7 @@ export default function App() {
       <QuizPage
         difficulty={difficulty}
         stats={getStats(key)}
-        onSubmitResult={(question, result) => handleChordSubmitResult(view.difficultyId, question, result)}
+        onSubmitResult={(question, result, responseSeconds) => handleChordSubmitResult(view.difficultyId, question, result, responseSeconds)}
         onResetStats={() => handleResetStats(key)}
         onBackHome={() => setView({ name: "home" })}
         onBackDifficulty={() => setView({ name: "chord-difficulty" })}
@@ -183,7 +195,7 @@ export default function App() {
         chapter={chapter}
         difficulty={difficulty}
         stats={getStats(key)}
-        onSubmitResult={(question, result) => handleTheorySubmitResult(view.difficultyId, question, result)}
+        onSubmitResult={(question, result, responseSeconds) => handleTheorySubmitResult(view.difficultyId, question, result, responseSeconds)}
         onResetStats={() => handleResetStats(key)}
         onBackHome={() => setView({ name: "home" })}
         onBackDifficulty={() => setView({ name: "theory-difficulty", chapterId: chapter.id })}
@@ -204,10 +216,39 @@ function loadStats(): StatsByScope {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
-    return JSON.parse(raw);
+    return normalizeLoadedStats(JSON.parse(raw));
   } catch {
     return {};
   }
+}
+
+function normalizeLoadedStats(rawStats: StatsByScope): StatsByScope {
+  return Object.fromEntries(
+    Object.entries(rawStats).map(([key, stats]) => {
+      if (!stats) {
+        return [key, createEmptyStats()];
+      }
+
+      const history = stats.history ?? [];
+      const timedHistory = history.map((item) => item.responseSeconds).filter((seconds): seconds is number => typeof seconds === "number");
+      const inferredTimedAnswers = stats.timedAnswers ?? timedHistory.length;
+      const inferredTotalSeconds = stats.totalResponseSeconds ?? timedHistory.reduce((sum, seconds) => sum + seconds, 0);
+      const inferredBestSeconds = stats.bestResponseSeconds ?? (timedHistory.length > 0 ? Math.min(...timedHistory) : undefined);
+
+      return [
+        key,
+        {
+          ...createEmptyStats(),
+          ...stats,
+          mistakesByType: stats.mistakesByType ?? {},
+          history,
+          totalResponseSeconds: inferredTotalSeconds,
+          timedAnswers: inferredTimedAnswers,
+          bestResponseSeconds: inferredBestSeconds,
+        },
+      ];
+    }),
+  );
 }
 
 function formatTime(): string {

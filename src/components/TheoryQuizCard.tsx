@@ -5,10 +5,11 @@ import { FretboardDiagram } from "./FretboardDiagram";
 import { MinorFunctionAudioPanel } from "./MinorFunctionAudioPanel";
 import { PentatonicBoxDiagram } from "./PentatonicBoxDiagram";
 import { RhythmStepSequencer, isRhythmGridQuestion } from "./RhythmStepSequencer";
+import { SpeedTimer, useQuestionTimer } from "./SpeedTimer";
 
 interface TheoryQuizCardProps {
   question: TheoryQuestion;
-  onSubmit: (result: TheoryEvaluationResult) => void;
+  onSubmit: (result: TheoryEvaluationResult, responseSeconds: number) => void;
   onNext: () => void;
 }
 
@@ -17,17 +18,24 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<TheoryEvaluationResult | null>(null);
   const isRhythmGrid = isRhythmGridQuestion(question);
+  const timer = useQuestionTimer(question.id);
 
   function handleSubmit() {
+    if (result) {
+      return;
+    }
+
     const nextResult = evaluateTheoryAnswer(question, answer);
+    const responseSeconds = timer.stop();
     setResult(nextResult);
-    onSubmit(nextResult);
+    onSubmit(nextResult, responseSeconds);
   }
 
   function handleNext() {
     setAnswer("");
     setShowHint(false);
     setResult(null);
+    timer.reset();
     onNext();
   }
 
@@ -41,10 +49,13 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
             <p className="mt-3 max-w-2xl text-base font-semibold leading-7 text-stone-800">{question.prompt}</p>
             <p className="mt-2 text-sm leading-6 text-stone-600">训练点：{question.typeLabel}</p>
           </div>
-          <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
-            <RefreshCw size={18} aria-hidden="true" />
-            下一题
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+            <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
+            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+              <RefreshCw size={18} aria-hidden="true" />
+              下一题
+            </button>
+          </div>
         </div>
       </div>
 
@@ -79,7 +90,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1" onClick={handleSubmit}>
+          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result)}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>

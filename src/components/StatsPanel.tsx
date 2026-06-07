@@ -1,5 +1,6 @@
-import { BarChart3, Flame, Target, Trophy } from "lucide-react";
+import { BarChart3, Flame, Gauge, Target, Trophy } from "lucide-react";
 import { QuizStats } from "../types/quiz";
+import { formatSeconds } from "./SpeedTimer";
 
 interface StatsPanelProps {
   stats: QuizStats;
@@ -8,6 +9,7 @@ interface StatsPanelProps {
 export function StatsPanel({ stats }: StatsPanelProps) {
   const accuracy = stats.totalAnswers === 0 ? 0 : Math.round((stats.correctAnswers / stats.totalAnswers) * 100);
   const weakestType = getWeakestType(stats.mistakesByType);
+  const averageSeconds = stats.timedAnswers && stats.totalResponseSeconds !== undefined ? Math.round(stats.totalResponseSeconds / stats.timedAnswers) : undefined;
 
   return (
     <section className="panel p-5">
@@ -22,6 +24,8 @@ export function StatsPanel({ stats }: StatsPanelProps) {
         <Metric label="正确率" value={`${accuracy}%`} icon={<Target size={16} aria-hidden="true" />} />
         <Metric label="连续答对" value={stats.currentStreak} icon={<Flame size={16} aria-hidden="true" />} />
         <Metric label="最高连对" value={stats.bestStreak} icon={<Trophy size={16} aria-hidden="true" />} />
+        <Metric label="平均用时" value={averageSeconds === undefined ? "暂无" : formatSeconds(averageSeconds)} icon={<Gauge size={16} aria-hidden="true" />} />
+        <Metric label="最快速答" value={stats.bestResponseSeconds === undefined ? "暂无" : formatSeconds(stats.bestResponseSeconds)} icon={<Gauge size={16} aria-hidden="true" />} />
         <Metric label="易错类型" value={weakestType} />
       </div>
     </section>

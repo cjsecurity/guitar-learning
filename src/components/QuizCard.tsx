@@ -12,10 +12,11 @@ import {
   getSkeletonTaskLabel,
   isNinthChord,
 } from "../utils/musicTheory";
+import { SpeedTimer, useQuestionTimer } from "./SpeedTimer";
 
 interface QuizCardProps {
   question: Question;
-  onSubmit: (result: EvaluationResult) => void;
+  onSubmit: (result: EvaluationResult, responseSeconds: number) => void;
   onNext: () => void;
 }
 
@@ -25,14 +26,20 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
   const [omitFifth, setOmitFifth] = useState(false);
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<EvaluationResult | null>(null);
+  const timer = useQuestionTimer(question.label);
 
   const hint = buildHint(question);
   const skeletonDegrees = getSkeletonDegreeLabels(question);
 
   function handleSubmit() {
+    if (result) {
+      return;
+    }
+
     const nextResult = evaluateAnswer(question, skeletonInput, finalInput, omitFifth);
+    const responseSeconds = timer.stop();
     setResult(nextResult);
-    onSubmit(nextResult);
+    onSubmit(nextResult, responseSeconds);
   }
 
   function handleNext() {
@@ -41,6 +48,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
     setOmitFifth(false);
     setShowHint(false);
     setResult(null);
+    timer.reset();
     onNext();
   }
 
@@ -56,10 +64,13 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
               先写根音的字母骨架，再套和弦公式。请按 1、3、5、7、9 的顺序输入；输入可用空格或逗号分隔。
             </p>
           </div>
-          <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
-            <RefreshCw size={18} aria-hidden="true" />
-            下一题
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+            <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
+            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+              <RefreshCw size={18} aria-hidden="true" />
+              下一题
+            </button>
+          </div>
         </div>
       </div>
 
@@ -121,7 +132,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1" onClick={handleSubmit}>
+          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result)}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>

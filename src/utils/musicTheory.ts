@@ -1,3 +1,5 @@
+import { QuestionPickOptions, normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+
 export type DifficultyId = "easy" | "medium" | "hard" | "hell";
 
 export type ChordType =
@@ -139,16 +141,10 @@ export function getDifficulty(id: DifficultyId): DifficultyConfig {
   return DIFFICULTIES.find((difficulty) => difficulty.id === id) ?? DIFFICULTIES[0];
 }
 
-export function createRandomQuestion(config: DifficultyConfig, previous?: Question): Question {
-  let question = buildQuestion(randomItem(config.roots), randomItem(config.chordTypes));
-
-  if (previous && config.roots.length * config.chordTypes.length > 1) {
-    while (question.label === previous.label) {
-      question = buildQuestion(randomItem(config.roots), randomItem(config.chordTypes));
-    }
-  }
-
-  return question;
+export function createRandomQuestion(config: DifficultyConfig, previousOrOptions?: Question | QuestionPickOptions<Question>): Question {
+  const options = normalizeQuestionPickOptions(previousOrOptions);
+  const pool = config.roots.flatMap((root) => config.chordTypes.map((type) => buildQuestion(root, type)));
+  return pickQuestionCandidate(pool, options);
 }
 
 export function buildQuestion(root: string, type: ChordType): Question {
@@ -555,8 +551,4 @@ function arraysEqual(left: string[], right: string[]): boolean {
 
 function mod12(value: number): number {
   return ((value % 12) + 12) % 12;
-}
-
-function randomItem<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
 }

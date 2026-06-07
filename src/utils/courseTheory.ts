@@ -1,3 +1,5 @@
+import { QuestionPickOptions, normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+
 export type TheoryDifficultyId = "easy" | "medium" | "hard" | "hell";
 
 export interface TheoryChapter {
@@ -557,12 +559,8 @@ export function getTheoryDifficulty(chapterId: string, difficultyId: TheoryDiffi
   return chapter.difficulties.find((difficulty) => difficulty.id === difficultyId) ?? chapter.difficulties[0];
 }
 
-export function createRandomTheoryQuestion(config: TheoryDifficultyConfig, previous?: TheoryQuestion): TheoryQuestion {
-  let question = randomItem(config.questions);
-  if (previous && config.questions.length > 1 && question.id === previous.id) {
-    question = randomItem(config.questions.filter((item) => item.id !== previous.id));
-  }
-  return question;
+export function createRandomTheoryQuestion(config: TheoryDifficultyConfig, previousOrOptions?: TheoryQuestion | QuestionPickOptions<TheoryQuestion>): TheoryQuestion {
+  return pickQuestionCandidate(config.questions, normalizeQuestionPickOptions(previousOrOptions));
 }
 
 export function evaluateTheoryAnswer(question: TheoryQuestion, answer: string): TheoryEvaluationResult {
@@ -850,8 +848,4 @@ function replaceChineseNumbers(value: string): string {
   };
 
   return Object.entries(phraseNumbers).reduce((text, [chinese, digit]) => text.split(chinese).join(digit), value);
-}
-
-function randomItem<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
 }

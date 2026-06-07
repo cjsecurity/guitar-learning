@@ -2,10 +2,11 @@ import { CheckCircle2, HelpCircle, Music, Play, RefreshCw, Send, Volume2, XCircl
 import { useState } from "react";
 import { getFrequency, playSequence, playSingle, playTogether } from "../utils/audioEngine";
 import { IntervalEvaluationResult, IntervalFeel, IntervalQuestion, evaluateIntervalAnswer } from "../utils/intervalTheory";
+import { SpeedTimer, useQuestionTimer } from "./SpeedTimer";
 
 interface IntervalQuizCardProps {
   question: IntervalQuestion;
-  onSubmit: (result: IntervalEvaluationResult) => void;
+  onSubmit: (result: IntervalEvaluationResult, responseSeconds: number) => void;
   onNext: () => void;
 }
 
@@ -19,11 +20,17 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
   const isHardIdentify = question.mode === "identify" && question.difficultyId === "hard";
+  const timer = useQuestionTimer(question.label);
 
   function handleSubmit() {
+    if (result) {
+      return;
+    }
+
     const nextResult = evaluateIntervalAnswer(question, { degree, semitones, quality, feel, target });
+    const responseSeconds = timer.stop();
     setResult(nextResult);
-    onSubmit(nextResult);
+    onSubmit(nextResult, responseSeconds);
   }
 
   function handleNext() {
@@ -35,6 +42,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
     setTarget("");
     setShowHint(false);
     setResult(null);
+    timer.reset();
     onNext();
   }
 
@@ -72,10 +80,13 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               {isHardIdentify ? "这一档只要求快速说出完整音程名；解释区会帮你核对度数、半音和协和分类。" : "练习顺序：度数看字母，性质看半音，最后判断基础协和分类。"}
             </p>
           </div>
-          <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
-            <RefreshCw size={18} aria-hidden="true" />
-            下一题
-          </button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
+            <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
+            <button type="button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
+              <RefreshCw size={18} aria-hidden="true" />
+              下一题
+            </button>
+          </div>
         </div>
       </div>
 
@@ -131,7 +142,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <button type="button" className="btn-primary flex-1" onClick={handleSubmit}>
+          <button type="button" className="btn-primary flex-1 disabled:cursor-not-allowed disabled:opacity-60" onClick={handleSubmit} disabled={Boolean(result)}>
             <Send size={18} aria-hidden="true" />
             提交答案
           </button>

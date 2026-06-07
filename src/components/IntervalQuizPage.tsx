@@ -8,21 +8,24 @@ import {
   IntervalQuestion,
   createRandomIntervalQuestion,
 } from "../utils/intervalTheory";
+import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { IntervalQuizCard } from "./IntervalQuizCard";
+import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 
 interface IntervalQuizPageProps {
   difficulty: IntervalDifficultyConfig;
   stats: QuizStats;
-  onSubmitResult: (question: IntervalQuestion, result: IntervalEvaluationResult) => void;
+  onSubmitResult: (question: IntervalQuestion, result: IntervalEvaluationResult, responseSeconds: number) => void;
   onResetStats: () => void;
   onBackHome: () => void;
   onBackDifficulty: () => void;
 }
 
 export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: IntervalQuizPageProps) {
-  const [question, setQuestion] = useState<IntervalQuestion>(() => createRandomIntervalQuestion(difficulty));
+  const [question, setQuestion] = useState<IntervalQuestion>(() => createRandomIntervalQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats) }));
+  const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立耳朵和尺子";
@@ -63,11 +66,12 @@ export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetSta
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <IntervalQuizCard
             question={question}
-            onSubmit={(result) => onSubmitResult(question, result)}
-            onNext={() => setQuestion((current) => createRandomIntervalQuestion(difficulty, current))}
+            onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
+            onNext={() => setQuestion((current) => createRandomIntervalQuestion(difficulty, { previous: current, reviewLabels }))}
           />
 
           <aside className="space-y-5">
+            <ReviewQueueNotice stats={stats} />
             <StatsPanel stats={stats} />
             <HistoryPanel history={stats.history} />
           </aside>

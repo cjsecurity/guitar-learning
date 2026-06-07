@@ -2,21 +2,24 @@ import { ArrowLeft, Home, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { QuizHistoryItem, QuizStats } from "../types/quiz";
 import { CHORD_CHAPTER, DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
+import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
 import { QuizCard } from "./QuizCard";
+import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 
 interface QuizPageProps {
   difficulty: DifficultyConfig;
   stats: QuizStats;
-  onSubmitResult: (question: Question, result: EvaluationResult) => void;
+  onSubmitResult: (question: Question, result: EvaluationResult, responseSeconds: number) => void;
   onResetStats: () => void;
   onBackHome: () => void;
   onBackDifficulty: () => void;
 }
 
 export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: QuizPageProps) {
-  const [question, setQuestion] = useState<Question>(() => createRandomQuestion(difficulty));
+  const [question, setQuestion] = useState<Question>(() => createRandomQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats) }));
+  const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立手感";
@@ -57,11 +60,12 @@ export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBa
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <QuizCard
             question={question}
-            onSubmit={(result) => onSubmitResult(question, result)}
-            onNext={() => setQuestion((current) => createRandomQuestion(difficulty, current))}
+            onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
+            onNext={() => setQuestion((current) => createRandomQuestion(difficulty, { previous: current, reviewLabels }))}
           />
 
           <aside className="space-y-5">
+            <ReviewQueueNotice stats={stats} />
             <StatsPanel stats={stats} />
             <HistoryPanel history={stats.history as QuizHistoryItem[]} />
           </aside>

@@ -5,9 +5,14 @@ const files = {
   musicTheory: readFileSync("src/utils/musicTheory.ts", "utf8"),
   intervalTheory: readFileSync("src/utils/intervalTheory.ts", "utf8"),
   audioEngine: readFileSync("src/utils/audioEngine.ts", "utf8"),
+  app: readFileSync("src/App.tsx", "utf8"),
+  quizTypes: readFileSync("src/types/quiz.ts", "utf8"),
   rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
   minorFunctionAudioPanel: readFileSync("src/components/MinorFunctionAudioPanel.tsx", "utf8"),
   pentatonicBoxDiagram: readFileSync("src/components/PentatonicBoxDiagram.tsx", "utf8"),
+  speedTimer: readFileSync("src/components/SpeedTimer.tsx", "utf8"),
+  reviewQueue: readFileSync("src/utils/reviewQueue.ts", "utf8"),
+  reviewQueueNotice: readFileSync("src/components/ReviewQueueNotice.tsx", "utf8"),
 };
 
 const source = Object.values(files).join("\n");
@@ -58,6 +63,14 @@ const requiredSnippets = [
   ["E minor / G major 共用五声盒子", "E 小调五声与 G 大调五声应落到同一指板盒子"],
   ["A minor / C major 共用五声盒子", "A 小调五声与 C 大调五声应落到同一指板盒子"],
   ["G minor / Bb major 共用五声盒子", "Bb 大调五声应连接到关系小调盒子"],
+  ["REVIEW_DRAW_RATE", "练习引擎应保留错题优先回炉概率"],
+  ["getReviewQuestionLabels", "练习引擎应从最近历史里提取未纠正错题"],
+  ["pickQuestionCandidate", "三个出题器应共用错题优先与避开上一题逻辑"],
+  ["SpeedTimer", "带“速算”的课程应显示本题计时"],
+  ["responseSeconds", "答题历史与统计应记录每题用时"],
+  ["timedAnswers", "平均用时应只统计已有秒表记录的答题"],
+  ["normalizeLoadedStats", "旧 localStorage 统计应能迁移到含用时字段的新结构"],
+  ["bestResponseSeconds", "统计模块应保留最快速答"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {

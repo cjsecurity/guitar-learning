@@ -2,7 +2,9 @@ import { ArrowLeft, Home, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { QuizStats } from "../types/quiz";
 import { TheoryChapter, TheoryDifficultyConfig, TheoryEvaluationResult, TheoryQuestion, createRandomTheoryQuestion } from "../utils/courseTheory";
+import { getReviewQuestionLabels } from "../utils/reviewQueue";
 import { HistoryPanel } from "./HistoryPanel";
+import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 import { TheoryQuizCard } from "./TheoryQuizCard";
 
@@ -10,14 +12,15 @@ interface TheoryQuizPageProps {
   chapter: TheoryChapter;
   difficulty: TheoryDifficultyConfig;
   stats: QuizStats;
-  onSubmitResult: (question: TheoryQuestion, result: TheoryEvaluationResult) => void;
+  onSubmitResult: (question: TheoryQuestion, result: TheoryEvaluationResult, responseSeconds: number) => void;
   onResetStats: () => void;
   onBackHome: () => void;
   onBackDifficulty: () => void;
 }
 
 export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: TheoryQuizPageProps) {
-  const [question, setQuestion] = useState<TheoryQuestion>(() => createRandomTheoryQuestion(difficulty));
+  const [question, setQuestion] = useState<TheoryQuestion>(() => createRandomTheoryQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats) }));
+  const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
 
   const headerStats = useMemo(() => {
     if (stats.totalAnswers === 0) return "从第一题开始建立反应速度";
@@ -58,11 +61,12 @@ export function TheoryQuizPage({ chapter, difficulty, stats, onSubmitResult, onR
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <TheoryQuizCard
             question={question}
-            onSubmit={(result) => onSubmitResult(question, result)}
-            onNext={() => setQuestion((current) => createRandomTheoryQuestion(difficulty, current))}
+            onSubmit={(result, responseSeconds) => onSubmitResult(question, result, responseSeconds)}
+            onNext={() => setQuestion((current) => createRandomTheoryQuestion(difficulty, { previous: current, reviewLabels }))}
           />
 
           <aside className="space-y-5">
+            <ReviewQueueNotice stats={stats} />
             <StatsPanel stats={stats} />
             <HistoryPanel history={stats.history} />
           </aside>

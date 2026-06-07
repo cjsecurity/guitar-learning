@@ -1,5 +1,6 @@
 import { Clock3 } from "lucide-react";
 import { QuizHistoryItem } from "../types/quiz";
+import { formatSeconds } from "./SpeedTimer";
 
 interface HistoryPanelProps {
   history: QuizHistoryItem[];
@@ -29,7 +30,10 @@ export function HistoryPanel({ history }: HistoryPanelProps) {
                   {item.correct ? "正确" : "错误"}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-stone-500">{item.time}</p>
+              <p className="mt-1 text-xs text-stone-500">
+                {item.time}
+                {item.responseSeconds !== undefined && <> · 用时 {formatSeconds(item.responseSeconds)}</>}
+              </p>
               <p className="mt-2 text-sm text-stone-700">答案：{item.expectedFinal}</p>
             </article>
           ))}

@@ -1,3 +1,5 @@
+import { QuestionPickOptions, normalizeQuestionPickOptions, pickQuestionCandidate } from "./reviewQueue";
+
 export type IntervalDifficultyId = "easy" | "medium" | "hard" | "hell";
 export type IntervalQuestionMode = "identify" | "spell";
 export type IntervalFeel = "完全协和" | "不完全协和" | "不协和";
@@ -155,13 +157,8 @@ export function getIntervalDifficulty(id: IntervalDifficultyId): IntervalDifficu
   return INTERVAL_DIFFICULTIES.find((difficulty) => difficulty.id === id) ?? INTERVAL_DIFFICULTIES[0];
 }
 
-export function createRandomIntervalQuestion(config: IntervalDifficultyConfig, previous?: IntervalQuestion): IntervalQuestion {
-  if (!previous) {
-    return buildRandomQuestion(config);
-  }
-
-  const candidates = buildQuestionPool(config).filter((question) => question.label !== previous.label);
-  return randomItem(candidates.length > 0 ? candidates : buildQuestionPool(config));
+export function createRandomIntervalQuestion(config: IntervalDifficultyConfig, previousOrOptions?: IntervalQuestion | QuestionPickOptions<IntervalQuestion>): IntervalQuestion {
+  return pickQuestionCandidate(buildQuestionPool(config), normalizeQuestionPickOptions(previousOrOptions));
 }
 
 export function evaluateIntervalAnswer(
@@ -202,10 +199,6 @@ export function normalizeNote(raw: string): string {
   if (!compact) return "";
 
   return `${compact.charAt(0).toUpperCase()}${compact.slice(1).replace(/B/g, "b")}`;
-}
-
-function buildRandomQuestion(config: IntervalDifficultyConfig): IntervalQuestion {
-  return randomItem(buildQuestionPool(config));
 }
 
 function buildQuestionPool(config: IntervalDifficultyConfig): IntervalQuestion[] {
@@ -427,8 +420,4 @@ function getSimpleEnharmonicName(note: string): string | null {
 
 function mod12(value: number): number {
   return ((value % 12) + 12) % 12;
-}
-
-function randomItem<T>(items: T[]): T {
-  return items[Math.floor(Math.random() * items.length)];
 }

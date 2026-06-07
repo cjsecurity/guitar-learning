@@ -10,6 +10,7 @@ export interface QuizHistoryItem {
   correct: boolean;
   expectedFinal: string;
   time: string;
+  responseSeconds?: number;
 }
 
 export interface QuizStats {
@@ -17,6 +18,9 @@ export interface QuizStats {
   correctAnswers: number;
   currentStreak: number;
   bestStreak: number;
+  totalResponseSeconds?: number;
+  timedAnswers?: number;
+  bestResponseSeconds?: number;
   mistakesByType: Record<string, number>;
   history: QuizHistoryItem[];
 }
@@ -28,6 +32,9 @@ export const EMPTY_STATS: QuizStats = {
   correctAnswers: 0,
   currentStreak: 0,
   bestStreak: 0,
+  totalResponseSeconds: 0,
+  timedAnswers: 0,
+  bestResponseSeconds: undefined,
   mistakesByType: {},
   history: [],
 };
