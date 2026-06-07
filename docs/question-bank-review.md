@@ -68,7 +68,7 @@
 | A/D/E/C/G 小调的导音减七功能 | 导音减七与省略根音的属七降九 | 通过，由 `buildLeadingToneDiminishedQuestions` 生成，反馈区区分功能和声与爵士/吉他语境 |
 | Ebmaj7 / Fmaj7 | C major 内外判断 | 通过 |
 | C 的 bIIImaj7 / bVImaj7 / bVII7 / iv / bVII | C major 从同主音 C minor 借用 | 通过，由 `buildBorrowedDegreeQuestions` 参数化生成，覆盖流行/摇滚高频 borrowed iv 与 bVII |
-| C/G/F 的 bIII-bVI-v、IV-iv、bVII 进行 | 同主音小调借用进行，含 borrowed iv 与 bVII | 通过，由 `buildBorrowedProgressionQuestions` 生成 |
+| C/G/F 的 bIII-bVI-v、IV-iv、bVII 进行 + G-B-C-Cm | 同主音小调借用进行，含 borrowed iv 与 bVII | 通过，由 `buildBorrowedProgressionQuestions` 生成，并用 `G - B - C - Cm` 作为 borrowed iv 听觉锚点 |
 | G/F/Bb/Eb 的 bIIImaj7 / bVImaj7 / bVII7 / iv / bVII | 换调后的同主音借用 | 通过，由 key + borrowed degree 参数化生成 |
 | 4/4 的 16 分格 / 每拍口令 | 十六分音符细分 | 通过 |
 | X..X..X..X..X... | 3+3+3+3+4 的 16 格重音移位 | 通过，长度 16，重音在 1、4、7、10、13 |

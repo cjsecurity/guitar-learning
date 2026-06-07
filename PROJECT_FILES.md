@@ -12,6 +12,16 @@
 git@github.com:cjsecurity/guitar-learning.git
 ```
 
+## Git 管理边界
+
+当前网站以 `guitar-learning/` 作为唯一项目根目录。后续开发、提交、构建、运行都应该在这个目录内完成：
+
+```bash
+cd /Users/joeyfu/Documents/Playground/guitar-learning
+```
+
+纳入 Git 的内容包括：React 源码、Vite/Tailwind/TypeScript 配置、乐理题库、音频与判题工具、题库审核脚本、项目说明文档。Playground 外层的旧备份、压缩包、飞书课程笔记和其他安全分析文件不属于当前网站源码。
+
 ## 网站运行必需文件
 
 ### 项目入口与构建配置

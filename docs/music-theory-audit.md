@@ -97,6 +97,7 @@ npm run build
 - 页面上使用“同主音大小调借用”作为中文说明，避免把课堂口语当成概念名。
 - 常见 borrowed iv、bVII、bVII7 需要进入题库，因为它们是流行/摇滚吉他里高频出现的同主音借用色彩。
 - 借用和弦题库应由 key + borrowed degree 参数化生成；常考 bIIImaj7、bVImaj7、bVII7、iv、bVII，并在进行题中让学生从实际和弦串里找出借用和弦。
+- borrowed iv 需要提供听觉锚点；可用 `G - B - C - Cm` 中的 `Cm` 作为 G major 里的 borrowed iv 示例，不引用歌词。
 
 ## 导音减七与属七降九
 

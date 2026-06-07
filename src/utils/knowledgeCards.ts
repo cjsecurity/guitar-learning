@@ -81,8 +81,8 @@ const KNOWLEDGE_CARDS: Record<string, KnowledgeCardContent> = {
     chapterId: "borrowed-chords",
     title: "借用和弦来自同主音大小调，不是随便外来",
     rule: "同主音大小调借用就是在同一个主音中心下，从平行小调或大调借来和弦色彩。C major 可以从 C minor 借 bIII、iv、bVI、bVII。",
-    example: "例：C - F - Fm - C 里的 Fm 是 borrowed iv，来自 C minor。",
-    selfCheck: "过关标准：看到 Cmaj7 Ebmaj7 Abmaj7 Gm7，能指出 Ebmaj7、Abmaj7、Gm7 都可借自 C minor。",
+    example: "例：C - F - Fm - C 里的 Fm 是 borrowed iv，来自 C minor。也可以用 Radiohead《Creep》的 G - B - C - Cm 记住这个声音：Cm 是 G major 里的 borrowed iv。",
+    selfCheck: "过关标准：看到 Cmaj7 Ebmaj7 Abmaj7 Gm7 能指出借用和弦；听到或弹到 C -> Cm，也能说这是 IV -> iv 的暗色变化。",
   },
   "rhythm-grid": {
     chapterId: "rhythm-grid",

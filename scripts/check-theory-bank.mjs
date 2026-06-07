@@ -71,6 +71,8 @@ const requiredSnippets = [
   ["buildBorrowedProgressionQuestions", "借用和弦进行题应由 key 参数化生成"],
   ["getBorrowedChord", "借用和弦应从同主音自然小调自动拼写"],
   ["bVII 三和弦", "借用和弦题应覆盖流行/摇滚高频 bVII 三和弦"],
+  ["buildBorrowedIvSongAnchorQuestion", "borrowed iv 应有歌曲级听觉锚点题"],
+  ["G - B - C - Cm", "borrowed iv 应用 G - B - C - Cm 作为无歌词听觉锚点"],
   ["playRhythmPattern", "节奏网格应支持音频播放"],
   ["RhythmStepSequencer", "16 分 pattern 题应使用点击式 step sequencer"],
   ["RhythmTapTrainer", "16 分 pattern 题应提供 tap-along 跟拍检测"],

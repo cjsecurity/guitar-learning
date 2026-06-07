@@ -118,7 +118,7 @@ const BORROWED_DEGREES: Record<BorrowedDegreeId, { scaleIndex: number; suffix: s
     suffix: "m",
     typeLabel: "borrowed iv",
     hint: "iv 是把大调里的 IV 借成同主音小调里的小四级。",
-    explanation: "iv 是流行歌里高频的小四级借用，会让大调进行短暂变暗。",
+    explanation: "iv 是流行歌里高频的小四级借用，会让大调进行短暂变暗。一个常用听觉锚点是 Radiohead《Creep》的 G - B - C - Cm，其中 Cm 是 G major 里的 borrowed iv。",
   },
   bVII: {
     scaleIndex: 6,
@@ -525,7 +525,10 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
       hard: {
         badge: "进行标注",
         description: "给课堂进行，标出借用和弦。",
-        questions: buildBorrowedProgressionQuestions(["C", "G", "F"]),
+        questions: [
+          ...buildBorrowedProgressionQuestions(["C", "G", "F"]),
+          buildBorrowedIvSongAnchorQuestion(),
+        ],
       },
       hell: {
         badge: "换调借用",
@@ -959,6 +962,19 @@ function buildBorrowedProgressionQuestions(keys: string[]): QuestionSeed[] {
       ),
     ];
   });
+}
+
+function buildBorrowedIvSongAnchorQuestion(): QuestionSeed {
+  return q(
+    "G-B-C-Cm",
+    "常见歌曲分析里，G - B - C - Cm 这个进行中哪个和弦是 G major 里的 borrowed iv？",
+    "借用和弦",
+    "Cm",
+    ["C minor", "C小三和弦"],
+    "borrowed iv",
+    ["G major 的 IV 是 C；同主音 G minor 的 iv 是 Cm。", "这类 I - III - IV - iv 色彩常被用来训练 borrowed iv 的听觉记忆。"],
+    ["Cm 是 G major 里的 borrowed iv。它来自同主音 G minor，让 C -> Cm 的变化听起来像大调里突然暗下来一点。"],
+  );
 }
 
 function buildMinorScaleQuestions(minorRoots: string[]): QuestionSeed[] {
