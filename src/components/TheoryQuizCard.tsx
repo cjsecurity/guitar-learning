@@ -64,7 +64,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
         <CircleOfFifthsDiagram question={question} />
-        <FretboardDiagram question={question} />
+        <FretboardDiagram question={question} value={answer} onChange={setAnswer} isSubmitted={Boolean(result)} />
         <PentatonicBoxDiagram question={question} />
         <MinorFunctionAudioPanel question={question} />
         {isRhythmGrid && <RhythmStepSequencer question={question} value={answer} onChange={setAnswer} />}

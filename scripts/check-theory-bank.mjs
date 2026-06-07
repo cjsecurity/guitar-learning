@@ -19,6 +19,7 @@ const files = {
   intervalQuizCard: readFileSync("src/components/IntervalQuizCard.tsx", "utf8"),
   theoryQuizPage: readFileSync("src/components/TheoryQuizPage.tsx", "utf8"),
   theoryQuizCard: readFileSync("src/components/TheoryQuizCard.tsx", "utf8"),
+  fretboardDiagram: readFileSync("src/components/FretboardDiagram.tsx", "utf8"),
   statsPanel: readFileSync("src/components/StatsPanel.tsx", "utf8"),
   reviewPracticePanel: readFileSync("src/components/ReviewPracticePanel.tsx", "utf8"),
   rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
@@ -91,6 +92,11 @@ const requiredSnippets = [
   ["data-testid=\"review-only-toggle\"", "错题复习中心应支持只练错题模式"],
   ["data-testid=\"review-practice-now-button\"", "错题复习中心应支持马上抽一题错题"],
   ["reviewRate: shouldReviewOnly ? 1 : undefined", "只练错题模式应把抽题概率提升为 100% 错题优先"],
+  ["data-testid=\"fretboard-practice-panel\"", "指板根音章节应提供可点击的指板实操面板"],
+  ["data-testid={`fretboard-cell-${stringNumber}-${fret}`}", "指板实操每个 5/6 弦品位格需要稳定测试定位"],
+  ["data-testid={`fretboard-ghost-string-${stringNumber}`}", "综合档应能选择 ghost note 更自然落在哪根弦"],
+  ["直接在 5/6 弦指板上点答案", "指板定位题应从纸面输入升级为真实点击定位"],
+  ["正确位置是", "提交后指板应揭示正确位置，形成演奏反馈"],
   ["Dm9 省略辨认", "省略音题目标签不应预先写 no5 泄露答案"],
   ["G13 省略辨认", "属十三省略音题目标签不应预先写 no5 泄露答案"],
   ["G9", "延伸音结构题应覆盖属九和弦完整结构"],
@@ -352,6 +358,22 @@ async function runRuntimeTheoryChecks() {
     assertRuntime(
       courseTheory.evaluateTheoryAnswer(cmaj7Root, "六弦八品拍六弦").isFullyCorrect,
       "指板根音题应接受全中文数字输入：六弦八品拍六弦",
+    );
+    assertRuntime(
+      !courseTheory.evaluateTheoryAnswer(cmaj7Root, "五弦八品拍五弦").isFullyCorrect,
+      "指板实操应区分弦号；同品位但点错弦不能判正确",
+    );
+
+    const fretboardEasy = courseTheory.getTheoryDifficulty("fretboard-root", "easy");
+    const cOnFifthString = fretboardEasy.questions.find((question) => question.label === "C 在五弦");
+    assertRuntime(Boolean(cOnFifthString), "指板根音简单档应包含 C 在五弦");
+    assertRuntime(
+      courseTheory.evaluateTheoryAnswer(cOnFifthString, "5弦3品").isFullyCorrect,
+      "指板点击输入生成的 5弦3品 应判为正确",
+    );
+    assertRuntime(
+      !courseTheory.evaluateTheoryAnswer(cOnFifthString, "6弦3品").isFullyCorrect,
+      "指板点击输入点到 6弦3品 时不应通过 C 在五弦",
     );
 
     for (const chapter of courseTheory.THEORY_CHAPTERS) {
