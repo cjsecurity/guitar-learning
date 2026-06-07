@@ -1,4 +1,4 @@
-import { CheckCircle2, HelpCircle, Music, Play, RefreshCw, Send, Volume2, XCircle } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, HelpCircle, Music, Play, RefreshCw, Send, Volume2, XCircle } from "lucide-react";
 import { useState } from "react";
 import { playSequence, playSingle, playTogether } from "../utils/audioEngine";
 import { INTERVALS, IntervalEvaluationResult, IntervalFeel, IntervalId, IntervalQuestion, evaluateIntervalAnswer, getIntervalAudioFrequencies } from "../utils/intervalTheory";
@@ -18,10 +18,20 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [hasPlayed, setHasPlayed] = useState(false);
   const [target, setTarget] = useState("");
   const [showHint, setShowHint] = useState(false);
+  const [blindListening, setBlindListening] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
   const requiresTargetInput = question.mode === "spell";
   const requiresDegreeInput = question.mode === "identify";
   const requiresQualityInput = question.mode === "identify";
+  const canUseBlindListening = question.mode === "identify";
+  const isBlindListeningActive = canUseBlindListening && blindListening && !result;
+  const displayQuestionLabel = isBlindListeningActive ? `${question.root} -> ?` : question.label;
+  const promptText =
+    question.mode === "spell"
+      ? "根据根音和音程名，写出目标音并完成音程分析。"
+      : isBlindListeningActive
+        ? "盲听模式：目标音先隐藏，先播放声音，再填写音程分析。"
+        : "根据根音和目标音，判断音程。";
   const canSubmit = Boolean(
     semitones.trim() &&
       feel &&
@@ -87,16 +97,26 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         <p className="text-sm font-medium text-leaf">当前题目</p>
         <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 data-testid="current-question-label" className="text-5xl font-black tracking-normal text-ink sm:text-6xl">{question.label}</h1>
-            <p className="mt-3 text-base font-semibold text-stone-800">
-              {question.mode === "spell" ? "根据根音和音程名，写出目标音并完成音程分析。" : "根据根音和目标音，判断音程。"}
-            </p>
+            <h1 data-testid="current-question-label" className="text-5xl font-black tracking-normal text-ink sm:text-6xl">{displayQuestionLabel}</h1>
+            <p className="mt-3 text-base font-semibold text-stone-800">{promptText}</p>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600">
               练习顺序：度数看字母，性质看半音，最后判断基础协和分类。
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:items-end">
             <SpeedTimer seconds={timer.elapsedSeconds} isStopped={timer.isStopped} />
+            {canUseBlindListening && (
+              <button
+                type="button"
+                data-testid="blind-listening-toggle"
+                className={`${blindListening ? "btn-warm" : "btn-secondary"} w-full sm:w-auto`}
+                onClick={() => setBlindListening((value) => !value)}
+                aria-pressed={blindListening}
+              >
+                {blindListening ? <Eye size={18} aria-hidden="true" /> : <EyeOff size={18} aria-hidden="true" />}
+                {blindListening ? "显示目标音" : "盲听模式"}
+              </button>
+            )}
             <button type="button" data-testid="next-question-button" className="btn-secondary w-full sm:w-auto" onClick={handleNext}>
               <RefreshCw size={18} aria-hidden="true" />
               下一题
@@ -114,6 +134,11 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
           <p className="mt-2 text-sm leading-6 text-stone-600">
             先听根音，再听目标音。听不出来时先播放下面的对比样本，再回来听当前题。
           </p>
+          {isBlindListeningActive && (
+            <p data-testid="blind-listening-notice" className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold leading-6 text-amber-800">
+              盲听模式已开启：目标音名会隐藏到提交后。先听根音、目标音、旋律音程和和声音程，再用理论反推答案。
+            </p>
+          )}
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <AudioButton label="播放根音" onClick={playRoot} />
             <AudioButton label="播放目标音" onClick={playTarget} />
@@ -183,14 +208,15 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
         {showHint && (
           <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-4">
             <h2 className="text-base font-bold text-stone-900">解题提示</h2>
-            <ol className="mt-3 space-y-2 text-sm leading-6 text-stone-700">
-              <li>1. 先数字母，决定它是几度。</li>
-              <li>2. 再数半音，决定大、小、纯、增、减。</li>
-              <li>3. 本课程的基础协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
-              {question.mode === "identify" && question.difficultyId === "hard" && <li>4. 本档已给目标音，不需要再输入目标音。</li>}
-              {question.mode === "identify" && <li>4. 本档要填写度数、半音、完整音程名和基础协和分类。</li>}
-              {question.mode === "spell" && <li>4. 反向题已给出度数和完整音程名，先定目标音，再填半音和基础协和分类。</li>}
-              {question.mode === "spell" && <li>5. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
+            <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6 text-stone-700">
+              <li>先数字母，决定它是几度。</li>
+              <li>再数半音，决定大、小、纯、增、减。</li>
+              <li>本课程的基础协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
+              {isBlindListeningActive && <li>盲听模式下先不要看目标音：先听根音到目标音的距离，再用半音和协和分类互相校验。</li>}
+              {question.mode === "identify" && question.difficultyId === "hard" && <li>本档已给目标音，不需要再输入目标音。</li>}
+              {question.mode === "identify" && <li>本档要填写度数、半音、完整音程名和基础协和分类。</li>}
+              {question.mode === "spell" && <li>反向题已给出度数和完整音程名，先定目标音，再填半音和基础协和分类。</li>}
+              {question.mode === "spell" && <li>反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
         )}
@@ -217,6 +243,11 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             <p className="mt-4 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
               你选的是 {feel || "未选择"}，标准分类是 {result.expectedFeel}。先听声音，再用理论检查：{question.interval.audioExample}。
             </p>
+            {blindListening && question.mode === "identify" && (
+              <p data-testid="blind-listening-reveal" className="mt-3 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
+                盲听揭示：本题目标音是 {question.target}，完整题面是 {question.label}。
+              </p>
+            )}
 
             <ul className="mt-4 space-y-2 text-sm leading-6 text-stone-800">
               {result.explanation.map((line) => (
