@@ -19,13 +19,15 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
   const [target, setTarget] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<IntervalEvaluationResult | null>(null);
-  const requiresTargetAnswer = question.mode === "spell" || question.difficultyId === "hard";
+  const requiresTargetInput = question.mode === "spell";
+  const requiresDegreeInput = question.mode === "identify";
+  const requiresQualityInput = question.mode === "identify";
   const canSubmit = Boolean(
-    degree.trim() &&
-      semitones.trim() &&
-      quality.trim() &&
+    semitones.trim() &&
       feel &&
-      (!requiresTargetAnswer || target.trim()),
+      (!requiresDegreeInput || degree.trim()) &&
+      (!requiresQualityInput || quality.trim()) &&
+      (!requiresTargetInput || target.trim()),
   );
   const timer = useQuestionTimer(question.label);
 
@@ -34,7 +36,13 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
       return;
     }
 
-    const nextResult = evaluateIntervalAnswer(question, { degree, semitones, quality, feel, target });
+    const nextResult = evaluateIntervalAnswer(question, {
+      degree: requiresDegreeInput ? degree : String(question.interval.degreeNumber),
+      semitones,
+      quality: requiresQualityInput ? quality : question.interval.fullName,
+      feel,
+      target: requiresTargetInput ? target : question.target,
+    });
     const responseSeconds = timer.stop();
     setResult(nextResult);
     onSubmit(nextResult, responseSeconds);
@@ -117,24 +125,24 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
 
         <ComparisonSamples />
 
-        {requiresTargetAnswer ? (
+        {question.mode === "spell" ? (
           <div className="grid gap-4 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="label">目标音</span>
+              <span className="label">目标音（请填写）</span>
               <input data-testid="interval-target-input" className="input" value={target} onChange={(event) => setTarget(event.target.value)} placeholder="例如 F#、Gb、C" />
             </label>
-            <label className="space-y-2">
-              <span className="label">度数</span>
-              <input data-testid="interval-degree-input" className="input" value={degree} onChange={(event) => setDegree(event.target.value)} placeholder="例如 四度 或 4度" />
-            </label>
+            <div className="space-y-2 rounded-md border border-stone-200 bg-white px-3 py-3 text-sm text-stone-700">
+              <span className="label">度数（已知）</span>
+              <p>{question.interval.degreeName}</p>
+            </div>
             <label className="space-y-2">
               <span className="label">半音数量</span>
               <input data-testid="interval-semitones-input" className="input" value={semitones} onChange={(event) => setSemitones(event.target.value)} placeholder="例如 6" />
             </label>
-            <label className="space-y-2">
-              <span className="label">完整音程名</span>
-              <input data-testid="interval-quality-input" className="input" value={quality} onChange={(event) => setQuality(event.target.value)} placeholder="例如 增四度 或 A4" />
-            </label>
+            <div className="space-y-2 rounded-md border border-stone-200 bg-white px-3 py-3 text-sm text-stone-700">
+              <span className="label">完整音程名（已知）</span>
+              <p>{question.interval.fullName}</p>
+            </div>
             <div className="space-y-2 md:col-span-2">
               <span className="label">基础协和分类</span>
               <FeelPicker value={feel} onChange={setFeel} />
@@ -179,7 +187,9 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <li>1. 先数字母，决定它是几度。</li>
               <li>2. 再数半音，决定大、小、纯、增、减。</li>
               <li>3. 本课程的基础协和分类按完全协和、不完全协和、不协和来判断；纯四度归入完全协和。</li>
-              {requiresTargetAnswer && <li>4. 本档要同时答目标音、度数、半音、完整音程名和基础协和分类；目标音也要按题目拼写写对。</li>}
+              {question.mode === "identify" && question.difficultyId === "hard" && <li>4. 本档已给目标音，不需要再输入目标音。</li>}
+              {question.mode === "identify" && <li>4. 本档要填写度数、半音、完整音程名和基础协和分类。</li>}
+              {question.mode === "spell" && <li>4. 反向题已给出度数和完整音程名，先定目标音，再填半音和基础协和分类。</li>}
               {question.mode === "spell" && <li>5. 反向题先定目标字母，再用 # 或 b 补足半音距离。</li>}
             </ol>
           </div>
@@ -201,7 +211,7 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
               <ResultBadge label="半音" status={answerStatus(result.semitoneCorrect)} value={`${result.expectedSemitones}`} />
               <ResultBadge label="音程名" status={answerStatus(result.qualityCorrect)} value={result.expectedQuality} />
               <ResultBadge label="基础协和分类" status={answerStatus(result.feelCorrect)} value={result.expectedFeel} />
-              {requiresTargetAnswer && <ResultBadge label="目标音" status={answerStatus(result.targetCorrect)} value={result.expectedTarget} />}
+              {question.mode === "spell" && <ResultBadge label="目标音" status={answerStatus(result.targetCorrect)} value={result.expectedTarget} />}
             </div>
 
             <p className="mt-4 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
