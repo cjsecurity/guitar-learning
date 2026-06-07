@@ -13,6 +13,7 @@ import { getRecentQuestionLabels, getReviewQuestionLabels, mergeRecentQuestionLa
 import { HistoryPanel } from "./HistoryPanel";
 import { IntervalQuizCard } from "./IntervalQuizCard";
 import { KnowledgeCard } from "./KnowledgeCard";
+import { ReviewPracticePanel } from "./ReviewPracticePanel";
 import { ReviewQueueNotice } from "./ReviewQueueNotice";
 import { StatsPanel } from "./StatsPanel";
 
@@ -28,6 +29,7 @@ interface IntervalQuizPageProps {
 export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBackHome, onBackDifficulty }: IntervalQuizPageProps) {
   const [question, setQuestion] = useState<IntervalQuestion>(() => createRandomIntervalQuestion(difficulty, { reviewLabels: getReviewQuestionLabels(stats), recentLabels: getRecentQuestionLabels(stats) }));
   const [shownLabels, setShownLabels] = useState<string[]>(() => [question.label]);
+  const [reviewOnly, setReviewOnly] = useState(false);
   const reviewLabels = useMemo(() => getReviewQuestionLabels(stats), [stats]);
   const recentLabels = useMemo(() => getRecentQuestionLabels(stats), [stats]);
   const effectiveRecentLabels = useMemo(() => mergeRecentQuestionLabels([shownLabels, recentLabels]), [shownLabels, recentLabels]);
@@ -38,8 +40,14 @@ export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetSta
     return `${stats.totalAnswers} 题 · 正确率 ${accuracy}% · 当前连对 ${stats.currentStreak}`;
   }, [stats]);
 
-  function handleNextQuestion() {
-    const nextQuestion = createRandomIntervalQuestion(difficulty, { previous: question, reviewLabels, recentLabels: effectiveRecentLabels });
+  function handleNextQuestion(forceReview = false) {
+    const shouldReviewOnly = (forceReview || reviewOnly) && reviewLabels.length > 0;
+    const nextQuestion = createRandomIntervalQuestion(difficulty, {
+      previous: question,
+      reviewLabels,
+      recentLabels: shouldReviewOnly ? undefined : effectiveRecentLabels,
+      reviewRate: shouldReviewOnly ? 1 : undefined,
+    });
     setQuestion(nextQuestion);
     setShownLabels((labels) => mergeRecentQuestionLabels([[nextQuestion.label], labels]));
   }
@@ -84,6 +92,7 @@ export function IntervalQuizPage({ difficulty, stats, onSubmitResult, onResetSta
           />
 
           <aside className="space-y-5">
+            <ReviewPracticePanel stats={stats} active={reviewOnly} onToggle={setReviewOnly} onPracticeNow={() => handleNextQuestion(true)} />
             <ReviewQueueNotice stats={stats} />
             <StatsPanel stats={stats} />
             <HistoryPanel history={stats.history} />

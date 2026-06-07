@@ -1,4 +1,4 @@
-import { BarChart3, Flame, Gauge, Target, Trophy } from "lucide-react";
+import { BarChart3, CheckCircle2, Flame, Gauge, LockKeyhole, Target, Trophy } from "lucide-react";
 import { QuizStats } from "../types/quiz";
 import { formatSeconds } from "./SpeedTimer";
 
@@ -6,10 +6,17 @@ interface StatsPanelProps {
   stats: QuizStats;
 }
 
+const PASS_REQUIRED_ANSWERS = 20;
+const PASS_REQUIRED_ACCURACY = 90;
+const PASS_REQUIRED_STREAK = 20;
+const PASS_TARGET_AVERAGE_SECONDS = 20;
+
 export function StatsPanel({ stats }: StatsPanelProps) {
   const accuracy = stats.totalAnswers === 0 ? 0 : Math.round((stats.correctAnswers / stats.totalAnswers) * 100);
   const weakestType = getWeakestType(stats.mistakesByType);
   const averageSeconds = stats.timedAnswers && stats.totalResponseSeconds !== undefined ? Math.round(stats.totalResponseSeconds / stats.timedAnswers) : undefined;
+  const passItems = getPassItems(stats, accuracy, averageSeconds);
+  const passed = passItems.every((item) => item.done);
 
   return (
     <section className="panel p-5">
@@ -27,6 +34,28 @@ export function StatsPanel({ stats }: StatsPanelProps) {
         <Metric label="平均用时" value={averageSeconds === undefined ? "暂无" : formatSeconds(averageSeconds)} icon={<Gauge size={16} aria-hidden="true" />} />
         <Metric label="最快速答" value={stats.bestResponseSeconds === undefined ? "暂无" : formatSeconds(stats.bestResponseSeconds)} icon={<Gauge size={16} aria-hidden="true" />} />
         <Metric label="易错类型" value={weakestType} />
+      </div>
+
+      <div className={`mt-4 rounded-lg border px-3 py-3 ${passed ? "border-emerald-200 bg-emerald-50" : "border-stone-200 bg-white"}`}>
+        <div className="flex items-start gap-2">
+          {passed ? (
+            <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-700" size={18} aria-hidden="true" />
+          ) : (
+            <LockKeyhole className="mt-0.5 shrink-0 text-stone-500" size={18} aria-hidden="true" />
+          )}
+          <div>
+            <h3 className="text-sm font-black text-ink">{passed ? "阶段通关" : "阶段通关标准"}</h3>
+            <p className="mt-1 text-xs leading-5 text-stone-600">
+              通关只证明你能完成当前题型的纸面推导、规则识别和输入表达；指板实操、闭眼听辨和歌曲应用还需要单独训练。
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 space-y-2">
+          {passItems.map((item) => (
+            <PassItem key={item.label} done={item.done} label={item.label} detail={item.detail} />
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -54,4 +83,38 @@ function getWeakestType(mistakesByType: QuizStats["mistakesByType"]): string {
   }
 
   return entries[0][0];
+}
+
+function getPassItems(stats: QuizStats, accuracy: number, averageSeconds: number | undefined) {
+  return [
+    {
+      done: stats.totalAnswers >= PASS_REQUIRED_ANSWERS && accuracy >= PASS_REQUIRED_ACCURACY,
+      label: "样本稳定",
+      detail: `${stats.totalAnswers}/${PASS_REQUIRED_ANSWERS} 题，正确率 ${accuracy}%/${PASS_REQUIRED_ACCURACY}%`,
+    },
+    {
+      done: stats.currentStreak >= PASS_REQUIRED_STREAK,
+      label: "连续稳定",
+      detail: `${stats.currentStreak}/${PASS_REQUIRED_STREAK} 题连续答对`,
+    },
+    {
+      done: averageSeconds !== undefined && averageSeconds <= PASS_TARGET_AVERAGE_SECONDS,
+      label: "反应速度",
+      detail: averageSeconds === undefined ? `暂无用时记录，目标 ≤ ${PASS_TARGET_AVERAGE_SECONDS} 秒` : `${formatSeconds(averageSeconds)} / ${formatSeconds(PASS_TARGET_AVERAGE_SECONDS)}`,
+    },
+  ];
+}
+
+function PassItem({ done, label, detail }: { done: boolean; label: string; detail: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-md bg-mist px-3 py-2">
+      <div>
+        <p className="text-xs font-black text-ink">{label}</p>
+        <p className="mt-0.5 text-xs text-stone-600">{detail}</p>
+      </div>
+      <span className={`shrink-0 rounded-full px-2 py-1 text-xs font-black ${done ? "bg-emerald-100 text-emerald-800" : "bg-stone-200 text-stone-600"}`}>
+        {done ? "达成" : "未达成"}
+      </span>
+    </div>
+  );
 }
