@@ -76,6 +76,7 @@ const requiredSnippets = [
   ["data-testid=\"reset-stats-button\"", "重置统计按钮需要稳定测试定位"],
   ["testId={`chapter-card-${chapter.id}`}", "所有章节入口需要稳定测试定位"],
   ["data-testid={`rhythm-step-${index + 1}`}", "节奏 16 格按钮需要稳定测试定位"],
+  ["data-testid=\"review-queue-notice\"", "错题回炉提示需要稳定测试定位"],
   ["Dm9 省略辨认", "省略音题目标签不应预先写 no5 泄露答案"],
   ["G13 省略辨认", "属十三省略音题目标签不应预先写 no5 泄露答案"],
   ["G9", "延伸音结构题应覆盖属九和弦完整结构"],

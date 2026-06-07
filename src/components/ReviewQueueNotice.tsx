@@ -14,7 +14,7 @@ export function ReviewQueueNotice({ stats }: ReviewQueueNoticeProps) {
   }
 
   return (
-    <section className="panel p-5">
+    <section data-testid="review-queue-notice" className="panel p-5">
       <div className="flex items-center gap-2">
         <Repeat2 className="text-leaf" size={20} aria-hidden="true" />
         <h2 className="text-lg font-bold text-ink">错题回炉</h2>
@@ -24,7 +24,7 @@ export function ReviewQueueNotice({ stats }: ReviewQueueNoticeProps) {
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
         {labels.map((label) => (
-          <span key={label} className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800">
+          <span key={label} data-testid="review-queue-item" className="rounded-md border border-amber-200 bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800">
             {label}
           </span>
         ))}
