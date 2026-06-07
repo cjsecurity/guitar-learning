@@ -4,6 +4,8 @@ const files = {
   courseTheory: readFileSync("src/utils/courseTheory.ts", "utf8"),
   musicTheory: readFileSync("src/utils/musicTheory.ts", "utf8"),
   intervalTheory: readFileSync("src/utils/intervalTheory.ts", "utf8"),
+  audioEngine: readFileSync("src/utils/audioEngine.ts", "utf8"),
+  rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
 };
 
 const source = Object.values(files).join("\n");
@@ -38,6 +40,10 @@ const requiredSnippets = [
   ["倒数第二个降号", "调号题应包含降号调经典速算法"],
   ["A小调 v7", "小调功能题应对比自然小调 v7 与和声小调 V7"],
   ["borrowed iv", "借用和弦题应覆盖流行乐高频的小四级借用"],
+  ["playRhythmPattern", "节奏网格应支持音频播放"],
+  ["RhythmStepSequencer", "16 分 pattern 题应使用点击式 step sequencer"],
+  ["6+6+4", "节奏题应覆盖 3+3+3+3+4 以外的分组"],
+  ["起点偏移", "节奏题应覆盖重音起点偏移"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {
@@ -66,6 +72,22 @@ if (accentPositions !== "1,4,7,10,13") {
 
 if (files.courseTheory.includes('"X..X..X..X...."')) {
   failures.push("旧 pattern X..X..X..X.... 不是 16 格，不能继续出现在题库源码中");
+}
+
+const requiredRhythmPatterns = [
+  ["X..X..X.X..X..X.", "3+3+2+3+3+2"],
+  ["X.....X.....X...", "6+6+4"],
+  [".X..X..X..X..X..", "第2格起 3+3+3+3+4"],
+];
+
+for (const [pattern, label] of requiredRhythmPatterns) {
+  if (pattern.length !== 16) {
+    failures.push(`${label} 的 pattern 长度应为 16，当前为 ${pattern.length}`);
+  }
+
+  if (!files.courseTheory.includes(pattern)) {
+    failures.push(`缺少 ${label} 的 16 格 pattern：${pattern}`);
+  }
 }
 
 if (failures.length > 0) {

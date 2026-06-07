@@ -2,6 +2,7 @@ import { CheckCircle2, HelpCircle, RefreshCw, Send, XCircle } from "lucide-react
 import { useState } from "react";
 import { TheoryEvaluationResult, TheoryQuestion, evaluateTheoryAnswer } from "../utils/courseTheory";
 import { FretboardDiagram } from "./FretboardDiagram";
+import { RhythmStepSequencer, isRhythmGridQuestion } from "./RhythmStepSequencer";
 
 interface TheoryQuizCardProps {
   question: TheoryQuestion;
@@ -13,6 +14,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
   const [answer, setAnswer] = useState("");
   const [showHint, setShowHint] = useState(false);
   const [result, setResult] = useState<TheoryEvaluationResult | null>(null);
+  const isRhythmGrid = isRhythmGridQuestion(question);
 
   function handleSubmit() {
     const nextResult = evaluateTheoryAnswer(question, answer);
@@ -46,8 +48,9 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
         <FretboardDiagram question={question} />
+        {isRhythmGrid && <RhythmStepSequencer question={question} value={answer} onChange={setAnswer} />}
 
-        {question.options && (
+        {!isRhythmGrid && question.options && (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {question.options.map((option) => (
               <button
@@ -64,10 +67,12 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
           </div>
         )}
 
-        <label className="space-y-2">
-          <span className="label">{question.answerLabel}</span>
-          <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="输入答案，支持空格、逗号或常见符号分隔" />
-        </label>
+        {!isRhythmGrid && (
+          <label className="space-y-2">
+            <span className="label">{question.answerLabel}</span>
+            <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="输入答案，支持空格、逗号或常见符号分隔" />
+          </label>
+        )}
 
         <div className="flex flex-col gap-3 sm:flex-row">
           <button type="button" className="btn-primary flex-1" onClick={handleSubmit}>
