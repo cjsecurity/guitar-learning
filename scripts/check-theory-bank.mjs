@@ -6,6 +6,7 @@ const files = {
   intervalTheory: readFileSync("src/utils/intervalTheory.ts", "utf8"),
   audioEngine: readFileSync("src/utils/audioEngine.ts", "utf8"),
   rhythmStepSequencer: readFileSync("src/components/RhythmStepSequencer.tsx", "utf8"),
+  minorFunctionAudioPanel: readFileSync("src/components/MinorFunctionAudioPanel.tsx", "utf8"),
 };
 
 const source = Object.values(files).join("\n");
@@ -48,6 +49,10 @@ const requiredSnippets = [
   ["起点偏移", "节奏题应覆盖重音起点偏移"],
   ["buildDiatonicDegreeQuestions", "顺阶和弦题库应由级数生成，避免手写小题池"],
   ["buildProgressionQuestions", "级数转调题库应由 key + progression 参数化生成"],
+  ["playChordProgression", "小调功能与其它和声听感题应能播放和弦进行"],
+  ["MinorFunctionAudioPanel", "自然小调 v7 与和声小调 V7 应提供听觉对比"],
+  ["Em7 -> Am", "小调功能题应听自然小调 v7 回 i"],
+  ["E7 -> Am", "小调功能题应听和声小调 V7 回 i"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {

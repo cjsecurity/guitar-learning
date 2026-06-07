@@ -33,6 +33,20 @@ export async function playRhythmPattern(pattern: string, bpm = 84) {
   });
 }
 
+export async function playChordProgression(chords: string[][], octave = 4) {
+  const context = getAudioContext();
+  await context.resume();
+
+  const start = context.currentTime + 0.04;
+  const chordDuration = 1.05;
+  const gap = 0.18;
+
+  chords.forEach((chord, chordIndex) => {
+    const chordStart = start + chordIndex * (chordDuration + gap);
+    chord.forEach((note) => schedulePianoTone(context, getFrequency(note, octaveForNote(note, octave)), chordStart, chordDuration));
+  });
+}
+
 async function playFrequencies(frequencies: number[], mode: PlayMode) {
   const context = getAudioContext();
   await context.resume();
@@ -136,6 +150,10 @@ function getPitchClass(note: string): number {
     }, 0);
 
   return ((base[letter] + offset) % 12 + 12) % 12;
+}
+
+function octaveForNote(note: string, octave: number): number {
+  return note.includes("A") && !note.includes("#") && !note.includes("b") ? octave - 1 : octave;
 }
 
 function normalizePattern(pattern: string): string[] {

@@ -2,6 +2,7 @@ import { CheckCircle2, HelpCircle, RefreshCw, Send, XCircle } from "lucide-react
 import { useState } from "react";
 import { TheoryEvaluationResult, TheoryQuestion, evaluateTheoryAnswer } from "../utils/courseTheory";
 import { FretboardDiagram } from "./FretboardDiagram";
+import { MinorFunctionAudioPanel } from "./MinorFunctionAudioPanel";
 import { RhythmStepSequencer, isRhythmGridQuestion } from "./RhythmStepSequencer";
 
 interface TheoryQuizCardProps {
@@ -48,6 +49,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
 
       <div className="space-y-5 px-5 py-5 sm:px-6">
         <FretboardDiagram question={question} />
+        <MinorFunctionAudioPanel question={question} />
         {isRhythmGrid && <RhythmStepSequencer question={question} value={answer} onChange={setAnswer} />}
 
         {!isRhythmGrid && question.options && (
