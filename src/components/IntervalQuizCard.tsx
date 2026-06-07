@@ -177,16 +177,24 @@ export function IntervalQuizCard({ question, onSubmit, onNext }: IntervalQuizCar
             </div>
 
             <div className="mt-4 grid gap-3 text-sm text-stone-800 sm:grid-cols-2 lg:grid-cols-4">
-              <ResultBadge label="度数" ok={question.mode === "spell" || isHardIdentify || result.degreeCorrect} value={result.expectedDegree} />
-              <ResultBadge label="半音" ok={question.mode === "spell" || isHardIdentify || result.semitoneCorrect} value={`${result.expectedSemitones}`} />
-              <ResultBadge label="音程名" ok={question.mode === "spell" || result.qualityCorrect} value={result.expectedQuality} />
-              {question.mode === "identify" && <ResultBadge label="基础协和分类" ok={isHardIdentify || result.feelCorrect} value={result.expectedFeel} />}
-              {question.mode === "spell" && <ResultBadge label="目标音" ok={result.targetCorrect} value={result.expectedTarget} />}
+              <ResultBadge label="度数" status={shouldReviewOnly(question, "degree") ? "reference" : answerStatus(result.degreeCorrect)} value={result.expectedDegree} />
+              <ResultBadge label="半音" status={shouldReviewOnly(question, "semitone") ? "reference" : answerStatus(result.semitoneCorrect)} value={`${result.expectedSemitones}`} />
+              <ResultBadge label="音程名" status={shouldReviewOnly(question, "quality") ? "reference" : answerStatus(result.qualityCorrect)} value={result.expectedQuality} />
+              {question.mode === "identify" && (
+                <ResultBadge label="基础协和分类" status={shouldReviewOnly(question, "feel") ? "reference" : answerStatus(result.feelCorrect)} value={result.expectedFeel} />
+              )}
+              {question.mode === "spell" && <ResultBadge label="目标音" status={answerStatus(result.targetCorrect)} value={result.expectedTarget} />}
             </div>
 
-            {question.mode === "identify" && (
+            {question.mode === "identify" && !isHardIdentify && (
               <p className="mt-4 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
                 你选的是 {feel || "未选择"}，标准分类是 {result.expectedFeel}。先听声音，再用理论检查：{question.interval.audioExample}。
+              </p>
+            )}
+
+            {isHardIdentify && (
+              <p className="mt-4 rounded-md bg-white/70 px-3 py-2 text-sm text-stone-800">
+                本档只判“完整音程名”；度数、半音和基础协和分类是提交后的复盘参考。
               </p>
             )}
 
@@ -272,12 +280,37 @@ function getSampleFrequencies(intervalId: IntervalId): [number, number] {
   return getIntervalAudioFrequencies("C", interval);
 }
 
-function ResultBadge({ label, ok, value }: { label: string; ok: boolean; value: string }) {
+type BadgeStatus = "correct" | "expected" | "reference";
+
+function answerStatus(ok: boolean): BadgeStatus {
+  return ok ? "correct" : "expected";
+}
+
+function shouldReviewOnly(question: IntervalQuestion, field: "degree" | "semitone" | "quality" | "feel"): boolean {
+  if (question.mode === "spell") {
+    return true;
+  }
+
+  return question.difficultyId === "hard" && field !== "quality";
+}
+
+function ResultBadge({ label, status, value }: { label: string; status: BadgeStatus; value: string }) {
+  const statusText: Record<BadgeStatus, string> = {
+    correct: "正确",
+    expected: "应为",
+    reference: "参考",
+  };
+  const statusClass: Record<BadgeStatus, string> = {
+    correct: "text-emerald-700",
+    expected: "text-rose-700",
+    reference: "text-stone-500",
+  };
+
   return (
     <div className="rounded-md border border-white/70 bg-white/70 px-3 py-3">
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold text-stone-700">{label}</span>
-        <span className={ok ? "text-emerald-700" : "text-rose-700"}>{ok ? "正确" : "应为"}</span>
+        <span className={statusClass[status]}>{statusText[status]}</span>
       </div>
       <p className="mt-2 break-words text-base font-bold text-ink">{value}</p>
     </div>

@@ -177,9 +177,9 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
             </div>
 
             <div className="mt-4 grid gap-3 text-sm text-stone-800 sm:grid-cols-3">
-              <ResultBadge label="字母骨架" ok={result.skeletonCorrect} value={result.expectedSkeleton.join(" ")} />
-              <ResultBadge label="和弦公式" ok value={formatFormula(result.formula)} />
-              <ResultBadge label="最终音" ok={result.finalCorrect} value={result.expectedFinal.join(" ")} />
+              <ResultBadge label="字母骨架" status={answerStatus(result.skeletonCorrect)} value={result.expectedSkeleton.join(" ")} />
+              <ResultBadge label="和弦公式" status="reference" value={formatFormula(result.formula)} />
+              <ResultBadge label="最终音" status={answerStatus(result.finalCorrect)} value={result.expectedFinal.join(" ")} />
             </div>
 
             {result.omittedFifthAnswer && !result.finalCorrect && (
@@ -227,12 +227,29 @@ function getOrderLabel(degreeCount: number): string {
   return ["1", "3", "5", "7", "9"].slice(0, degreeCount).join("-");
 }
 
-function ResultBadge({ label, ok, value }: { label: string; ok: boolean; value: string }) {
+type BadgeStatus = "correct" | "expected" | "reference";
+
+function answerStatus(ok: boolean): BadgeStatus {
+  return ok ? "correct" : "expected";
+}
+
+function ResultBadge({ label, status, value }: { label: string; status: BadgeStatus; value: string }) {
+  const statusText: Record<BadgeStatus, string> = {
+    correct: "正确",
+    expected: "应为",
+    reference: "参考",
+  };
+  const statusClass: Record<BadgeStatus, string> = {
+    correct: "text-emerald-700",
+    expected: "text-rose-700",
+    reference: "text-stone-500",
+  };
+
   return (
     <div className="rounded-md border border-white/70 bg-white/70 px-3 py-3">
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold text-stone-700">{label}</span>
-        <span className={ok ? "text-emerald-700" : "text-rose-700"}>{ok ? "正确" : "应为"}</span>
+        <span className={statusClass[status]}>{statusText[status]}</span>
       </div>
       <p className="mt-2 break-words text-base font-bold text-ink">{value}</p>
     </div>
