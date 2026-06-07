@@ -15,6 +15,7 @@ const files = {
   knowledgeCardComponent: readFileSync("src/components/KnowledgeCard.tsx", "utf8"),
   quizPage: readFileSync("src/components/QuizPage.tsx", "utf8"),
   quizCard: readFileSync("src/components/QuizCard.tsx", "utf8"),
+  chordWorkedExample: readFileSync("src/components/ChordWorkedExample.tsx", "utf8"),
   intervalQuizPage: readFileSync("src/components/IntervalQuizPage.tsx", "utf8"),
   intervalQuizCard: readFileSync("src/components/IntervalQuizCard.tsx", "utf8"),
   theoryQuizPage: readFileSync("src/components/TheoryQuizPage.tsx", "utf8"),
@@ -175,6 +176,11 @@ const requiredSnippets = [
   ["30 秒知识卡", "知识卡标题需要明确它是进测验前的快速规则预习"],
   ["getKnowledgeCard", "答题页应通过统一入口读取章节知识卡"],
   ["selfCheck", "知识卡应包含过关自查标准"],
+  ["data-testid=\"chord-worked-example\"", "和弦简单档应有新手第一题 worked example，解释字母骨架与最终音的区别"],
+  ["为什么 D 的骨架是 D F A，但 D 大三和弦是 D F# A", "新手示范应直面 D 骨架与 D 大三和弦的常见困惑"],
+  ["D 到 F 只有 3 个半音", "示范必须说明为什么 F 不是 D 大三和弦的最终三音"],
+  ["骨架没有错，最终音要补上升降号", "示范必须明确骨架步骤与最终音步骤不矛盾"],
+  ["difficulty.id === \"easy\" && <ChordWorkedExample", "新手 worked example 应只在和弦简单档出现，避免干扰高阶练习"],
 ];
 
 for (const [snippet, reason] of requiredSnippets) {

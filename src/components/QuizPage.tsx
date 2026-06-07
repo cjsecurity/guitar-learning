@@ -4,6 +4,7 @@ import { QuizHistoryItem, QuizStats } from "../types/quiz";
 import { getKnowledgeCard } from "../utils/knowledgeCards";
 import { CHORD_CHAPTER, DifficultyConfig, EvaluationResult, Question, createRandomQuestion } from "../utils/musicTheory";
 import { getRecentQuestionLabels, getReviewQuestionLabels, mergeRecentQuestionLabels } from "../utils/reviewQueue";
+import { ChordWorkedExample } from "./ChordWorkedExample";
 import { HistoryPanel } from "./HistoryPanel";
 import { KnowledgeCard } from "./KnowledgeCard";
 import { QuizCard } from "./QuizCard";
@@ -77,6 +78,8 @@ export function QuizPage({ difficulty, stats, onSubmitResult, onResetStats, onBa
         </header>
 
         <KnowledgeCard card={getKnowledgeCard("chord")} />
+
+        {difficulty.id === "easy" && <ChordWorkedExample defaultOpen={stats.totalAnswers === 0} />}
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <QuizCard
