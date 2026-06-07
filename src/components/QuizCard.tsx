@@ -30,6 +30,8 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
 
   const hint = buildHint(question);
   const skeletonDegrees = getSkeletonDegreeLabels(question);
+  const skeletonPlaceholder = getSkeletonPlaceholder(skeletonDegrees.length);
+  const finalPlaceholder = getFinalNotesPlaceholder(skeletonDegrees.length);
 
   function handleSubmit() {
     if (result) {
@@ -104,7 +106,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
               className="input"
               value={skeletonInput}
               onChange={(event) => setSkeletonInput(event.target.value)}
-              placeholder={isNinthChord(question.type) ? "例如 D F A C E" : "例如 A C E G"}
+              placeholder={skeletonPlaceholder}
             />
           </label>
 
@@ -114,7 +116,7 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
               className="input"
               value={finalInput}
               onChange={(event) => setFinalInput(event.target.value)}
-              placeholder="按 1-3-5-7-9 顺序，例如 A C# E G"
+              placeholder={finalPlaceholder}
             />
           </label>
         </div>
@@ -197,6 +199,32 @@ export function QuizCard({ question, onSubmit, onNext }: QuizCardProps) {
       </div>
     </section>
   );
+}
+
+function getSkeletonPlaceholder(degreeCount: number): string {
+  const order = getOrderLabel(degreeCount);
+  const examples: Record<number, string> = {
+    3: "C E G",
+    4: "A C E G",
+    5: "D F A C E",
+  };
+
+  return `按 ${order} 顺序，例如 ${examples[degreeCount] ?? examples[4]}`;
+}
+
+function getFinalNotesPlaceholder(degreeCount: number): string {
+  const order = getOrderLabel(degreeCount);
+  const examples: Record<number, string> = {
+    3: "D F# A",
+    4: "A C# E G",
+    5: "D F A C E",
+  };
+
+  return `按 ${order} 顺序，例如 ${examples[degreeCount] ?? examples[4]}`;
+}
+
+function getOrderLabel(degreeCount: number): string {
+  return ["1", "3", "5", "7", "9"].slice(0, degreeCount).join("-");
 }
 
 function ResultBadge({ label, ok, value }: { label: string; ok: boolean; value: string }) {
