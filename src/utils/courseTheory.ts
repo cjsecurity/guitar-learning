@@ -62,6 +62,8 @@ const DIFFICULTY_TITLES: Record<TheoryDifficultyId, string> = {
 };
 
 const MAJOR_SCALE_INTERVALS = [0, 2, 4, 5, 7, 9, 11];
+const NATURAL_MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 10];
+const HARMONIC_MINOR_INTERVALS = [0, 2, 3, 5, 7, 8, 11];
 const NOTE_LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
 const NATURAL_PITCH: Record<string, number> = {
   C: 0,
@@ -437,37 +439,26 @@ const COURSE_DEFINITIONS: Array<Omit<TheoryChapter, "difficulties"> & { difficul
     difficultySeeds: {
       easy: {
         badge: "音阶差异",
-        description: "对比 A 自然小调与 A 和声小调。",
-        questions: [
-          q("A自然小调", "A 自然小调是哪七个音？", "音名", "A B C D E F G", ["A,B,C,D,E,F,G"], "自然小调", ["A 自然小调无升降号。"], ["A 自然小调是 A B C D E F G。"]),
-          q("A和声小调", "A 和声小调是哪七个音？", "音名", "A B C D E F G#", ["A,B,C,D,E,F,G#"], "和声小调", ["自然小调 b7 升高为 7。"], ["A 和声小调是 A B C D E F G#。"]),
-        ],
+        description: "对比 A、D、E 自然小调与和声小调。",
+        questions: buildMinorScaleQuestions(["A", "D", "E"]),
       },
       medium: {
         badge: "v7 / V7 / vii°7",
         description: "写 A 小调里的 v7、V7、vii°7。",
         questions: [
-          q("A小调 v7", "A 自然小调里的 v7 是什么？", "和弦", "Em7", ["Emin7", "E-7", "E小七"], "自然小调 v7", ["先听 Em7 -> Am，再听 E7 -> Am。", "A 自然小调第 5 级是 E，音是 E G B D。"], ["A 自然小调的 v7 是 Em7。因为第三音是 G，不是 G#，所以它不像 E7 那样强烈导向 Am。"]),
-          q("A小调 V7", "A 和声小调里的 V7 是什么？", "和弦", "E7", ["E dominant7", "E属七"], "小调属功能", ["先听 E7 -> Am 的回家感。", "A 的五级是 E。"], ["A 和声小调把 G 升成 G#，所以 V7 是 E7。"]),
-          q("A小调 vii°7", "A 和声小调里的 vii°7 是什么？", "和弦", "G#°7", ["G#dim7", "G# diminished7"], "导音减七", ["先听 G#°7 -> Am 的收束感。", "导音是 G#。"], ["A 和声小调 vii°7 是 G#°7。"]),
-          q("为何升7级", "A 小调里为什么常把 G 升成 G# 来形成和声小调？", "原因", "制造导音让V7更强地回到i", ["制造导音", "让E7回Am更强", "形成V7回i", "导音回主音"], "和声小调功能", ["对比听 Em7 -> Am 和 E7 -> Am。", "G# 离 A 只有半音。"], ["G# 是 A 的导音，会强烈想解决到 A；因此 E7 的 G# 比 Em7 的 G 更能制造 V7 -> i 的回家感。"]),
+          ...buildMinorDominantQuestions(["A"]),
+          ...buildHarmonicMinorReasonQuestions(["A"]),
         ],
       },
       hard: {
         badge: "换小调",
         description: "换到 Dm、Em、Cm 等小调。",
-        questions: [
-          q("D小调 V7", "D harmonic minor 的 V7 是什么？", "和弦", "A7", ["A属七"], "小调属功能", ["D 的五级是 A，和声小调升 C#。"], ["D 小调的 V7 是 A7。"]),
-          q("E小调 V7", "E harmonic minor 的 V7 是什么？", "和弦", "B7", ["B属七"], "小调属功能", ["E 的五级是 B，和声小调升 D#。"], ["E 小调的 V7 是 B7。"]),
-        ],
+        questions: buildMinorDominantQuestions(["D", "E", "C", "G"]),
       },
       hell: {
         badge: "减七替代",
         description: "由导音减七判断它对应哪个省略根音的属七降九。",
-        questions: [
-          q("G#°7 功能", "G#°7 可以理解成哪个省略根音的属七降九？", "导音减七与属七降九", "省略根音的 E7(b9)", ["E7(b9)", "E7b9", "E属七降九", "无根E7b9"], "导音减七", ["E7(b9)=E G# B D F；省略根音 E 后得到 G# B D F。"], ["G#°7 = G# B D F。正统功能和声中，它是 A 小调的导音减七和弦 vii°7；在爵士/吉他语境里，也常理解为省略根音的 E7(b9)。"]),
-          q("C#°7 功能", "C#°7 导向 Dm 时，可理解成哪个省略根音的属七降九？", "导音减七与属七降九", "省略根音的 A7(b9)", ["A7(b9)", "A7b9", "A属七降九", "无根A7b9"], "导音减七", ["A7(b9)=A C# E G Bb；省略根音 A 后得到 C# E G Bb。"], ["C#°7 = C# E G Bb。它可作为 D 小调的导音减七，也可理解为省略根音的 A7(b9)，导向 Dm。"]),
-        ],
+        questions: buildLeadingToneDiminishedQuestions(["A", "D", "E", "C", "G"]),
       },
     },
   },
@@ -865,6 +856,166 @@ function buildPentatonicCenterQuestions(majorKeys: string[]): QuestionSeed[] {
       ["同一批音，中心不同；先找小调 1，再找上方小三度的关系大调中心。"],
       [`${notes.join(" ")} 是 ${minorRoot} 小调五声，也可看作 ${majorKey} 大调五声。吉他上同一盒子可以因为落点中心不同而听成不同调性。`],
     );
+  });
+}
+
+function buildMinorScaleQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.flatMap((minorRoot) => {
+    const natural = getMinorScale(minorRoot, "natural");
+    const harmonic = getMinorScale(minorRoot, "harmonic");
+    const naturalSeventh = natural[6];
+    const harmonicSeventh = harmonic[6];
+
+    return [
+      q(
+        `${minorRoot}自然小调`,
+        `${minorRoot} 自然小调是哪七个音？`,
+        "音名",
+        natural.join(" "),
+        [natural.join(","), natural.join(" ")],
+        "自然小调",
+        [`${minorRoot} 自然小调公式是 1 2 b3 4 5 b6 b7。`],
+        [`${minorRoot} 自然小调是 ${natural.join(" ")}。`],
+      ),
+      q(
+        `${minorRoot}和声小调`,
+        `${minorRoot} 和声小调是哪七个音？`,
+        "音名",
+        harmonic.join(" "),
+        [harmonic.join(","), harmonic.join(" ")],
+        "和声小调",
+        [`和声小调把自然小调的 b7 升高为 7：${naturalSeventh} -> ${harmonicSeventh}。`],
+        [`${minorRoot} 和声小调是 ${harmonic.join(" ")}。升高第 7 级是为了制造导音，让 V7 更想回 i。`],
+      ),
+    ];
+  });
+}
+
+function buildMinorDominantQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.flatMap((minorRoot) => {
+    const natural = getMinorScale(minorRoot, "natural");
+    const harmonic = getMinorScale(minorRoot, "harmonic");
+    const dominantRoot = natural[4];
+    const naturalThird = natural[6];
+    const leadingTone = harmonic[6];
+    const naturalV = `${dominantRoot}m7`;
+    const dominantV = `${dominantRoot}7`;
+    const leadingToneChord = `${leadingTone}°7`;
+
+    return [
+      q(
+        `${minorRoot}小调 v7`,
+        `${minorRoot} 自然小调里的 v7 是什么？`,
+        "和弦",
+        naturalV,
+        getChordAliases(naturalV),
+        "自然小调 v7",
+        [`${minorRoot} 自然小调第 5 级是 ${dominantRoot}；自然第 7 级是 ${naturalThird}，不会形成导音。`],
+        [`${minorRoot} 自然小调的 v7 是 ${naturalV}。因为第三音来自自然小调，没有升高成导音，所以回 i 的力量较弱。`],
+      ),
+      q(
+        `${minorRoot}小调 V7`,
+        `${minorRoot} 和声小调里的 V7 是什么？`,
+        "和弦",
+        dominantV,
+        getChordAliases(dominantV),
+        "小调属功能",
+        [`${minorRoot} 的五级是 ${dominantRoot}；和声小调把 ${naturalThird} 升成 ${leadingTone}。`],
+        [`${minorRoot} 和声小调的 V7 是 ${dominantV}。${leadingTone} 是导音，会强烈想解决到 ${minorRoot}。`],
+      ),
+      q(
+        `${minorRoot}小调 vii°7`,
+        `${minorRoot} 和声小调里的 vii°7 是什么？`,
+        "和弦",
+        leadingToneChord,
+        [`${leadingTone}dim7`, `${leadingTone} diminished7`, `${leadingTone}o7`],
+        "导音减七",
+        [`导音是 ${leadingTone}，从导音上叠减七和弦形成 vii°7。`],
+        [`${minorRoot} 和声小调的 vii°7 是 ${leadingToneChord}，它会强烈导向 ${minorRoot}m。`],
+      ),
+    ];
+  });
+}
+
+function buildHarmonicMinorReasonQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.map((minorRoot) => {
+    const natural = getMinorScale(minorRoot, "natural");
+    const harmonic = getMinorScale(minorRoot, "harmonic");
+    const naturalSeventh = natural[6];
+    const leadingTone = harmonic[6];
+    const dominantRoot = natural[4];
+
+    return q(
+      `${minorRoot}小调为何升7级`,
+      `${minorRoot} 小调里为什么常把 ${naturalSeventh} 升成 ${leadingTone} 来形成和声小调？`,
+      "原因",
+      "制造导音让V7更强地回到i",
+      ["制造导音", `让${dominantRoot}7回${minorRoot}m更强`, "形成V7回i", "导音回主音"],
+      "和声小调功能",
+      [`${leadingTone} 离 ${minorRoot} 只有半音。`, `升高第 7 级后，${dominantRoot}m7 会变成 ${dominantRoot}7。`],
+      [`${leadingTone} 是 ${minorRoot} 的导音，会强烈想解决到 ${minorRoot}；因此 ${dominantRoot}7 比 ${dominantRoot}m7 更能制造 V7 -> i 的回家感。`],
+    );
+  });
+}
+
+function buildLeadingToneDiminishedQuestions(minorRoots: string[]): QuestionSeed[] {
+  return minorRoots.map((minorRoot) => {
+    const natural = getMinorScale(minorRoot, "natural");
+    const harmonic = getMinorScale(minorRoot, "harmonic");
+    const dominantRoot = natural[4];
+    const leadingTone = harmonic[6];
+    const diminishedNotes = getDiminishedSeventhChord(leadingTone);
+    const dominantFlatNineNotes = getDominantFlatNineChord(dominantRoot);
+
+    return q(
+      `${leadingTone}°7 功能`,
+      `${leadingTone}°7 导向 ${minorRoot}m 时，可理解成哪个省略根音的属七降九？`,
+      "导音减七与属七降九",
+      `省略根音的 ${dominantRoot}7(b9)`,
+      [`${dominantRoot}7(b9)`, `${dominantRoot}7b9`, `${dominantRoot}属七降九`, `无根${dominantRoot}7b9`],
+      "导音减七",
+      [`${dominantRoot}7(b9)=${dominantFlatNineNotes.join(" ")}；省略根音 ${dominantRoot} 后得到 ${diminishedNotes.join(" ")}。`],
+      [`${leadingTone}°7 = ${diminishedNotes.join(" ")}。正统功能和声中，它是 ${minorRoot} 小调的导音减七和弦 vii°7；在爵士/吉他语境里，也常理解为省略根音的 ${dominantRoot}7(b9)。`],
+    );
+  });
+}
+
+function getMinorScale(minorRoot: string, kind: "natural" | "harmonic"): string[] {
+  const root = parseNote(minorRoot);
+  const rootLetterIndex = NOTE_LETTERS.indexOf(root.letter);
+  const intervals = kind === "natural" ? NATURAL_MINOR_INTERVALS : HARMONIC_MINOR_INTERVALS;
+
+  return intervals.map((interval, index) => {
+    const letter = NOTE_LETTERS[(rootLetterIndex + index) % NOTE_LETTERS.length];
+    return spellPitchForLetter(letter, mod12(root.pitch + interval));
+  });
+}
+
+function getDiminishedSeventhChord(root: string): string[] {
+  const parsed = parseNote(root);
+  const rootLetterIndex = NOTE_LETTERS.indexOf(parsed.letter);
+  const intervals = [0, 3, 6, 9];
+
+  return intervals.map((interval, index) => {
+    const letter = NOTE_LETTERS[(rootLetterIndex + index * 2) % NOTE_LETTERS.length];
+    return spellPitchForLetter(letter, mod12(parsed.pitch + interval));
+  });
+}
+
+function getDominantFlatNineChord(root: string): string[] {
+  const parsed = parseNote(root);
+  const rootLetterIndex = NOTE_LETTERS.indexOf(parsed.letter);
+  const degrees = [
+    { letterOffset: 0, semitones: 0 },
+    { letterOffset: 2, semitones: 4 },
+    { letterOffset: 4, semitones: 7 },
+    { letterOffset: 6, semitones: 10 },
+    { letterOffset: 1, semitones: 13 },
+  ];
+
+  return degrees.map(({ letterOffset, semitones }) => {
+    const letter = NOTE_LETTERS[(rootLetterIndex + letterOffset) % NOTE_LETTERS.length];
+    return spellPitchForLetter(letter, mod12(parsed.pitch + semitones));
   });
 }
 

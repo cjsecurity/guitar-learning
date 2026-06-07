@@ -36,6 +36,7 @@ git@github.com:cjsecurity/guitar-learning.git
 ### 页面与练习组件
 
 - `src/components/HomePage.tsx`：主页面课程入口。
+- `src/components/CircleOfFifthsDiagram.tsx`：五度圈与调号方向图。
 - `src/components/DifficultySelect.tsx`：和弦课程难度选择。
 - `src/components/QuizPage.tsx`：和弦练习页。
 - `src/components/QuizCard.tsx`：和弦答题卡片。
