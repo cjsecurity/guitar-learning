@@ -178,10 +178,8 @@ export function evaluateIntervalAnswer(
   const feelCorrect = normalizeFeelAnswer(answers.feel) === question.interval.feel;
   const targetCorrect = normalizeNote(answers.target) === normalizeNote(question.target);
   const isFullyCorrect =
-    question.mode === "spell"
-      ? targetCorrect
-      : question.difficultyId === "hard"
-        ? qualityCorrect
+    question.mode === "spell" || question.difficultyId === "hard"
+      ? targetCorrect && degreeCorrect && semitoneCorrect && qualityCorrect && feelCorrect
       : degreeCorrect && semitoneCorrect && qualityCorrect && feelCorrect;
 
   return {

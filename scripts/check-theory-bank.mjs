@@ -53,7 +53,7 @@ const requiredSnippets = [
   ["纯四度", "音程协和分类需要明确纯四度"],
   ["preserveRomanCase", "罗马数字大小写必须保留"],
   ["replaceChineseNumbers", "指板弦品答案需要支持中文数字输入"],
-  ["difficultyId === \"hard\"", "音程困难档应只要求完整音程名，降低四字段填写摩擦"],
+  ["requiresTargetAnswer", "音程困难档和反向拼写题都应显示目标音输入框与四个理论字段"],
   ["本题不能直接写成", "音程等音目标音反馈首句应解释为何不能改写成常见等音名"],
   ["getIntervalAudioFrequencies", "音程音频应按从根音向上数的半音距离生成目标频率"],
   ["interval.semitones / 12", "F -> D 这类回绕音名应播放为向上的大六度，而不是固定八度里的下降小三度"],
@@ -67,7 +67,7 @@ const requiredSnippets = [
   ["getSkeletonPlaceholder", "和弦骨架输入框应按三/七/九和弦动态提示 1-3-5-7-9 顺序"],
   ["getFinalNotesPlaceholder", "最终和弦音输入框应明确按 1-3-5-7-9 顺序输入，避免转位答案误判"],
   ["实际谱面常会按调性改用更易读的等音根音", "升降号九和弦出现双升/双降时，应桥接理论拼写与实用记谱"],
-  ["shouldReviewOnly", "音程困难档和反向拼写题未要求填写的字段应显示为参考，不应标成正确"],
+  ["targetCorrect && degreeCorrect && semitoneCorrect && qualityCorrect && feelCorrect", "音程困难档与反向拼写题必须同时判目标音、度数、半音、完整音程名和基础协和分类"],
   ["status=\"reference\"", "和弦公式等系统复盘字段应显示为参考，不应假装用户答对了该字段"],
   ["Dm9 省略辨认", "省略音题目标签不应预先写 no5 泄露答案"],
   ["G13 省略辨认", "属十三省略音题目标签不应预先写 no5 泄露答案"],
@@ -257,6 +257,62 @@ async function runRuntimeTheoryChecks() {
     assertRuntime(isCloseRatio(upperD / fRoot, 2 ** (9 / 12)), `F -> D 的音频应播放向上大六度，当前频率比为 ${upperD / fRoot}`);
     const [cRoot, highC] = intervalTheory.getIntervalAudioFrequencies("C", octave);
     assertRuntime(isCloseRatio(highC / cRoot, 2), `八度音频应播放同音名高一组，当前频率比为 ${highC / cRoot}`);
+
+    const mediumInterval = intervalTheory.createRandomIntervalQuestion(intervalTheory.getIntervalDifficulty("medium"));
+    assertRuntime(
+      intervalTheory.evaluateIntervalAnswer(mediumInterval, {
+        degree: String(mediumInterval.interval.degreeNumber),
+        semitones: String(mediumInterval.interval.semitones),
+        quality: mediumInterval.interval.fullName,
+        feel: mediumInterval.interval.feel,
+        target: "",
+      }).isFullyCorrect,
+      "C 根音含升降号识别题应判度数、半音、完整音程名和基础协和分类四字段",
+    );
+
+    const hardInterval = intervalTheory.createRandomIntervalQuestion(intervalTheory.getIntervalDifficulty("hard"));
+    assertRuntime(
+      !intervalTheory.evaluateIntervalAnswer(hardInterval, {
+        degree: "",
+        semitones: "",
+        quality: hardInterval.interval.fullName,
+        feel: "",
+        target: "",
+      }).isFullyCorrect,
+      "自然根音随机困难档不能只写对完整音程名就算全对",
+    );
+    assertRuntime(
+      intervalTheory.evaluateIntervalAnswer(hardInterval, {
+        degree: String(hardInterval.interval.degreeNumber),
+        semitones: String(hardInterval.interval.semitones),
+        quality: hardInterval.interval.fullName,
+        feel: hardInterval.interval.feel,
+        target: hardInterval.target,
+      }).isFullyCorrect,
+      "自然根音随机困难档应同时判目标音、度数、半音、完整音程名和基础协和分类",
+    );
+
+    const spellInterval = intervalTheory.createRandomIntervalQuestion(intervalTheory.getIntervalDifficulty("hell"));
+    assertRuntime(
+      !intervalTheory.evaluateIntervalAnswer(spellInterval, {
+        degree: "",
+        semitones: "",
+        quality: "",
+        feel: "",
+        target: spellInterval.target,
+      }).isFullyCorrect,
+      "反向拼写题不能只写对目标音就算全对",
+    );
+    assertRuntime(
+      intervalTheory.evaluateIntervalAnswer(spellInterval, {
+        degree: String(spellInterval.interval.degreeNumber),
+        semitones: String(spellInterval.interval.semitones),
+        quality: spellInterval.interval.fullName,
+        feel: spellInterval.interval.feel,
+        target: spellInterval.target,
+      }).isFullyCorrect,
+      "反向拼写题应同时判目标音、度数、半音、完整音程名和基础协和分类",
+    );
 
     const diatonicHell = courseTheory.getTheoryDifficulty("diatonic-chords", "hell");
     const secondaryDominant = diatonicHell.questions.find((question) => question.label === "Bm7b5-E7-Am7");
