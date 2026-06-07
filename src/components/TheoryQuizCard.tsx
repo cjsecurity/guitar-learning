@@ -5,6 +5,7 @@ import { FretboardDiagram } from "./FretboardDiagram";
 import { MinorFunctionAudioPanel } from "./MinorFunctionAudioPanel";
 import { PentatonicBoxDiagram } from "./PentatonicBoxDiagram";
 import { RhythmStepSequencer, isRhythmGridQuestion } from "./RhythmStepSequencer";
+import { RhythmTapTrainer } from "./RhythmTapTrainer";
 import { SpeedTimer, useQuestionTimer } from "./SpeedTimer";
 
 interface TheoryQuizCardProps {
@@ -64,6 +65,7 @@ export function TheoryQuizCard({ question, onSubmit, onNext }: TheoryQuizCardPro
         <PentatonicBoxDiagram question={question} />
         <MinorFunctionAudioPanel question={question} />
         {isRhythmGrid && <RhythmStepSequencer question={question} value={answer} onChange={setAnswer} />}
+        {isRhythmGrid && <RhythmTapTrainer question={question} />}
 
         {!isRhythmGrid && question.options && (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
